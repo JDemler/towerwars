@@ -1,0 +1,80 @@
+package game
+
+import "fmt"
+
+type Field struct {
+	Id      int
+	Player  Player
+	TWMap   TWMap
+	Mobs    []*Mob
+	Bullets []*Bullet
+	Towers  []*Tower
+}
+
+func NewField(id int, twmap TWMap) *Field {
+	return &Field{
+		Id:      id,
+		Player:  NewPlayer(),
+		TWMap:   twmap,
+		Mobs:    []*Mob{},
+		Bullets: []*Bullet{},
+		Towers:  []*Tower{},
+	}
+}
+
+func (field *Field) handleBuildEvent(x, y int) {
+	// check if player has enough money
+	if field.Player.Money < 1 {
+		return
+	}
+	// check if position within map bounds
+	if x < 0 || x >= field.TWMap.Width || y < 0 || y >= field.TWMap.Height {
+		return
+	}
+	// check if position is already occupied
+	if field.TWMap.IsOccupied(x, y) {
+		return
+	}
+	field.Player.Money -= 1
+	field.TWMap.Occupy(x, y)
+	field.Towers = append(field.Towers, &Tower{X: float64(x)*TileSize + TileSize/2, Y: float64(y)*TileSize + TileSize/2, Damage: 1, Range: 500, FireRate: 0.3, Cooldown: 0})
+}
+
+func (field *Field) Update(delta float64, events []Event, otherFields []*Field) {
+	for _, event := range events {
+		// Iterate over event targetfieldids and get targetfields
+		targetFields := []*Field{}
+		for _, targetFieldId := range event.TargetFieldIds() {
+			for _, otherField := range otherFields {
+				if otherField.Id == targetFieldId {
+					targetFields = append(targetFields, otherField)
+				}
+			}
+		}
+
+		if !event.TryExecute(field, targetFields) {
+			//Log failure to execute event
+			fmt.Printf("Failed to execute event: %+v", event)
+		}
+	}
+
+	// Update Towers
+	for i := 0; i < len(field.Towers); i++ {
+		bullets := field.Towers[i].Update(delta, field.Mobs)
+		field.Bullets = append(field.Bullets, bullets...)
+	}
+
+	// Update bullets and remove irrelevant bullets from the game
+	for i := len(field.Bullets) - 1; i >= 0; i-- {
+		if !field.Bullets[i].Update(delta) || field.Bullets[i].Target.IsDead() {
+			field.Bullets = append(field.Bullets[:i], field.Bullets[i+1:]...)
+		}
+	}
+	// Update mobs
+	for i := len(field.Mobs) - 1; i >= 0; i-- {
+		field.Mobs[i].Update(delta, &field.TWMap)
+		if field.Mobs[i].IsDead() {
+			field.Mobs = append(field.Mobs[:i], field.Mobs[i+1:]...)
+		}
+	}
+}
