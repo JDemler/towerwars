@@ -19,3 +19,9 @@
 
 # Go workspace file
 go.work
+
+# Node modules
+web/client/node_modules
+
+# Typescript output
+web/client/dist
