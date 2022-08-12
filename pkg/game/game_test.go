@@ -8,11 +8,12 @@ import (
 func prepareGame() *Game {
 	return &Game{
 		Fields: []*Field{
-			NewField(0, standardTWMap()),
-			NewField(1, standardTWMap())},
+			NewField(0, NewPlayer(), standardTWMap()),
+			NewField(1, NewPlayer(), standardTWMap())},
 		Elapsed:        0,
 		MobRespawnTime: 5,
 		IncomeCooldown: 30,
+		State:          WaitingState,
 	}
 }
 
@@ -41,6 +42,7 @@ func TestMakeTiles(t *testing.T) {
 // Test that player gets money after income loop
 func TestPlayerGetsMoneyAfterIncomeLoop(t *testing.T) {
 	game := prepareGame()
+	game.Start()
 	// iterate over fields and players and check that players have 100 money
 	for _, field := range game.Fields {
 		if field.Player.Money != 100 {
@@ -56,5 +58,34 @@ func TestPlayerGetsMoneyAfterIncomeLoop(t *testing.T) {
 		if field.Player.Money != 100+field.Player.Income {
 			t.Errorf("Expected player to have 100+income money, got %d", field.Player.Money)
 		}
+	}
+}
+
+// Test that state is correct throughout the game
+func TestGameState(t *testing.T) {
+	game := prepareGame()
+	// Check that state is waiting
+	if game.State != WaitingState {
+		t.Errorf("Expected state to be waiting, got %s", game.State)
+	}
+	game.Start()
+	// Check that state is playing after start
+	if game.State != PlayingState {
+		t.Errorf("Expected state to be playing, got %s", game.State)
+	}
+	// Set live of all players to 1 and add mob
+	game.Fields[0].Player.Lives = 1
+	game.Fields[0].Mobs = append(game.Fields[0].Mobs, &Mob{X: 5, Y: 5, TargetX: 5, TargetY: 5, Health: 100, Speed: 100})
+	// run the game
+	for i := 0; i < 31; i++ {
+		game.Update(1, []FieldEvent{})
+	}
+	// Check that mob reached is target and is thus removed from the game
+	if len(game.Fields[0].Mobs) != 0 {
+		t.Errorf("Expected mob to be removed, got %d", len(game.Fields[0].Mobs))
+	}
+	// Check that state is GameOver after end of game
+	if game.State != GameOverState {
+		t.Errorf("Expected state to be waiting, got %s", game.State)
 	}
 }

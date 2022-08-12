@@ -6,7 +6,7 @@ import (
 
 // prepare a field containing a single tower and a single mob using the standardtwmap
 func prepareField(hasTower bool, hasMob bool) *Field {
-	field := NewField(2, standardTWMap())
+	field := NewField(2, NewPlayer(), standardTWMap())
 	if hasTower {
 		field.Towers = append(field.Towers, &Tower{X: 1, Y: 0, Damage: 10, Range: 1, FireRate: 1, Cooldown: 0})
 	}
@@ -16,9 +16,10 @@ func prepareField(hasTower bool, hasMob bool) *Field {
 	return field
 }
 
-// Test that when mob reaches end of twmap it is removed from the field
+// Test that when mob reaches end of twmap it is removed from the field and player looses a live
 func TestMobReachesEndOfTWMap(t *testing.T) {
 	field := prepareField(false, true)
+	field.Player.Lives = 3
 	if len(field.Mobs) != 1 {
 		t.Errorf("Expected 1 mob, got %d", len(field.Mobs))
 	}
@@ -31,6 +32,9 @@ func TestMobReachesEndOfTWMap(t *testing.T) {
 		for _, mob := range field.Mobs {
 			t.Errorf("Mob X: %f, Y: %f", mob.X, mob.Y)
 		}
+	}
+	if field.Player.Lives != 2 {
+		t.Errorf("Expected 2 lives, got %d", field.Player.Lives)
 	}
 }
 

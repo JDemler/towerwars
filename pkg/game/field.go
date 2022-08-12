@@ -11,10 +11,10 @@ type Field struct {
 	Towers  []*Tower
 }
 
-func NewField(id int, twmap TWMap) *Field {
+func NewField(id int, player *Player, twmap TWMap) *Field {
 	return &Field{
 		Id:      id,
-		Player:  NewPlayer(),
+		Player:  player,
 		TWMap:   twmap,
 		Mobs:    []*Mob{},
 		Bullets: []*Bullet{},
@@ -78,7 +78,8 @@ func (field *Field) Update(delta float64, events []Event, otherFields []*Field) 
 			field.Player.Money += field.Mobs[i].Reward
 			field.Mobs = append(field.Mobs[:i], field.Mobs[i+1:]...)
 		} else if field.Mobs[i].Reached {
-			// Check if mob has reached the end of the map, remove mob from game
+			// Check if mob has reached the end of the map, remove mob from game and reduce liver of player
+			field.Player.Lives -= 1
 			field.Mobs = append(field.Mobs[:i], field.Mobs[i+1:]...)
 		}
 	}
