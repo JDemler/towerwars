@@ -4,7 +4,7 @@ import "fmt"
 
 type Field struct {
 	Id      int
-	Player  Player
+	Player  *Player
 	TWMap   TWMap
 	Mobs    []*Mob
 	Bullets []*Bullet
@@ -77,4 +77,9 @@ func (field *Field) Update(delta float64, events []Event, otherFields []*Field) 
 			field.Mobs = append(field.Mobs[:i], field.Mobs[i+1:]...)
 		}
 	}
+}
+
+// payout income to player
+func (field *Field) Payout() {
+	field.Player.Money += field.Player.Income
 }

@@ -4,6 +4,18 @@ import (
 	"testing"
 )
 
+// Function that prepares a game to test with
+func prepareGame() *Game {
+	return &Game{
+		Fields: []*Field{
+			NewField(0, standardTWMap()),
+			NewField(1, standardTWMap())},
+		Elapsed:        0,
+		MobRespawnTime: 5,
+		IncomeCooldown: 30,
+	}
+}
+
 func TestMakeTiles(t *testing.T) {
 	tiles := makeTiles(2, 2)
 	if len(tiles) != 2 {
@@ -23,5 +35,26 @@ func TestMakeTiles(t *testing.T) {
 	}
 	if tiles[1][1].Y != 1 {
 		t.Errorf("Expected Y to be 1, got %d", tiles[1][1].Y)
+	}
+}
+
+// Test that player gets money after income loop
+func TestPlayerGetsMoneyAfterIncomeLoop(t *testing.T) {
+	game := prepareGame()
+	// iterate over fields and players and check that players have 100 money
+	for _, field := range game.Fields {
+		if field.Player.Money != 100 {
+			t.Errorf("Expected player to have 100 money, got %d", field.Player.Money)
+		}
+	}
+	// run update loop
+	for i := 0; i < 31; i++ {
+		game.Update(1, []FieldEvent{})
+	}
+	// Check that every player has money + income
+	for _, field := range game.Fields {
+		if field.Player.Money != 100+field.Player.Income {
+			t.Errorf("Expected player to have 100+income money, got %d", field.Player.Money)
+		}
 	}
 }

@@ -15,11 +15,12 @@ type Player struct {
 type Game struct {
 	Fields         []*Field
 	Elapsed        float64
+	IncomeCooldown float64
 	MobRespawnTime float64
 }
 
-func NewPlayer() Player {
-	return Player{
+func NewPlayer() *Player {
+	return &Player{
 		Money:  100,
 		Income: 10,
 		Lives:  3,
@@ -33,17 +34,19 @@ func NewGame() *Game {
 			NewField(1, standardTWMap())},
 		Elapsed:        0,
 		MobRespawnTime: 5,
+		IncomeCooldown: 30,
 	}
 }
 
 func (game *Game) Update(delta float64, events []FieldEvent) {
-
-	game.MobRespawnTime = math.Max(game.MobRespawnTime-delta, 0)
-	if game.MobRespawnTime == 0 {
-		for i := 0; i < len(game.Fields); i++ {
-			game.Fields[i].Mobs = append(game.Fields[i].Mobs, &Mob{X: 0, Y: 0, Health: 100, Speed: 30})
+	// reduce income cooldown
+	game.IncomeCooldown = math.Max(game.IncomeCooldown-delta, 0)
+	// when income cooldown is 0 payout
+	if game.IncomeCooldown == 0 {
+		for _, field := range game.Fields {
+			field.Payout()
 		}
-		game.MobRespawnTime = 5
+		game.IncomeCooldown = 30
 	}
 
 	game.Elapsed += delta
