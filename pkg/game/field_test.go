@@ -110,3 +110,26 @@ func TestBuildTower(t *testing.T) {
 		t.Error("Expected TWMap is occupied at 1, 1")
 	}
 }
+
+// Test that player gets money when a mob is killed
+func TestMobKilled(t *testing.T) {
+	field := prepareField(true, true)
+	field.Towers[0].Damage = 200
+	field.Towers[0].BulletSpeed = 200
+	field.Mobs[0].Speed = 0
+	field.Mobs[0].Reward = 10
+	// Check that mob is alive
+	if field.Mobs[0].Health != 100 {
+		t.Errorf("Expected mob health to be 100, got %d", field.Mobs[0].Health)
+	}
+	for i := 0; i < 100; i++ {
+		field.Update(1, []Event{}, []*Field{})
+	}
+	// Check that there is no mob
+	if len(field.Mobs) != 0 {
+		t.Errorf("Expected 0 mob, got %d", len(field.Mobs))
+	}
+	if field.Player.Money != 110 {
+		t.Errorf("Expected 110 money, got %d", field.Player.Money)
+	}
+}

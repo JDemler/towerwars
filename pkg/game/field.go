@@ -73,7 +73,12 @@ func (field *Field) Update(delta float64, events []Event, otherFields []*Field) 
 	// Update mobs
 	for i := len(field.Mobs) - 1; i >= 0; i-- {
 		field.Mobs[i].Update(delta, &field.TWMap)
-		if field.Mobs[i].IsDead() {
+		// Check if mobs health is 0 or less, remove mob from game and payout player money
+		if field.Mobs[i].Health <= 0 {
+			field.Player.Money += field.Mobs[i].Reward
+			field.Mobs = append(field.Mobs[:i], field.Mobs[i+1:]...)
+		} else if field.Mobs[i].Reached {
+			// Check if mob has reached the end of the map, remove mob from game
 			field.Mobs = append(field.Mobs[:i], field.Mobs[i+1:]...)
 		}
 	}
