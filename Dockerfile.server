@@ -1,0 +1,24 @@
+FROM golang:1.19-alpine AS build
+
+WORKDIR /app
+
+COPY go.mod ./
+COPY go.sum ./
+COPY cmd ./cmd
+COPY pkg ./pkg
+
+RUN go mod download
+
+RUN go build -o /towerwars-server ./cmd/server/main.go
+
+FROM alpine:latest
+
+WORKDIR /
+
+COPY --from=build /towerwars-server /towerwars-server
+
+EXPOSE 8080
+
+USER root
+
+ENTRYPOINT [ "/towerwars-server" ]
