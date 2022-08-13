@@ -3,6 +3,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -44,6 +45,11 @@ func (s *Server) AddPlayer(w http.ResponseWriter, r *http.Request) {
 
 	// return success
 	w.WriteHeader(http.StatusOK)
+	// return player id
+	json.NewEncoder(w).Encode(len(s.game.Fields) - 1)
+
+	//log player joined
+	fmt.Println("Player joined")
 }
 
 func (s *Server) RegisterEvent(w http.ResponseWriter, r *http.Request) {

@@ -3,8 +3,12 @@ package main
 // pixelpl towerwars client
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"image/color"
+	"io/ioutil"
+	"net/http"
 	"time"
 	"towerwars/pkg/game"
 
@@ -15,15 +19,69 @@ import (
 )
 
 type Client struct {
-	game   *game.Game
-	window *pixelgl.Window
+	game       *game.Game
+	url        string
+	httpClient *http.Client
+	window     *pixelgl.Window
+	fieldId    int
+	playerId   string
 }
 
-func (c *Client) update(delta float64, events []game.FieldEvent) {
-	for _, event := range events {
-		c.game.HandleEvent(event)
+func (c *Client) joinGame() {
+	// make http request to join game
+	req, err := c.httpClient.Get(c.url + "/add_player")
+	if err != nil {
+		panic(err)
 	}
-	c.game.Update(delta)
+	defer req.Body.Close()
+	// Get PlayerID from response body
+	body, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	err = json.Unmarshal(body, &c.fieldId)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+}
+
+func (c *Client) sendEvent(Event game.FieldEvent) {
+	// make http request to send event
+	// json encode event
+	jsonEvent, err := json.Marshal(Event)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	req, err := c.httpClient.Post(c.url+"/register_event", "application/json", bytes.NewBuffer([]byte(jsonEvent)))
+	if err != nil {
+		panic(err)
+	}
+	defer req.Body.Close()
+}
+
+// get gamestate from server
+func (c *Client) getGameState() {
+	// make http request to get gamestate
+	req, err := c.httpClient.Get(c.url + "/game")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer req.Body.Close()
+	// Get gamestate from response body
+	body, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	err = json.Unmarshal(body, &c.game)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 }
 
 func (c *Client) drawMob(mob *game.Mob) {
@@ -73,7 +131,7 @@ func (c *Client) drawTile(tile *game.Tile) {
 	imd.Draw(c.window)
 }
 
-func (c *Client) drawField(field *game.Field, offsetX, offsetY int) {
+func (c *Client) drawField(field *game.Field) {
 	//draw field
 	//draw tiles
 	for _, tileRow := range field.TWMap.Tiles {
@@ -100,13 +158,20 @@ func (c *Client) drawField(field *game.Field, offsetX, offsetY int) {
 
 func (c *Client) draw() {
 	c.window.Clear(colornames.Black)
+	count := 0
+	c.window.Canvas().SetMatrix(pixel.IM.Moved(pixel.V(float64(count)*500, 0)))
+	// draw on field centered
+	c.drawField(c.game.Fields[c.fieldId])
 
-	//Draw all fields with an offset of the current field
+	//Draw all other fields with an offset of the current field
 	for i, field := range c.game.Fields {
-		// Offset windows canvas
-		c.window.Canvas().SetMatrix(pixel.IM.Moved(pixel.V(float64(i)*500, 0)))
-		// then draw field
-		c.drawField(field, i*500, 0)
+		if i != c.fieldId {
+			count += 1
+			// Offset windows canvas
+			c.window.Canvas().SetMatrix(pixel.IM.Moved(pixel.V(float64(count)*500, 0)))
+			// then draw field
+			c.drawField(field)
+		}
 	}
 
 	c.window.Update()
@@ -126,49 +191,47 @@ func run() {
 
 	//create client
 	client := &Client{
-		game:   game.NewGame(),
-		window: win,
+		game:       game.NewGame(),
+		window:     win,
+		url:        "http://localhost:8080",
+		httpClient: &http.Client{},
 	}
 
-	client.game.AddPlayer(game.NewPlayer())
-	client.game.AddPlayer(game.NewPlayer())
-	client.game.Start()
+	client.joinGame()
 
-	lastTime := time.Now()
 	for !win.Closed() {
-		// calculate delta
-		delta := float64(time.Now().Sub(lastTime).Milliseconds()) / 1000.0
-		lastTime = time.Now()
-
+		client.getGameState()
+		if client.game.State == game.WaitingState {
+			// wait for game to start
+			time.Sleep(time.Second * 1)
+			fmt.Println("Waiting for game to start")
+			continue
+		}
 		events := []game.FieldEvent{}
 		//Check for MouseClick
 		if win.JustPressed(pixelgl.MouseButtonLeft) {
 			x := int(win.MousePosition().X / game.TileSize)
 			y := int(win.MousePosition().Y / game.TileSize)
 			events = append(events, game.FieldEvent{
-				FieldId: 0,
+				FieldId: client.fieldId,
 				Type:    "build",
 				Payload: fmt.Sprintf(`{"x": %d, "y": %d, "tower_type": "Arrow"}`, x, y),
 			})
 		} else if win.JustPressed(pixelgl.KeyR) {
-			// when R is pressed fire a BuyMob event for field 0
+			// when R is pressed fire a BuyMob event
 			events = append(events, game.FieldEvent{
-				FieldId: 0,
+				FieldId: client.fieldId,
 				Type:    "buy_mob",
-				Payload: `{"target_field_id": 1, "mob_type": "Circle"}`,
-			})
-		} else if win.JustPressed(pixelgl.KeyT) {
-			//when T is pressed fire a BuyMob event for field 1
-			events = append(events, game.FieldEvent{
-				FieldId: 1,
-				Type:    "buy_mob",
-				Payload: `{"target_field_id": 0, "mob_type": "Circle"}`,
+				Payload: fmt.Sprintf(`{"target_field_id": %d, "mob_type": "Circle"}`, 1-client.fieldId),
 			})
 		}
-
-		client.update(delta, events)
+		for _, event := range events {
+			client.sendEvent(event)
+		}
 		client.draw()
 
+		//sleep for 30ms to avoid 100% cpu usage
+		time.Sleep(time.Millisecond * 30)
 		//if esc is pressed, close window
 		if win.Pressed(pixelgl.KeyEscape) {
 			break
