@@ -30,12 +30,47 @@ func (s *Server) GetGameState(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(s.game)
 }
 
+func (s *Server) AddPlayer(w http.ResponseWriter, r *http.Request) {
+	// Check if game is still in waiting state
+	if s.game.State != game.WaitingState {
+		// return bad request
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	// add player to game
+	player := game.NewPlayer()
+	s.game.AddPlayer(player)
+
+	// return success
+	w.WriteHeader(http.StatusOK)
+}
+
+func (s *Server) RegisterEvent(w http.ResponseWriter, r *http.Request) {
+	// decode event
+	var event game.FieldEvent
+	err := json.NewDecoder(r.Body).Decode(&event)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	// update game
+	s.Update(0, []game.FieldEvent{event})
+
+	// return success
+	w.WriteHeader(http.StatusOK)
+}
+
 // gameLoop
 func (s *Server) gameLoop() {
 	last := time.Now()
 	for {
 		delta := float64(time.Now().Sub(last).Milliseconds()) / 1000.0
 		last = time.Now()
+		if len(s.game.Fields) > 1 {
+			s.game.Start()
+		}
 		s.Update(delta, nil)
 		time.Sleep(time.Second / 60)
 	}
@@ -46,5 +81,7 @@ func main() {
 	go s.gameLoop()
 
 	http.HandleFunc("/game", s.GetGameState)
+	http.HandleFunc("/add_player", s.AddPlayer)
+	http.HandleFunc("/register_event", s.RegisterEvent)
 	http.ListenAndServe(":8080", nil)
 }
