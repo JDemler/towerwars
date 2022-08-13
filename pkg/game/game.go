@@ -54,7 +54,26 @@ func (game *Game) Start() {
 	game.State = PlayingState
 }
 
-func (game *Game) Update(delta float64, events []FieldEvent) {
+// Returns field with Id or nil if not found
+func (game *Game) getFieldAt(id int) *Field {
+	for _, field := range game.Fields {
+		if field.Id == id {
+			return field
+		}
+	}
+	return nil
+}
+
+func (game *Game) HandleEvent(fieldEvent FieldEvent) bool {
+	event := fieldEvent.Unpack()
+	targetField := game.getFieldAt(event.FieldId())
+	if targetField != nil {
+		return targetField.HandleEvent(event, game.Fields)
+	}
+	return false
+}
+
+func (game *Game) Update(delta float64) {
 	// Only do something when the game is playing
 	if game.State != PlayingState {
 		return
@@ -77,14 +96,7 @@ func (game *Game) Update(delta float64, events []FieldEvent) {
 			continue
 		}
 
-		//Get relevant InputEvents for this field
-		fieldEvents := []Event{}
-		for _, event := range events {
-			if event.FieldId == game.Fields[i].Id {
-				fieldEvents = append(fieldEvents, event.Unpack())
-			}
-		}
-		game.Fields[i].Update(delta, fieldEvents, game.Fields)
+		game.Fields[i].Update(delta)
 	}
 	// Set game over if there is only one player left
 	if len(game.Fields) <= 1 {

@@ -24,7 +24,7 @@ func TestMobReachesEndOfTWMap(t *testing.T) {
 		t.Errorf("Expected 1 mob, got %d", len(field.Mobs))
 	}
 	for i := 0; i < 100; i++ {
-		field.Update(1, []Event{}, []*Field{})
+		field.Update(1)
 	}
 	if len(field.Mobs) != 0 {
 		t.Errorf("Expected 0 mob, got %d", len(field.Mobs))
@@ -47,7 +47,7 @@ func TestBulletReachesEndOfTWMap(t *testing.T) {
 		t.Errorf("Expected 1 bullet, got %d", len(field.Bullets))
 	}
 	for i := 0; i < 100; i++ {
-		field.Update(1, []Event{}, []*Field{})
+		field.Update(1)
 	}
 	if len(field.Bullets) != 0 {
 		t.Errorf("Expected 0 bullet, got %d", len(field.Bullets))
@@ -68,7 +68,7 @@ func TestBulletReachesEndOfTWMapAndAnotherMob(t *testing.T) {
 	}
 
 	for i := 0; i < 40; i++ {
-		field.Update(1, []Event{}, []*Field{})
+		field.Update(1)
 	}
 	if len(field.Mobs) != 1 {
 		t.Errorf("Expected 1 mob, got %d", len(field.Mobs))
@@ -81,7 +81,7 @@ func TestBulletReachesEndOfTWMapAndAnotherMob(t *testing.T) {
 // Test that a BuyMobEvent reduces the money of the player and increases the income of the player
 func TestBuyMobEvent(t *testing.T) {
 	field := prepareField(false, false)
-	field.Update(1, []Event{BuyMobEvent{fieldId: 0, MobType: "Circle"}}, []*Field{})
+	field.HandleEvent(BuyMobEvent{fieldId: 0, MobType: "Circle", TargetFieldId: 0}, []*Field{field})
 	if field.Player.Money != 90 {
 		t.Errorf("Expected 90 money, got %d", field.Player.Money)
 	}
@@ -96,7 +96,13 @@ func TestBuyMobEventNotExecuted(t *testing.T) {
 	sourceField.Player.Money = 0
 	targetField := prepareField(false, false)
 	targetField.Id = 1
-	sourceField.Update(1, []Event{BuyMobEvent{fieldId: 0, MobType: "Circle", TargetFieldId: 1}}, []*Field{targetField})
+	// Check that target field has no mobs
+	if len(targetField.Mobs) != 0 {
+		t.Errorf("Expected 0 mob, got %d", len(targetField.Mobs))
+	}
+	if sourceField.HandleEvent(BuyMobEvent{fieldId: 0, MobType: "Circle", TargetFieldId: 1}, []*Field{targetField}) {
+		t.Errorf("Expected BuyMobEvent to not be executed")
+	}
 	if len(targetField.Mobs) != 0 {
 		t.Error("Expected no mob")
 	}
@@ -105,16 +111,16 @@ func TestBuyMobEventNotExecuted(t *testing.T) {
 // Test that tower is created when a buy tower event is received
 func TestBuyTower(t *testing.T) {
 	field := prepareField(false, false)
-	field.Update(1, []Event{BuildEvent{fieldId: 0, X: 1, Y: 1, TowerType: "Arrow"}}, []*Field{})
+	// Test that 1,1 is not occupied before BuyTowerEvent is executed
+	if field.TWMap.IsOccupied(1, 1) {
+		t.Error("Expected 1,1 to be empty")
+	}
+	if !field.HandleEvent(BuildEvent{fieldId: 0, X: 1, Y: 1, TowerType: "Arrow"}, []*Field{}) {
+		t.Error("Expected tower to be built")
+	}
 	if len(field.Towers) != 1 {
 		t.Errorf("Expected 1 tower, got %d", len(field.Towers))
 	}
-}
-
-// Test that when a tower is created the tile is occupied
-func TestBuildTower(t *testing.T) {
-	field := prepareField(false, false)
-	field.Update(1, []Event{BuildEvent{fieldId: 0, X: 1, Y: 1, TowerType: "Arrow"}}, []*Field{})
 	if field.TWMap.IsOccupied(1, 1) != true {
 		t.Error("Expected TWMap is occupied at 1, 1")
 	}
@@ -132,7 +138,7 @@ func TestMobKilled(t *testing.T) {
 		t.Errorf("Expected mob health to be 100, got %d", field.Mobs[0].Health)
 	}
 	for i := 0; i < 100; i++ {
-		field.Update(1, []Event{}, []*Field{})
+		field.Update(1)
 	}
 	// Check that there is no mob
 	if len(field.Mobs) != 0 {

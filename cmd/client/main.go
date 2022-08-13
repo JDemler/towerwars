@@ -20,7 +20,10 @@ type Client struct {
 }
 
 func (c *Client) update(delta float64, events []game.FieldEvent) {
-	c.game.Update(delta, events)
+	for _, event := range events {
+		c.game.HandleEvent(event)
+	}
+	c.game.Update(delta)
 }
 
 func (c *Client) drawMob(mob *game.Mob) {

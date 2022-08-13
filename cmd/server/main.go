@@ -20,8 +20,8 @@ func NewServer() *Server {
 }
 
 // Update the game
-func (s *Server) Update(delta float64, events []game.FieldEvent) {
-	s.game.Update(delta, events)
+func (s *Server) Update(delta float64) {
+	s.game.Update(delta)
 }
 
 // Http Handler returning the game state
@@ -55,8 +55,11 @@ func (s *Server) RegisterEvent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// update game
-	s.Update(0, []game.FieldEvent{event})
+	// HandleEvent
+	if !s.game.HandleEvent(event) {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
 
 	// return success
 	w.WriteHeader(http.StatusOK)
@@ -71,7 +74,7 @@ func (s *Server) gameLoop() {
 		if len(s.game.Fields) > 1 {
 			s.game.Start()
 		}
-		s.Update(delta, nil)
+		s.Update(delta)
 		time.Sleep(time.Second / 60)
 	}
 }

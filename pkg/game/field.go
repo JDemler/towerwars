@@ -40,23 +40,27 @@ func (field *Field) handleBuildEvent(x, y int) {
 	field.Towers = append(field.Towers, &Tower{X: float64(x)*TileSize + TileSize/2, Y: float64(y)*TileSize + TileSize/2, Damage: 1, Range: 500, FireRate: 0.3, Cooldown: 0})
 }
 
-func (field *Field) Update(delta float64, events []Event, otherFields []*Field) {
-	for _, event := range events {
-		// Iterate over event targetfieldids and get targetfields
-		targetFields := []*Field{}
-		for _, targetFieldId := range event.TargetFieldIds() {
-			for _, otherField := range otherFields {
-				if otherField.Id == targetFieldId {
-					targetFields = append(targetFields, otherField)
-				}
+// HandleEvent for field
+func (field *Field) HandleEvent(event Event, otherFields []*Field) bool {
+	// Iterate over event targetfieldids and get targetfields
+	targetFields := []*Field{}
+	for _, targetFieldId := range event.TargetFieldIds() {
+		for _, otherField := range otherFields {
+			if otherField.Id == targetFieldId {
+				targetFields = append(targetFields, otherField)
 			}
 		}
-
-		if !event.TryExecute(field, targetFields) {
-			//Log failure to execute event
-			fmt.Printf("Failed to execute event: %+v", event)
-		}
 	}
+
+	if !event.TryExecute(field, targetFields) {
+		//Log failure to execute event
+		fmt.Printf("Failed to execute event: %+v", event)
+		return false
+	}
+	return true
+}
+
+func (field *Field) Update(delta float64) {
 
 	// Update Towers
 	for i := 0; i < len(field.Towers); i++ {

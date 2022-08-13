@@ -51,7 +51,7 @@ func TestPlayerGetsMoneyAfterIncomeLoop(t *testing.T) {
 	}
 	// run update loop
 	for i := 0; i < 31; i++ {
-		game.Update(1, []FieldEvent{})
+		game.Update(1)
 	}
 	// Check that every player has money + income
 	for _, field := range game.Fields {
@@ -78,7 +78,7 @@ func TestGameState(t *testing.T) {
 	game.Fields[0].Mobs = append(game.Fields[0].Mobs, &Mob{X: 5, Y: 5, TargetX: 5, TargetY: 5, Health: 100, Speed: 100})
 	// run the game
 	for i := 0; i < 31; i++ {
-		game.Update(1, []FieldEvent{})
+		game.Update(1)
 	}
 	// Check that mob reached is target and is thus removed from the game
 	if len(game.Fields[0].Mobs) != 0 {

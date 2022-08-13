@@ -60,7 +60,7 @@ func (tile *Tile) IsOccupied() bool {
 func (tile *Tile) path(acc []position) []position {
 	if tile != nil {
 		// prepend own position to acc
-		acc = append([]position{position{tile.X, tile.Y}}, acc...)
+		acc = append([]position{{tile.X, tile.Y}}, acc...)
 		// call recursive function on predecessor if it exists
 		if tile.predecessor != nil {
 			return tile.predecessor.path(acc)
