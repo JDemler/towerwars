@@ -56,7 +56,7 @@ func (c *Client) drawTile(tile *game.Tile) {
 	// Color is dependent on x and y position and if tile is occupied or not
 	var alpha uint8 = 255
 	if tile.IsOccupied() {
-		alpha = 200
+		alpha = 50
 	}
 	//Checssboard pattern
 	if (tile.X+tile.Y)%2 == 0 {
@@ -75,7 +75,7 @@ func (c *Client) drawField(field *game.Field, offsetX, offsetY int) {
 	//draw tiles
 	for _, tileRow := range field.TWMap.Tiles {
 		for _, tile := range tileRow {
-			c.drawTile(&tile)
+			c.drawTile(tile)
 		}
 	}
 
@@ -126,6 +126,10 @@ func run() {
 		game:   game.NewGame(),
 		window: win,
 	}
+
+	client.game.AddPlayer(game.NewPlayer())
+	client.game.AddPlayer(game.NewPlayer())
+	client.game.Start()
 
 	lastTime := time.Now()
 	for !win.Closed() {

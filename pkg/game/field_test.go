@@ -92,9 +92,14 @@ func TestBuyMobEvent(t *testing.T) {
 
 // Test that a BuyMobEvent is not executed when Player does not have enough money
 func TestBuyMobEventNotExecuted(t *testing.T) {
-	field := prepareField(false, false)
-	field.Player.Money = 0
-	field.Update(1, []Event{BuyMobEvent{fieldId: 0, MobType: "Circle"}}, []*Field{})
+	sourceField := prepareField(false, false)
+	sourceField.Player.Money = 0
+	targetField := prepareField(false, false)
+	targetField.Id = 1
+	sourceField.Update(1, []Event{BuyMobEvent{fieldId: 0, MobType: "Circle", TargetFieldId: 1}}, []*Field{targetField})
+	if len(targetField.Mobs) != 0 {
+		t.Error("Expected no mob")
+	}
 }
 
 // Test that tower is created when a buy tower event is received

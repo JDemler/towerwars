@@ -1,10 +1,8 @@
 package game
 
 import (
-	"errors"
 	"fmt"
 	"math"
-	"sort"
 )
 
 type Mob struct {
@@ -20,51 +18,17 @@ type Mob struct {
 }
 
 func (mob *Mob) calcDirection(twMap *TWMap) {
-	path, err := mob.findPath(twMap)
-	if err == nil {
-		nextTile := path.NextTile()
-		if nextTile != nil {
-			//log mob reached end of map
-			mob.TargetX = float64(nextTile.X)*TileSize + TileSize/2
-			mob.TargetY = float64(nextTile.Y)*TileSize + TileSize/2
-		} else {
-			//Mob reach maps end. Kill it
-			fmt.Println("Mob reached end of map")
-			mob.Reached = true
-		}
+	x, y := int(mob.X/TileSize), int(mob.Y/TileSize)
+	if twMap.IsEnd(x, y) {
+		mob.Reached = true
+		return
 	}
-}
-
-func (mob *Mob) findPath(twMap *TWMap) (Tile, error) {
-	//use a* search algorithm to find path for mob
-	mobX := int(mob.X / TileSize)
-	mobY := int(mob.Y / TileSize)
-	openTiles := tileList([]Tile{{X: mobX, Y: mobY}})
-	closedTiles := tileList([]Tile{})
-
-	for openTiles.Len() > 0 {
-		sort.Sort(openTiles)
-		currentTile := openTiles[0]
-		openTiles = openTiles[1:]
-		if twMap.IsEndNode(currentTile) {
-			return currentTile, nil
-		}
-		closedTiles = append(closedTiles, currentTile)
-		for _, neighbor := range twMap.GetNeighbors(currentTile) {
-			if closedTiles.Contains(neighbor) || neighbor.IsOccupied() {
-				continue
-			}
-			g := currentTile.f + 1
-			if openTiles.fValueOf(neighbor) >= g {
-				continue
-			}
-			neighbor.f = g + twMap.DistanceToEnd(neighbor)
-			neighbor.predecessor = &currentTile
-
-			openTiles = openTiles.add(neighbor)
-		}
+	nX, nY, err := twMap.NextStep(int(mob.X/TileSize), int(mob.Y/TileSize))
+	if err != nil {
+		fmt.Println(err)
 	}
-	return Tile{}, errors.New("No path found")
+	mob.TargetX = float64(nX)*TileSize + TileSize/2
+	mob.TargetY = float64(nY)*TileSize + TileSize/2
 }
 
 func (mob *Mob) IsDead() bool {
