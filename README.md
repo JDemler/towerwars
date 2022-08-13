@@ -8,11 +8,10 @@ cd cmd/client
 go run main.go
 ``` 
 
-Click on Tile in Field 0 to build a Tower
+Client expects server to run on `localhost:8080`
 
-Press T to send a Mob to Field 0
-
-Press R to send a Mob to Field 1
+Click on Tile to build a Tower
+Press R to send a Mob
 
 ## HTTP Server
 Run server with
@@ -25,3 +24,5 @@ go run server.go
 ### Endpoints
 
 `/game` :: Gets Game State
+`/add_player` :: Adds a player. Returns player id if successfull
+`/register_event` :: Register an Event (BuyMob, BuildTower) to the server. 200 OK if successfull
