@@ -27,9 +27,10 @@ func (e FieldEvent) Unpack() Event {
 }
 
 type Event interface {
-	TryExecute(sourceField *Field, targetFields []*Field) bool
+	TryExecute(sourceField *Field, targetFields []*Field, gc *GameConfig) bool
 	FieldId() int
 	TargetFieldIds() []int
+	ToJson() string
 }
 
 type BuildEvent struct {
@@ -44,7 +45,7 @@ func NewBuildEvent(fieldId int) BuildEvent {
 }
 
 // implement Event for BuildEvent
-func (e BuildEvent) TryExecute(sourceField *Field, targetFields []*Field) bool {
+func (e BuildEvent) TryExecute(sourceField *Field, targetFields []*Field, gc *GameConfig) bool {
 	// Check if position is within twmap bounds
 	if e.X < 0 || e.X >= sourceField.TWMap.Width || e.Y < 0 || e.Y >= sourceField.TWMap.Height {
 		return false
@@ -53,8 +54,8 @@ func (e BuildEvent) TryExecute(sourceField *Field, targetFields []*Field) bool {
 	if sourceField.TWMap.IsOccupied(e.X, e.Y) {
 		return false
 	}
-	// Get TowerType from StandardGameConfig
-	towerType := StandardGameConfig.TowerType(e.TowerType)
+	// Get TowerType from gameConfig
+	towerType := gc.TowerType(e.TowerType)
 	if towerType == nil {
 		return false
 	}
@@ -75,6 +76,12 @@ func (e BuildEvent) FieldId() int {
 
 func (e BuildEvent) TargetFieldIds() []int {
 	return []int{}
+}
+
+func (e BuildEvent) ToJson() string {
+	// encode e using json.Marshal
+	json, _ := json.Marshal(e)
+	return string(json)
 }
 
 type SellEvent struct {
@@ -98,9 +105,9 @@ func NewBuyMobEvent(fieldId int) BuyMobEvent {
 }
 
 // implement Event for BuyMobEvent
-func (e BuyMobEvent) TryExecute(sourceField *Field, targetFields []*Field) bool {
+func (e BuyMobEvent) TryExecute(sourceField *Field, targetFields []*Field, config *GameConfig) bool {
 	// Check if player can afford mob
-	mobType := StandardGameConfig.MobType(e.MobType)
+	mobType := config.MobType(e.MobType)
 	if mobType == nil {
 		// Invalid mob type
 		fmt.Println("Invalid mob type")
@@ -131,4 +138,10 @@ func (e BuyMobEvent) FieldId() int {
 
 func (e BuyMobEvent) TargetFieldIds() []int {
 	return []int{e.TargetFieldId}
+}
+
+func (e BuyMobEvent) ToJson() string {
+	// encode e using json.Marshal
+	json, _ := json.Marshal(e)
+	return string(json)
 }

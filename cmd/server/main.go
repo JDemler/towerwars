@@ -71,6 +71,16 @@ func (s *Server) RegisterEvent(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+func (s *Server) GetTowerTypes(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(s.game.TowerTypes())
+}
+
+func (s *Server) GetMobTypes(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(s.game.MobTypes())
+}
+
 // gameLoop
 func (s *Server) gameLoop() {
 	last := time.Now()
@@ -92,5 +102,7 @@ func main() {
 	http.HandleFunc("/game", s.GetGameState)
 	http.HandleFunc("/add_player", s.AddPlayer)
 	http.HandleFunc("/register_event", s.RegisterEvent)
+	http.HandleFunc("/tower_types", s.GetTowerTypes)
+	http.HandleFunc("/mob_types", s.GetMobTypes)
 	http.ListenAndServe(":8080", nil)
 }

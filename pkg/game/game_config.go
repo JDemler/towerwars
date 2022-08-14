@@ -1,8 +1,11 @@
 package game
 
+type MapConstructor func() *TWMap
+
 type GameConfig struct {
-	TowerTypes []TowerType
-	MobTypes   []MobType
+	TowerTypes []*TowerType
+	MobTypes   []*MobType
+	TWMap      MapConstructor
 }
 
 type TowerType struct {
@@ -34,21 +37,22 @@ func (m *MobType) Mob(x float64, y float64) *Mob {
 
 // Standard game config
 var StandardGameConfig = GameConfig{
-	TowerTypes: []TowerType{
+	TowerTypes: []*TowerType{
 		{Name: "Arrow", Damage: 1, Range: 300, FireRate: 0.2, Cost: 5, BulletSpeed: 150},
 		{Name: "Siege", Damage: 5, Range: 150, FireRate: 0.7, Cost: 15, BulletSpeed: 75},
 	},
-	MobTypes: []MobType{
+	MobTypes: []*MobType{
 		{Name: "Dot", Health: 50, Speed: 50, Reward: 1, Income: 1, Cost: 5},
 		{Name: "Circle", Health: 100, Speed: 60, Reward: 2, Income: 2, Cost: 10},
 	},
+	TWMap: standardTWMap,
 }
 
 // Lookup function for TowerType
 func (g *GameConfig) TowerType(name string) *TowerType {
 	for _, t := range g.TowerTypes {
 		if t.Name == name {
-			return &t
+			return t
 		}
 	}
 	return nil
@@ -58,7 +62,7 @@ func (g *GameConfig) TowerType(name string) *TowerType {
 func (g *GameConfig) MobType(name string) *MobType {
 	for _, t := range g.MobTypes {
 		if t.Name == name {
-			return &t
+			return t
 		}
 	}
 	return nil

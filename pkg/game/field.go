@@ -5,13 +5,13 @@ import "fmt"
 type Field struct {
 	Id      int
 	Player  *Player
-	TWMap   TWMap
+	TWMap   *TWMap
 	Mobs    []*Mob
 	Bullets []*Bullet
 	Towers  []*Tower
 }
 
-func NewField(id int, player *Player, twmap TWMap) *Field {
+func NewField(id int, player *Player, twmap *TWMap) *Field {
 	return &Field{
 		Id:      id,
 		Player:  player,
@@ -41,7 +41,7 @@ func (field *Field) handleBuildEvent(x, y int) {
 }
 
 // HandleEvent for field
-func (field *Field) HandleEvent(event Event, otherFields []*Field) bool {
+func (field *Field) HandleEvent(event Event, otherFields []*Field, gc *GameConfig) bool {
 	// Iterate over event targetfieldids and get targetfields
 	targetFields := []*Field{}
 	for _, targetFieldId := range event.TargetFieldIds() {
@@ -52,7 +52,7 @@ func (field *Field) HandleEvent(event Event, otherFields []*Field) bool {
 		}
 	}
 
-	if !event.TryExecute(field, targetFields) {
+	if !event.TryExecute(field, targetFields, gc) {
 		//Log failure to execute event
 		fmt.Printf("Failed to execute event: %+v", event)
 		return false
@@ -76,7 +76,7 @@ func (field *Field) Update(delta float64) {
 	}
 	// Update mobs
 	for i := len(field.Mobs) - 1; i >= 0; i-- {
-		field.Mobs[i].Update(delta, &field.TWMap)
+		field.Mobs[i].Update(delta, field.TWMap)
 		// Check if mobs health is 0 or less, remove mob from game and payout player money
 		if field.Mobs[i].Health <= 0 {
 			field.Player.Money += field.Mobs[i].Reward

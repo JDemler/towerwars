@@ -150,13 +150,13 @@ func (twMap *TWMap) findPath(x int, y int) (*Tile, error) {
 	return &Tile{}, errors.New("No path found")
 }
 
-func standardTWMap() TWMap {
-	return TWMap{
+func standardTWMap() *TWMap {
+	return &TWMap{
 		Width:  10,
 		Height: 10,
 		XStart: 0,
 		YStart: 0,
-		XEnd:   3,
+		XEnd:   9,
 		YEnd:   9,
 		Tiles:  makeTiles(10, 10),
 	}
