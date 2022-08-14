@@ -1,13 +1,20 @@
 import './App.css';
-import { Layer, Stage, Text } from 'react-konva';
-import Background from './ui/background/Background';
+import { Layer, Stage } from 'react-konva';
+import BackgroundLayer from './ui/background/BackgroundLayer';
+import Turret from './ui/entities/Turret';
+import GridCoordinate from './lib/GridCoordinate';
+import Mob from './ui/entities/Mob';
 
 function App() {
   return (
     <Stage width={window.innerWidth} height={window.innerHeight}>
-      <Background width={10} height={10} />
+      <BackgroundLayer width={10} height={10} />
       <Layer>
-        <Text x={16} y={16} text="Hello World!" />
+        <Turret coordinate={new GridCoordinate(0, 0)} />
+        <Turret coordinate={new GridCoordinate(2, 1)} />
+        <Turret coordinate={new GridCoordinate(5, 5)} />
+
+        <Mob coordinate={new GridCoordinate(4, 4)} />
       </Layer>
     </Stage>
   );
