@@ -18,7 +18,7 @@ function App() {
     const interval = setInterval(() => {
       getGameState()
         .then(gameState => {
-          console.log(gameState)
+          // console.log(gameState)
           setGameState(gameState);
         }).catch(err => {
           console.error('Error while fetching gameState', err);
@@ -63,7 +63,7 @@ function App() {
       <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-evenly', alignContent: 'space-evenly', height: '100%' }}>
         {gameState.fields.map(field => 
           <div key={field.id} style={{margin: '8px'}}>
-            <Field field={field} />
+            <Field field={field} onTileClick={coordinate => { console.log('tile clicked', coordinate); buildTurret(coordinate)}} />
           </div>
         )}
       </div>
@@ -72,7 +72,7 @@ function App() {
       <div style={{ position: 'fixed', bottom: '16px', width: '100%', display: 'flex', justifyContent: 'center' }}>
         <input type="button" value="Join Game" onClick={() => join()} />
         <input type="button" value="Buy Mob" onClick={() => buyMob()} />
-        <input type="button" value="Build Turret" onClick={() => buildTurret(new GridCoordinate(1, 1))} />
+        {/* <input type="button" value="Build Turret" onClick={() => buildTurret(new GridCoordinate(1, 1))} /> */}
       </div>
     </div>
   )

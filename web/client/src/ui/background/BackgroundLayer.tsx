@@ -5,18 +5,20 @@ import BackgroundTile from "./BackgroundTile";
 export interface BackgroundProps {
     width: number;
     height: number;
+
+    onTileClick?: (coordinate: GridCoordinate) => void;
 }
 
 
 // React component that draws a single 1x1 rect based on the given GridCoordinate. 
 // The fill color is determined by the coordinate in a chessboard pattern.
-const BackgroundLayer: React.FC<BackgroundProps> = ({ width, height }) => {
+const BackgroundLayer: React.FC<BackgroundProps> = ({ width, height, onTileClick }) => {
     
     // Return BackgroundTile for each tile in the grid based on the width and height of the background
     const tiles = [];
     for (let x = 0; x < width; x++) {
         for (let y = 0; y < height; y++) {
-            tiles.push(<BackgroundTile key={`${x},${y}`} coordinate={new GridCoordinate(x, y)} />);
+            tiles.push(<BackgroundTile key={`${x},${y}`} coordinate={new GridCoordinate(x, y)} onClick={() => onTileClick && onTileClick(new GridCoordinate(x, y))} />);
         }
     }
 

@@ -20,11 +20,11 @@ export default class GameState {
 
     static fromJSON(json: any): GameState {
         return new GameState(
-            json.Fields.map((jsonField: any) => FieldModel.fromJSON(jsonField)),
-            json.Elapsed,
-            json.IncomeCooldown,
-            json.MobRespawnTime,
-            json.State,
+            json.fields.map((jsonField: any) => FieldModel.fromJSON(jsonField)),
+            json.elapsed,
+            json.incomeCooldown,
+            json.mobRespawnTime,
+            json.state,
         );
     }
 }
@@ -49,11 +49,11 @@ export class FieldModel {
     static fromJSON(json: any): FieldModel {
         return new FieldModel(
             json.Id,
-            PlayerModel.fromJSON(json.Player),
-            MapModel.fromJSON(json.TWMap),
-            json.Mobs.map((jsonMob: any) => MobModel.fromJSON(jsonMob)),
-            json.Bullets.map((jsonBullet: any) => BulletModel.fromJSON(jsonBullet)),
-            json.Towers.map((jsonTower: any) => TowerModel.fromJSON(jsonTower)),
+            PlayerModel.fromJSON(json.player),
+            MapModel.fromJSON(json.twmap),
+            json.mobs.map((jsonMob: any) => MobModel.fromJSON(jsonMob)),
+            json.bullets.map((jsonBullet: any) => BulletModel.fromJSON(jsonBullet)),
+            json.towers.map((jsonTower: any) => TowerModel.fromJSON(jsonTower)),
         );
     }
 }
@@ -62,9 +62,9 @@ export class MapModel {
     size: GridSize;
     start: GridCoordinate;
     end: GridCoordinate;
-    tiles: { X: number, Y: number }[];
+    tiles: { x: number, y: number }[];
     
-    constructor(size: GridSize, start: GridCoordinate, end: GridCoordinate, tiles: { X: number, Y: number }[]) {
+    constructor(size: GridSize, start: GridCoordinate, end: GridCoordinate, tiles: { x: number, y: number }[]) {
         this.size = size;
         this.start = start;
         this.end = end;
@@ -73,9 +73,9 @@ export class MapModel {
 
     static fromJSON(json: any): MapModel {
         return new MapModel(
-            new GridSize(json.Width, json.Height),
-            new GridCoordinate(json.XStart, json.YStart),
-            new GridCoordinate(json.XEnd, json.YEnd),
+            new GridSize(json.width, json.height),
+            new GridCoordinate(json.xstart, json.ystart),
+            new GridCoordinate(json.xend, json.yend),
             json.Tiles,
         );
     }
@@ -122,13 +122,13 @@ export class MobModel {
 
     static fromJSON(json: any): MobModel {
         return new MobModel(
-            new GridCoordinate(json.X / ServerTileSize, json.Y / ServerTileSize),
-            new GridCoordinate(json.TargetX / ServerTileSize, json.TargetY / ServerTileSize),
-            json.Speed,
-            json.Health,
-            json.MaxHealth,
-            json.Reward,
-            json.ReachedTarget,
+            new GridCoordinate(json.x / ServerTileSize, json.y / ServerTileSize),
+            new GridCoordinate(json.targetX / ServerTileSize, json.targetY / ServerTileSize),
+            json.speed,
+            json.health,
+            json.maxHealth,
+            json.reward,
+            json.reachedTarget,
         );
     }
 }
@@ -150,11 +150,11 @@ export class BulletModel {
 
     static fromJSON(json: any): BulletModel {
         return new BulletModel(
-            new GridCoordinate(json.X / ServerTileSize, json.Y / ServerTileSize),
-            json.Speed,
-            json.Damage,
-            json.Irrelevant,
-            MobModel.fromJSON(json.Target),
+            new GridCoordinate(json.x / ServerTileSize, json.y / ServerTileSize),
+            json.speed,
+            json.damage,
+            json.irrelevant,
+            MobModel.fromJSON(json.target),
         );
     }
 }
@@ -177,13 +177,19 @@ export class TowerModel {
     }
 
     static fromJSON(json: any): TowerModel {
-        return new TowerModel(
-            new GridCoordinate(json.X / ServerTileSize, json.Y / ServerTileSize),
-            json.Damage,
-            json.Range / ServerTileSize,
-            json.FireRate,
-            json.Cooldown,
-            json.BulletSpeed,
+        
+        const tower = new TowerModel(
+            new GridCoordinate(
+                (json.x - ServerTileSize * 0.5) / ServerTileSize, 
+                (json.y - ServerTileSize * 0.5) / ServerTileSize
+            ),
+            json.damage,
+            json.range / ServerTileSize,
+            json.fireRate,
+            json.cooldown,
+            json.bulletSpeed,
         );
+        console.log(json, tower);
+        return tower;
     }
 }

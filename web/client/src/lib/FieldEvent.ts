@@ -1,12 +1,12 @@
 export class FieldEvent {
-    FieldId: number;
-    Type: string;
-    Payload: any;
+    fieldId: number;
+    eventType: string;
+    payload: any;
 
-    constructor(FieldId: number, Type: string, Payload: any) {
-        this.FieldId = FieldId;
-        this.Type = Type;
-        this.Payload = JSON.stringify(Payload);
+    constructor(fieldId: number, eventType: string, payload: any) {
+        this.fieldId = fieldId;
+        this.eventType = eventType;
+        this.payload = JSON.stringify(payload);
     }
 }
 
@@ -14,10 +14,10 @@ export type TurretType = 'Arrow';
 
 export class BuildTurretEvent extends FieldEvent {
     constructor(fieldId: number, x: number, y: number, turretType: TurretType) {
-        super(fieldId, "build", {
+        super(fieldId, "buildTower", {
             x: x,
             y: y,
-            tower_type: turretType,
+            towerType: turretType,
         });
     }
 }
@@ -26,9 +26,10 @@ export type MobType = 'Circle';
 
 export class BuyMobEvent extends FieldEvent {
     constructor(fieldId: number, targetFieldId: number, mobType: MobType) {
-        super(fieldId, "buy_mob", {
-            target_field_id: targetFieldId,
-            mob_type: mobType,
+        super(fieldId, "buyMob", {
+            fieldId: fieldId,
+            targetFieldId: targetFieldId,
+            mobType: mobType,
         });
     }
 }
