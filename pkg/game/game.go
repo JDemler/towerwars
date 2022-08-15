@@ -16,12 +16,12 @@ type Player struct {
 }
 
 type Game struct {
-	Fields         []*Field
-	Elapsed        float64
-	IncomeCooldown float64
-	MobRespawnTime float64
-	State          string
-	config         *GameConfig
+	Fields         []*Field    `json:"fields"`
+	Elapsed        float64     `json:"elapsed"`
+	IncomeCooldown float64     `json:"incomeCooldown"`
+	MobRespawnTime float64     `json:"-"`
+	State          string      `json:"state"`
+	config         *GameConfig `json:"-"`
 }
 
 func NewPlayer() *Player {

@@ -6,19 +6,19 @@ import (
 )
 
 type FieldEvent struct {
-	FieldId int
-	Type    string
-	Payload string
+	FieldId int    `json:"field_id"`
+	Type    string `json:"eventType"`
+	Payload string `json:"payload"`
 }
 
 // Unpack FieldEvent to Event
 func (e FieldEvent) Unpack() Event {
 	switch e.Type {
-	case "build":
+	case "buildTower":
 		res := NewBuildEvent(e.FieldId)
 		json.Unmarshal([]byte(e.Payload), &res)
 		return res
-	case "buy_mob":
+	case "buyMob":
 		res := NewBuyMobEvent(e.FieldId)
 		json.Unmarshal([]byte(e.Payload), &res)
 		return res
@@ -37,7 +37,7 @@ type BuildEvent struct {
 	fieldId   int
 	X         int    `json:"x"`
 	Y         int    `json:"y"`
-	TowerType string `json:"tower_type"`
+	TowerType string `json:"towerType"`
 }
 
 func NewBuildEvent(fieldId int) BuildEvent {
@@ -96,8 +96,8 @@ type UpgradeEvent struct {
 
 type BuyMobEvent struct {
 	fieldId       int
-	TargetFieldId int    `json:"target_field_id"`
-	MobType       string `json:"mob_type"`
+	TargetFieldId int    `json:"targetFieldId"`
+	MobType       string `json:"mobType"`
 }
 
 func NewBuyMobEvent(fieldId int) BuyMobEvent {

@@ -8,5 +8,9 @@ export type Mob = {
     targetY: number;
     health: number;
     maxHealth: number;
-    reward: number;
+    mobtype: string;
+}
+
+export function drawMob(mob: Mob, scene: Phaser.Scene) {
+    scene.add.circle(mob.x, mob.y, 10, 0x00ff00);    
 }

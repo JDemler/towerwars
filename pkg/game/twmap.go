@@ -12,14 +12,14 @@ type position struct {
 }
 
 type TWMap struct {
-	Width       int
-	Height      int
-	XStart      int
-	YStart      int
-	XEnd        int
-	YEnd        int
-	Tiles       [][]*Tile
-	currentPath []position
+	Width       int        `json:"width"`
+	Height      int        `json:"height"`
+	XStart      int        `json:"xstart"`
+	YStart      int        `json:"ystart"`
+	XEnd        int        `json:"xend"`
+	YEnd        int        `json:"yend"`
+	Tiles       [][]*Tile  `json:"tiles"`
+	currentPath []position `json:"-"`
 }
 
 func (twMap *TWMap) GetNeighbors(tile *Tile) []*Tile {

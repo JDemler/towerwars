@@ -7,8 +7,9 @@ import { Mob } from "./mob";
 export type Field = {
     id: number;
     player: Player;
-    twMap: TWMap;
+    twmap: TWMap;
     towers: Tower[];
     mobs: Mob[];
     bullets: Bullet[];
+    towerType: string;
 }

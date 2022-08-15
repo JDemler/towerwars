@@ -15,6 +15,7 @@ type Mob struct {
 	MaxHealth int
 	Reward    int
 	Reached   bool
+	Type      string
 }
 
 func (mob *Mob) calcDirection(twMap *TWMap) {

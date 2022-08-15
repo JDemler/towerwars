@@ -9,12 +9,12 @@ type GameConfig struct {
 }
 
 type TowerType struct {
-	Name        string
-	Damage      int
-	Range       float64
-	FireRate    float64
-	BulletSpeed float64
-	Cost        int
+	Name        string  `json:"name"`
+	Damage      int     `json:"damage"`
+	Range       float64 `json:"range"`
+	FireRate    float64 `json:"fire_rate"`
+	BulletSpeed float64 `json:"bullet_speed"`
+	Cost        int     `json:"cost"`
 }
 
 func (t *TowerType) Tower(x float64, y float64) *Tower {
@@ -22,17 +22,17 @@ func (t *TowerType) Tower(x float64, y float64) *Tower {
 }
 
 type MobType struct {
-	Name   string
-	Health int
-	Speed  float64
-	Reward int
-	Income int
-	Cost   int
+	Name   string  `json:"name"`
+	Health int     `json:"health"`
+	Speed  float64 `json:"speed"`
+	Reward int     `json:"reward"`
+	Income int     `json:"income"`
+	Cost   int     `json:"cost"`
 }
 
 // Make Mob from MobType
 func (m *MobType) Mob(x float64, y float64) *Mob {
-	return &Mob{X: x, Y: y, TargetX: x, TargetY: y, Health: m.Health, MaxHealth: m.Health, Speed: m.Speed, Reward: m.Reward}
+	return &Mob{X: x, Y: y, TargetX: x, TargetY: y, Health: m.Health, MaxHealth: m.Health, Speed: m.Speed, Reward: m.Reward, Type: m.Name}
 }
 
 // Standard game config

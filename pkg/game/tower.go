@@ -5,13 +5,13 @@ import (
 )
 
 type Tower struct {
-	X           float64
-	Y           float64
-	Damage      int
-	Range       float64
-	FireRate    float64
-	Cooldown    float64
-	BulletSpeed float64
+	X           float64 `json:"x"`
+	Y           float64 `json:"y"`
+	Damage      int     `json:"damage"`
+	Range       float64 `json:"range"`
+	FireRate    float64 `json:"fire_rate"`
+	Cooldown    float64 `json:"cooldown"`
+	BulletSpeed float64 `json:"-"`
 }
 
 // update tower

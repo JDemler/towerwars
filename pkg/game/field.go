@@ -3,12 +3,12 @@ package game
 import "fmt"
 
 type Field struct {
-	Id      int
-	Player  *Player
-	TWMap   *TWMap
-	Mobs    []*Mob
-	Bullets []*Bullet
-	Towers  []*Tower
+	Id      int       `json:"id"`
+	Player  *Player   `json:"player"`
+	TWMap   *TWMap    `json:"twmap"`
+	Mobs    []*Mob    `json:"mobs"`
+	Bullets []*Bullet `json:"bullets"`
+	Towers  []*Tower  `json:"towers"`
 }
 
 func NewField(id int, player *Player, twmap *TWMap) *Field {
