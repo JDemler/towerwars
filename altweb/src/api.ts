@@ -46,9 +46,8 @@ export async function joinGame() {
             throw new Error('Network response was not ok.');
         }
 
-        const result = (await response.json()) as Game;
-
-        console.log(result);
+        const result = (await response.json()) as number;
+        return result;
     } catch (error) {
         console.error(error);
     }

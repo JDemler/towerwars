@@ -6,12 +6,15 @@ import { TowerType, MobType } from '../data/gameConfig';
 import { drawTower } from '../data/tower';
 import { drawMob } from '../data/mob';
 
-export default class Demo extends Phaser.Scene {
+export default class GameScene extends Phaser.Scene {
   // properties
   gameState: Game;
+  serverAlive: boolean = true;
+  playerId: number = 0;
   towerTypes: TowerType[] = []
   mobTypes: MobType[] = []
-  serverAlive: boolean = true;
+  offsetX: number = 0;
+  offsetY: number = 0;
 
   constructor() {
     super('GameScene');
@@ -22,28 +25,16 @@ export default class Demo extends Phaser.Scene {
     };
   }
 
-  init(towerTypes: TowerType[], mobTypes: MobType[]): void {
-    this.towerTypes = towerTypes;
-    this.mobTypes = mobTypes;
+  init(data: { towerTypes: TowerType[], mobTypes: MobType[], playerId: number }): void {
+    this.towerTypes = data.towerTypes;
+    this.mobTypes = data.mobTypes;
+    this.playerId = data.playerId;
+    // log player id
+    console.log("Player id: " + this.playerId);
   }
 
   preload() {
-    //get mob and tower types
-    getMobTypes().then(mobTypes => {
-      if (mobTypes) {
-        this.mobTypes = mobTypes;
-      }
-    }).catch(error => {
-      console.log(error);
-    }
-    );
-    getTowerTypes().then(towerTypes => {
-      if (towerTypes) {
-        this.towerTypes = towerTypes;
-      }
-    }).catch(error => {
-      console.log(error);
-    });
+
   }
 
   create() {
@@ -53,9 +44,8 @@ export default class Demo extends Phaser.Scene {
         this.gameState = game;
         // draw fields    
         this.gameState.fields.forEach((field, i) => {
-          if (i == 0) {
-            drawTWMap(field.twmap, this.buildTower(field.id), this);
-          }
+          this.offsetX = field.id * 400;
+          drawTWMap(field.twmap, this.buildTower(field.id), this);
         });
       }
     }).catch(error => {
@@ -90,6 +80,7 @@ export default class Demo extends Phaser.Scene {
         this.gameState = game;
         // draw new mobs
         this.gameState.fields.forEach(field => {
+          this.offsetX = field.id * 400;
           field.mobs.forEach(mob => {
             drawMob(mob, this);
           });

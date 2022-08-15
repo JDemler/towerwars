@@ -1,4 +1,5 @@
 import { TileSize } from '../config';
+import GameScene from '../scenes/Game';
 
 // type that represents a tower
 export type Tower = {
@@ -8,6 +9,6 @@ export type Tower = {
     tower_type: string;
 }
 
-export function drawTower(tower: Tower, scene: Phaser.Scene): void {
-    scene.add.rectangle(tower.x, tower.y, TileSize / 2, TileSize / 2, 0x0000ff);
+export function drawTower(tower: Tower, scene: GameScene): void {
+    scene.add.rectangle(tower.x + scene.offsetX, tower.y + scene.offsetY, TileSize / 2, TileSize / 2, 0x0000ff);
 }
