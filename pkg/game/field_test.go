@@ -9,13 +9,13 @@ func prepareField(hasTower bool, hasMob bool) *Field {
 	field := NewField(0, NewPlayer(), standardTWMap())
 	if hasTower {
 		// add tower by handling an event
-		if (!field.HandleEvent(BuildEvent{fieldId: 0, X: 1, Y: 1, TowerType: "Arrow"}, []*Field{}, &StandardGameConfig)) {
+		if (!field.HandleEvent(BuildEvent{fieldId: 0, X: 5, Y: 5, TowerType: "FastBullet"}, []*Field{}, &TestGameConfig)) {
 			panic("Failed to build tower")
 		}
 	}
 	if hasMob {
 		// add mob by handling an event
-		if (!field.HandleEvent(BuyMobEvent{fieldId: 0, MobType: "Circle", TargetFieldId: 0}, []*Field{field}, &StandardGameConfig)) {
+		if (!field.HandleEvent(BuyMobEvent{fieldId: 0, MobType: "SlowMob", TargetFieldId: 0}, []*Field{field}, &TestGameConfig)) {
 			panic("BuyMobEvent failed")
 		}
 
@@ -181,5 +181,55 @@ func TestMobId(t *testing.T) {
 	field.HandleEvent(BuyMobEvent{fieldId: 0, MobType: "Circle", TargetFieldId: 0}, []*Field{field}, &StandardGameConfig)
 	if field.Mobs[0].Id != 3 {
 		t.Error("Expected mobs to have different but ascending ids")
+	}
+}
+
+// Test that bullets have a unique ascending id
+func TestBulletId(t *testing.T) {
+	field := prepareField(true, true)
+	// check to see there are no bullets
+	if len(field.Bullets) != 0 {
+		t.Errorf("Expected 0 bullets, got %d", len(field.Bullets))
+	}
+	// update field to let tower shoot
+	field.Update(0.01)
+	field.Update(1.01)
+
+	// check to see there is 1 bullet
+	if len(field.Bullets) != 2 {
+		t.Errorf("Expected 2 bullet, got %d", len(field.Bullets))
+	}
+	// check bullet ids
+	if field.Bullets[0].Id != 1 {
+		t.Errorf("Expected bullet id to be 0, got %d", field.Bullets[0].Id)
+	}
+	if field.Bullets[1].Id != 2 {
+		t.Errorf("Expected bullet id to be 1, got %d", field.Bullets[1].Id)
+	}
+	if field.Bullets[0].Id == field.Bullets[1].Id {
+		t.Error("Expected bullets to have different but ascending ids")
+	}
+	// let bullets finish
+	for i := 0; i < 100; i++ {
+		field.Update(1)
+	}
+	// check that there are no bullets and no mobs on the field
+	if len(field.Bullets) != 0 {
+		t.Errorf("Expected 0 bullets, got %d", len(field.Bullets))
+	}
+	if len(field.Mobs) != 0 {
+		t.Errorf("Expected 0 mobs, got %d", len(field.Mobs))
+	}
+	// add mob by handling an event
+	field.HandleEvent(BuyMobEvent{fieldId: 0, MobType: "StationaryMob", TargetFieldId: 0}, []*Field{field}, &TestGameConfig)
+	// add bullet by updating field
+	field.Update(0.01)
+	// check to see there is 1 bullet
+	if len(field.Bullets) != 1 {
+		t.Errorf("Expected 1 bullet, got %d", len(field.Bullets))
+	}
+	// other bullets have been fired, so the id should be higher than 3
+	if field.Bullets[0].Id <= 3 {
+		t.Errorf("Expected bullets to have different but ascending ids: %d", field.Bullets[0].Id)
 	}
 }

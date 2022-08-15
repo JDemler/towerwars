@@ -3,24 +3,26 @@ package game
 import "fmt"
 
 type Field struct {
-	Id         int       `json:"id"`
-	Player     *Player   `json:"player"`
-	TWMap      *TWMap    `json:"twmap"`
-	Mobs       []*Mob    `json:"mobs"`
-	Bullets    []*Bullet `json:"bullets"`
-	Towers     []*Tower  `json:"towers"`
-	mobCounter int       `json:"-"` // counter for mob ids
+	Id            int       `json:"id"`
+	Player        *Player   `json:"player"`
+	TWMap         *TWMap    `json:"twmap"`
+	Mobs          []*Mob    `json:"mobs"`
+	Bullets       []*Bullet `json:"bullets"`
+	Towers        []*Tower  `json:"towers"`
+	mobCounter    int       `json:"-"` // counter for mob ids
+	bulletCounter int       `json:"-"` // counter for bullet ids
 }
 
 func NewField(id int, player *Player, twmap *TWMap) *Field {
 	return &Field{
-		Id:         id,
-		Player:     player,
-		TWMap:      twmap,
-		Mobs:       []*Mob{},
-		Bullets:    []*Bullet{},
-		Towers:     []*Tower{},
-		mobCounter: 0,
+		Id:            id,
+		Player:        player,
+		TWMap:         twmap,
+		Mobs:          []*Mob{},
+		Bullets:       []*Bullet{},
+		Towers:        []*Tower{},
+		mobCounter:    0,
+		bulletCounter: 0,
 	}
 }
 
@@ -48,7 +50,7 @@ func (field *Field) Update(delta float64) {
 
 	// Update Towers
 	for i := 0; i < len(field.Towers); i++ {
-		bullets := field.Towers[i].Update(delta, field.Mobs)
+		bullets := field.Towers[i].Update(delta, field.Mobs, field.getNextBulletId)
 		field.Bullets = append(field.Bullets, bullets...)
 	}
 
@@ -76,6 +78,11 @@ func (field *Field) Update(delta float64) {
 func (field *Field) getNextMobId() int {
 	field.mobCounter++
 	return field.mobCounter
+}
+
+func (field *Field) getNextBulletId() int {
+	field.bulletCounter++
+	return field.bulletCounter
 }
 
 // payout income to player

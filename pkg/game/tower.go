@@ -15,7 +15,7 @@ type Tower struct {
 }
 
 // update tower
-func (tower *Tower) Update(delta float64, mobs []*Mob) []*Bullet {
+func (tower *Tower) Update(delta float64, mobs []*Mob, getId func() int) []*Bullet {
 	tower.Cooldown = math.Max((tower.Cooldown - delta), 0)
 	if tower.Cooldown > 0 {
 		return []*Bullet{}
@@ -28,8 +28,9 @@ func (tower *Tower) Update(delta float64, mobs []*Mob) []*Bullet {
 		if distance <= tower.Range {
 			// mob is in range of tower, fire at mob
 			tower.Cooldown += tower.FireRate
+			bulletId := getId()
 			// create bullet
-			return []*Bullet{{X: tower.X, Y: tower.Y, Target: mobs[j], Damage: tower.Damage, Speed: tower.BulletSpeed}}
+			return []*Bullet{{Id: bulletId, X: tower.X, Y: tower.Y, Target: mobs[j], Damage: tower.Damage, Speed: tower.BulletSpeed}}
 		}
 	}
 	return []*Bullet{}

@@ -18,7 +18,7 @@ type TowerType struct {
 }
 
 func (t *TowerType) Tower(x float64, y float64) *Tower {
-	return &Tower{X: x, Y: y, Damage: t.Damage, Range: t.Range, FireRate: t.FireRate, BulletSpeed: t.BulletSpeed}
+	return &Tower{X: x, Y: y, Damage: t.Damage, Range: t.Range, FireRate: t.FireRate, BulletSpeed: t.BulletSpeed, Cooldown: 0}
 }
 
 type MobType struct {
@@ -46,6 +46,19 @@ var StandardGameConfig = GameConfig{
 		{Name: "Circle", Health: 100, Speed: 60, Reward: 2, Income: 2, Cost: 10},
 	},
 	TWMap: standardTWMap,
+}
+
+var TestGameConfig = GameConfig{
+	TowerTypes: []*TowerType{
+		{Name: "FastBullet", Damage: 1, Range: 300, FireRate: 1, Cost: 5, BulletSpeed: 150},
+		{Name: "SlowBullet", Damage: 5, Range: 150, FireRate: 1, Cost: 15, BulletSpeed: 25},
+		{Name: "StationaryBullet", Damage: 5, Range: 150, FireRate: 1, Cost: 15, BulletSpeed: 0},
+	},
+	MobTypes: []*MobType{
+		{Name: "FastMob", Health: 50, Speed: 70, Reward: 1, Income: 1, Cost: 5},
+		{Name: "SlowMob", Health: 100, Speed: 50, Reward: 2, Income: 2, Cost: 10},
+		{Name: "StationaryMob", Health: 100, Speed: 0, Reward: 2, Income: 2, Cost: 10},
+	},
 }
 
 // Lookup function for TowerType
