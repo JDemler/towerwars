@@ -16,7 +16,7 @@ const BackgroundLayer: React.FC<BackgroundProps> = ({ width, height }) => {
     const tiles = [];
     for (let x = 0; x < width; x++) {
         for (let y = 0; y < height; y++) {
-            tiles.push(<BackgroundTile coordinate={new GridCoordinate(x, y)} />);
+            tiles.push(<BackgroundTile key={`${x},${y}`} coordinate={new GridCoordinate(x, y)} />);
         }
     }
 
