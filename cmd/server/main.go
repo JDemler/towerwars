@@ -95,14 +95,31 @@ func (s *Server) gameLoop() {
 	}
 }
 
+func logAndAddCorsHeadersToRequest(handler http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// log request
+		fmt.Println(r.Method, r.URL.Path)
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+		w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+		handler.ServeHTTP(w, r)
+	})
+}
+
 func main() {
 	s := NewServer()
 	go s.gameLoop()
+	// Accept CORS
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		// log request
+		fmt.Println(r.Method, r.URL.Path)
 
+		http.DefaultServeMux.ServeHTTP(w, r)
+	})
 	http.HandleFunc("/game", s.GetGameState)
 	http.HandleFunc("/add_player", s.AddPlayer)
 	http.HandleFunc("/register_event", s.RegisterEvent)
 	http.HandleFunc("/tower_types", s.GetTowerTypes)
 	http.HandleFunc("/mob_types", s.GetMobTypes)
-	http.ListenAndServe(":8080", nil)
+	http.ListenAndServe(":8080", logAndAddCorsHeadersToRequest(http.DefaultServeMux))
 }
