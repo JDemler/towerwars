@@ -3,41 +3,25 @@ package game
 import "fmt"
 
 type Field struct {
-	Id      int       `json:"id"`
-	Player  *Player   `json:"player"`
-	TWMap   *TWMap    `json:"twmap"`
-	Mobs    []*Mob    `json:"mobs"`
-	Bullets []*Bullet `json:"bullets"`
-	Towers  []*Tower  `json:"towers"`
+	Id         int       `json:"id"`
+	Player     *Player   `json:"player"`
+	TWMap      *TWMap    `json:"twmap"`
+	Mobs       []*Mob    `json:"mobs"`
+	Bullets    []*Bullet `json:"bullets"`
+	Towers     []*Tower  `json:"towers"`
+	mobCounter int       `json:"-"` // counter for mob ids
 }
 
 func NewField(id int, player *Player, twmap *TWMap) *Field {
 	return &Field{
-		Id:      id,
-		Player:  player,
-		TWMap:   twmap,
-		Mobs:    []*Mob{},
-		Bullets: []*Bullet{},
-		Towers:  []*Tower{},
+		Id:         id,
+		Player:     player,
+		TWMap:      twmap,
+		Mobs:       []*Mob{},
+		Bullets:    []*Bullet{},
+		Towers:     []*Tower{},
+		mobCounter: 0,
 	}
-}
-
-func (field *Field) handleBuildEvent(x, y int) {
-	// check if player has enough money
-	if field.Player.Money < 1 {
-		return
-	}
-	// check if position within map bounds
-	if x < 0 || x >= field.TWMap.Width || y < 0 || y >= field.TWMap.Height {
-		return
-	}
-	// check if position is already occupied
-	if field.TWMap.IsOccupied(x, y) {
-		return
-	}
-	field.Player.Money -= 1
-	field.TWMap.Occupy(x, y)
-	field.Towers = append(field.Towers, &Tower{X: float64(x)*TileSize + TileSize/2, Y: float64(y)*TileSize + TileSize/2, Damage: 1, Range: 500, FireRate: 0.3, Cooldown: 0})
 }
 
 // HandleEvent for field
@@ -87,6 +71,11 @@ func (field *Field) Update(delta float64) {
 			field.Mobs = append(field.Mobs[:i], field.Mobs[i+1:]...)
 		}
 	}
+}
+
+func (field *Field) getNextMobId() int {
+	field.mobCounter++
+	return field.mobCounter
 }
 
 // payout income to player

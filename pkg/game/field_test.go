@@ -6,12 +6,19 @@ import (
 
 // prepare a field containing a single tower and a single mob using the standardtwmap
 func prepareField(hasTower bool, hasMob bool) *Field {
-	field := NewField(2, NewPlayer(), standardTWMap())
+	field := NewField(0, NewPlayer(), standardTWMap())
 	if hasTower {
-		field.Towers = append(field.Towers, &Tower{X: 1, Y: 0, Damage: 10, Range: 1, FireRate: 1, Cooldown: 0})
+		// add tower by handling an event
+		if (!field.HandleEvent(BuildEvent{fieldId: 0, X: 1, Y: 1, TowerType: "Arrow"}, []*Field{}, &StandardGameConfig)) {
+			panic("Failed to build tower")
+		}
 	}
 	if hasMob {
-		field.Mobs = append(field.Mobs, &Mob{X: 0, Y: 0, Health: 100, Speed: 51})
+		// add mob by handling an event
+		if (!field.HandleEvent(BuyMobEvent{fieldId: 0, MobType: "Circle", TargetFieldId: 0}, []*Field{field}, &StandardGameConfig)) {
+			panic("BuyMobEvent failed")
+		}
+
 	}
 	return field
 }
@@ -132,6 +139,7 @@ func TestMobKilled(t *testing.T) {
 	field := prepareField(true, true)
 	field.Towers[0].Damage = 200
 	field.Towers[0].BulletSpeed = 200
+	field.Player.Money = 100
 	field.Mobs[0].Speed = 0
 	field.Mobs[0].Reward = 10
 	// Check that mob is alive
@@ -147,5 +155,31 @@ func TestMobKilled(t *testing.T) {
 	}
 	if field.Player.Money != 110 {
 		t.Errorf("Expected 110 money, got %d", field.Player.Money)
+	}
+}
+
+// Test that mobs get a unique ascending id
+func TestMobId(t *testing.T) {
+	field := prepareField(false, true)
+	// add mob by handling an event
+	field.HandleEvent(BuyMobEvent{fieldId: 0, MobType: "Circle", TargetFieldId: 0}, []*Field{field}, &StandardGameConfig)
+	// check mob ids
+	if field.Mobs[0].Id != 1 {
+		t.Errorf("Expected mob id to be 0, got %d", field.Mobs[0].Id)
+	}
+	if field.Mobs[1].Id != 2 {
+		t.Errorf("Expected mob id to be 1, got %d", field.Mobs[1].Id)
+	}
+	if field.Mobs[0].Id == field.Mobs[1].Id {
+		t.Error("Expected mobs to have different but ascending ids")
+	}
+	// let mobs finish
+	for i := 0; i < 100; i++ {
+		field.Update(1)
+	}
+	// add mob by handling an event
+	field.HandleEvent(BuyMobEvent{fieldId: 0, MobType: "Circle", TargetFieldId: 0}, []*Field{field}, &StandardGameConfig)
+	if field.Mobs[0].Id != 3 {
+		t.Error("Expected mobs to have different but ascending ids")
 	}
 }

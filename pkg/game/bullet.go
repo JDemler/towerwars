@@ -3,12 +3,13 @@ package game
 import "math"
 
 type Bullet struct {
-	X          float64
-	Y          float64
-	Speed      float64
-	Damage     int
-	Irrelevant bool
-	Target     *Mob
+	Id         int     `json:"id"`
+	X          float64 `json:"x"`
+	Y          float64 `json:"y"`
+	Speed      float64 `json:"speed"`
+	Damage     int     `json:"damage"`
+	Irrelevant bool    `json:"-"`
+	Target     *Mob    `json:"-"`
 }
 
 // update bullet returning if it is still relevant to the game

@@ -31,8 +31,8 @@ type MobType struct {
 }
 
 // Make Mob from MobType
-func (m *MobType) Mob(x float64, y float64) *Mob {
-	return &Mob{X: x, Y: y, TargetX: x, TargetY: y, Health: m.Health, MaxHealth: m.Health, Speed: m.Speed, Reward: m.Reward, Type: m.Name}
+func (m *MobType) Mob(x float64, y float64, id int) *Mob {
+	return &Mob{Id: id, X: x, Y: y, TargetX: x, TargetY: y, Health: m.Health, MaxHealth: m.Health, Speed: m.Speed, Reward: m.Reward, Type: m.Name}
 }
 
 // Standard game config

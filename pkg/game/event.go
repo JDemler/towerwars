@@ -128,12 +128,10 @@ func (e BuyMobEvent) TryExecute(sourceField *Field, targetFields []*Field, confi
 	sourceField.Player.Income += mobType.Income
 	// range over targetFields and add mob to all of them
 	for _, targetField := range targetFields {
-		if targetField.Id != e.TargetFieldId {
-			continue
-		}
 		//Get startposition
 		startX, startY := targetField.TWMap.StartPosition()
-		mob := mobType.Mob(float64(startX)*TileSize+TileSize/2, float64(startY)*TileSize+TileSize/2)
+		mobId := targetField.getNextMobId()
+		mob := mobType.Mob(float64(startX)*TileSize+TileSize/2, float64(startY)*TileSize+TileSize/2, mobId)
 		targetField.Mobs = append(targetField.Mobs, mob)
 	}
 	return true
