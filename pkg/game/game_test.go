@@ -105,3 +105,17 @@ func TestBuildTower(t *testing.T) {
 		t.Errorf("Expected field to not be occupied, got true")
 	}
 }
+
+// Test that buying a mob creats a mob on target field
+func TestBuyMob(t *testing.T) {
+	game := prepareGame()
+	game.Start()
+	// Buy mob on field 0
+	if !game.HandleEvent(FieldEvent{FieldId: 1, Type: "buyMob", Payload: BuyMobEvent{fieldId: 1, MobType: "Circle", TargetFieldId: 0}.ToJson()}) {
+		t.Errorf("Expected buying to succeed, got false")
+	}
+	// Check that field 0 has a mob
+	if len(game.Fields[0].Mobs) != 1 {
+		t.Errorf("Expected field to have 1 mob, got %d", len(game.Fields[1].Mobs))
+	}
+}

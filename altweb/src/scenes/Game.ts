@@ -46,6 +46,7 @@ export default class GameScene extends Phaser.Scene {
         this.gameState.fields.forEach((field, i) => {
           this.offsetX = field.id * 400;
           drawTWMap(field.twmap, this.buildTower(field.id), this);
+          this.drawBuyMobButtons(field.id);
         });
       }
     }).catch(error => {
@@ -93,5 +94,28 @@ export default class GameScene extends Phaser.Scene {
       this.serverAlive = false;
       console.log(error);
     });
+  }
+
+  drawBuyMobButtons(fieldId: number): void {
+    this.mobTypes.forEach((mobType, i) => {
+      this.add.text(100 + this.offsetX + (i * 100), 500, mobType.name, {
+        font: '48px Arial',
+      })
+        .setInteractive({ useHandCursor: true })
+        .on('pointerdown', () => {
+          registerEvent({
+            fieldId: fieldId,
+            eventType: "buyMob",
+            payload: JSON.stringify({
+              mobType: mobType.name,
+              targetFieldId: 1 - fieldId
+            })
+          })
+            .then(() => console.log("Mob bought"))
+            .catch(error => console.log(error));
+        }
+        );
+    }
+    );
   }
 }
