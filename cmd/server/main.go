@@ -27,8 +27,6 @@ func (s *Server) Update(delta float64) {
 
 // Http Handler returning the game state
 func (s *Server) GetGameState(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
 	json.NewEncoder(w).Encode(s.game)
 }
 
@@ -44,9 +42,6 @@ func (s *Server) AddPlayer(w http.ResponseWriter, r *http.Request) {
 	player := game.NewPlayer()
 	s.game.AddPlayer(player)
 
-	// add cors header
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-
 	// return success
 	w.WriteHeader(http.StatusOK)
 	// return player id
@@ -57,9 +52,6 @@ func (s *Server) AddPlayer(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) RegisterEvent(w http.ResponseWriter, r *http.Request) {
-	// add cors header
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-
 	// decode event
 	var event game.FieldEvent
 	err := json.NewDecoder(r.Body).Decode(&event)
