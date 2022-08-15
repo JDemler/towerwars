@@ -9,7 +9,7 @@ func TestBuildEvent(t *testing.T) {
 	event := FieldEvent{
 		FieldId: 0,
 		Type:    "build",
-		Payload: `{"x":1,"y":1,"tower_type":"tower_1"}`,
+		Payload: `{"x":1,"y":1,"towerType":"tower_1"}`,
 	}
 	unpackedEvent := event.Unpack()
 	if unpackedEvent == nil {
@@ -39,7 +39,7 @@ func TestUnpackBuyMobEvent(t *testing.T) {
 	event := FieldEvent{
 		FieldId: 0,
 		Type:    "buy_mob",
-		Payload: `{"target_field_id": 1, "mob_type":"mob_1"}`,
+		Payload: `{"targetFieldId": 1, "mobType":"mob_1"}`,
 	}
 	unpackedEvent := event.Unpack()
 	if unpackedEvent == nil {

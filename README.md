@@ -26,3 +26,5 @@ go run server.go
 `/game` :: Gets Game State
 `/add_player` :: Adds a player. Returns player id if successfull
 `/register_event` :: Register an Event (BuyMob, BuildTower) to the server. 200 OK if successfull
+`/tower_types` :: Gets all Tower Types from gameconfig
+`/mob_types` :: Gets all Mob Types from gameconfig

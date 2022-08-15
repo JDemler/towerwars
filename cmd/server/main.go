@@ -80,6 +80,16 @@ func (s *Server) RegisterEvent(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+func (s *Server) GetTowerTypes(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(s.game.TowerTypes())
+}
+
+func (s *Server) GetMobTypes(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(s.game.MobTypes())
+}
+
 // gameLoop
 func (s *Server) gameLoop() {
 	last := time.Now()
@@ -94,12 +104,35 @@ func (s *Server) gameLoop() {
 	}
 }
 
+func logAndAddCorsHeadersToRequest(handler http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// log request
+		fmt.Println(r.Method, r.URL.Path)
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+		w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+		// Handle OPTIONS requests
+		if r.Method == "OPTIONS" {
+			return
+		}
+		handler.ServeHTTP(w, r)
+	})
+}
+
 func main() {
 	s := NewServer()
 	go s.gameLoop()
+	// Accept CORS
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		// log request
+		fmt.Println(r.Method, r.URL.Path)
 
+		http.DefaultServeMux.ServeHTTP(w, r)
+	})
 	http.HandleFunc("/game", s.GetGameState)
 	http.HandleFunc("/add_player", s.AddPlayer)
 	http.HandleFunc("/register_event", s.RegisterEvent)
-	http.ListenAndServe(":8080", nil)
+	http.HandleFunc("/tower_types", s.GetTowerTypes)
+	http.HandleFunc("/mob_types", s.GetMobTypes)
+	http.ListenAndServe(":8080", logAndAddCorsHeadersToRequest(http.DefaultServeMux))
 }

@@ -12,14 +12,14 @@ type position struct {
 }
 
 type TWMap struct {
-	Width       int
-	Height      int
-	XStart      int
-	YStart      int
-	XEnd        int
-	YEnd        int
-	Tiles       [][]*Tile
-	currentPath []position
+	Width       int        `json:"width"`
+	Height      int        `json:"height"`
+	XStart      int        `json:"xstart"`
+	YStart      int        `json:"ystart"`
+	XEnd        int        `json:"xend"`
+	YEnd        int        `json:"yend"`
+	Tiles       [][]*Tile  `json:"tiles"`
+	currentPath []position `json:"-"`
 }
 
 func (twMap *TWMap) GetNeighbors(tile *Tile) []*Tile {
@@ -150,13 +150,13 @@ func (twMap *TWMap) findPath(x int, y int) (*Tile, error) {
 	return &Tile{}, errors.New("No path found")
 }
 
-func standardTWMap() TWMap {
-	return TWMap{
+func standardTWMap() *TWMap {
+	return &TWMap{
 		Width:  10,
 		Height: 10,
 		XStart: 0,
 		YStart: 0,
-		XEnd:   3,
+		XEnd:   9,
 		YEnd:   9,
 		Tiles:  makeTiles(10, 10),
 	}

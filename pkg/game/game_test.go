@@ -6,15 +6,17 @@ import (
 
 // Function that prepares a game to test with
 func prepareGame() *Game {
-	return &Game{
-		Fields: []*Field{
-			NewField(0, NewPlayer(), standardTWMap()),
-			NewField(1, NewPlayer(), standardTWMap())},
+	game := Game{
+		Fields:         []*Field{},
 		Elapsed:        0,
 		MobRespawnTime: 5,
 		IncomeCooldown: 30,
 		State:          WaitingState,
+		config:         &StandardGameConfig,
 	}
+	game.AddPlayer(NewPlayer())
+	game.AddPlayer(NewPlayer())
+	return &game
 }
 
 func TestMakeTiles(t *testing.T) {
@@ -87,5 +89,19 @@ func TestGameState(t *testing.T) {
 	// Check that state is GameOver after end of game
 	if game.State != GameOverState {
 		t.Errorf("Expected state to be waiting, got %s", game.State)
+	}
+}
+
+// Test that building a tower on one field does not occupy the other field
+func TestBuildTower(t *testing.T) {
+	game := prepareGame()
+	game.Start()
+	// Build tower on field 1
+	if !game.HandleEvent(FieldEvent{FieldId: 1, Type: "build", Payload: BuildEvent{fieldId: 0, X: 1, Y: 1, TowerType: "Arrow"}.ToJson()}) {
+		t.Errorf("Expected building to succeed, got false")
+	}
+	// Check that field 0 is not occupied
+	if game.Fields[0].TWMap.IsOccupied(1, 1) {
+		t.Errorf("Expected field to not be occupied, got true")
 	}
 }

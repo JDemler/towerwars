@@ -16,11 +16,12 @@ type Player struct {
 }
 
 type Game struct {
-	Fields         []*Field
-	Elapsed        float64
-	IncomeCooldown float64
-	MobRespawnTime float64
-	State          string
+	Fields         []*Field    `json:"fields"`
+	Elapsed        float64     `json:"elapsed"`
+	IncomeCooldown float64     `json:"incomeCooldown"`
+	MobRespawnTime float64     `json:"-"`
+	State          string      `json:"state"`
+	config         *GameConfig `json:"-"`
 }
 
 func NewPlayer() *Player {
@@ -38,12 +39,13 @@ func NewGame() *Game {
 		MobRespawnTime: 5,
 		IncomeCooldown: 30,
 		State:          WaitingState,
+		config:         &StandardGameConfig,
 	}
 }
 
 // Add Player to Game
 func (game *Game) AddPlayer(player *Player) {
-	game.Fields = append(game.Fields, NewField(len(game.Fields), player, standardTWMap()))
+	game.Fields = append(game.Fields, NewField(len(game.Fields), player, game.config.TWMap()))
 }
 
 // Start game if there are more than two players
@@ -68,7 +70,7 @@ func (game *Game) HandleEvent(fieldEvent FieldEvent) bool {
 	event := fieldEvent.Unpack()
 	targetField := game.getFieldAt(event.FieldId())
 	if targetField != nil {
-		return targetField.HandleEvent(event, game.Fields)
+		return targetField.HandleEvent(event, game.Fields, game.config)
 	}
 	return false
 }
@@ -102,4 +104,14 @@ func (game *Game) Update(delta float64) {
 	if len(game.Fields) <= 1 {
 		game.State = GameOverState
 	}
+}
+
+// Return TowerTypes
+func (game *Game) TowerTypes() []*TowerType {
+	return game.config.TowerTypes
+}
+
+// Return MobTypes
+func (game *Game) MobTypes() []*MobType {
+	return game.config.MobTypes
 }

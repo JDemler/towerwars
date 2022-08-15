@@ -154,6 +154,7 @@ func (c *Client) drawField(field *game.Field) {
 	for _, bullet := range field.Bullets {
 		c.drawBullet(bullet)
 	}
+
 }
 
 func (c *Client) draw() {

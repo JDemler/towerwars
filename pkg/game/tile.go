@@ -1,11 +1,12 @@
 package game
 
 type Tile struct {
-	X, Y     int
-	occupied bool
-	f        float64
+	X        int     `json:"x"`
+	Y        int     `json:"y"`
+	occupied bool    `json:"-"`
+	f        float64 `json:"-"`
 	// Only necessary for the a* algorithm
-	predecessor *Tile
+	predecessor *Tile `json:"-"`
 }
 
 type tileList []*Tile
