@@ -6,7 +6,7 @@ import (
 )
 
 type FieldEvent struct {
-	FieldId int    `json:"field_id"`
+	FieldId int    `json:"fieldId"`
 	Type    string `json:"eventType"`
 	Payload string `json:"payload"`
 }
@@ -46,6 +46,8 @@ func NewBuildEvent(fieldId int) BuildEvent {
 
 // implement Event for BuildEvent
 func (e BuildEvent) TryExecute(sourceField *Field, targetFields []*Field, gc *GameConfig) bool {
+	// Debuglog event
+	fmt.Printf("BuildEvent: %+v\n", e)
 	// Check if position is within twmap bounds
 	if e.X < 0 || e.X >= sourceField.TWMap.Width || e.Y < 0 || e.Y >= sourceField.TWMap.Height {
 		return false

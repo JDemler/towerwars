@@ -8,7 +8,7 @@ import (
 func TestBuildEvent(t *testing.T) {
 	event := FieldEvent{
 		FieldId: 0,
-		Type:    "build",
+		Type:    "buildTower",
 		Payload: `{"x":1,"y":1,"towerType":"tower_1"}`,
 	}
 	unpackedEvent := event.Unpack()
@@ -38,7 +38,7 @@ func TestBuildEvent(t *testing.T) {
 func TestUnpackBuyMobEvent(t *testing.T) {
 	event := FieldEvent{
 		FieldId: 0,
-		Type:    "buy_mob",
+		Type:    "buyMob",
 		Payload: `{"targetFieldId": 1, "mobType":"mob_1"}`,
 	}
 	unpackedEvent := event.Unpack()

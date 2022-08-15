@@ -97,7 +97,7 @@ func TestBuildTower(t *testing.T) {
 	game := prepareGame()
 	game.Start()
 	// Build tower on field 1
-	if !game.HandleEvent(FieldEvent{FieldId: 1, Type: "build", Payload: BuildEvent{fieldId: 0, X: 1, Y: 1, TowerType: "Arrow"}.ToJson()}) {
+	if !game.HandleEvent(FieldEvent{FieldId: 1, Type: "buildTower", Payload: BuildEvent{fieldId: 0, X: 1, Y: 1, TowerType: "Arrow"}.ToJson()}) {
 		t.Errorf("Expected building to succeed, got false")
 	}
 	// Check that field 0 is not occupied
