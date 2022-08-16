@@ -97,8 +97,9 @@ func TestBuildTower(t *testing.T) {
 	game := prepareGame()
 	game.Start()
 	// Build tower on field 1
-	if !game.HandleEvent(FieldEvent{FieldId: 1, Type: "buildTower", Payload: BuildEvent{fieldId: 0, X: 1, Y: 1, TowerType: "Arrow"}.ToJson()}) {
-		t.Errorf("Expected building to succeed, got false")
+	_, err := game.HandleEvent(FieldEvent{FieldId: 1, Type: "buildTower", Payload: BuildEvent{fieldId: 0, X: 1, Y: 1, TowerType: "Arrow"}.ToJson()})
+	if err != nil {
+		t.Errorf("Expected no error, got %s", err)
 	}
 	// Check that field 0 is not occupied
 	if game.Fields[0].TWMap.IsOccupied(1, 1) {
@@ -111,8 +112,9 @@ func TestBuyMob(t *testing.T) {
 	game := prepareGame()
 	game.Start()
 	// Buy mob on field 0
-	if !game.HandleEvent(FieldEvent{FieldId: 1, Type: "buyMob", Payload: BuyMobEvent{fieldId: 1, MobType: "Circle", TargetFieldId: 0}.ToJson()}) {
-		t.Errorf("Expected buying to succeed, got false")
+	_, err := game.HandleEvent(FieldEvent{FieldId: 1, Type: "buyMob", Payload: BuyMobEvent{fieldId: 1, MobType: "Circle", TargetFieldId: 0}.ToJson()})
+	if err != nil {
+		t.Errorf("Expected no error, got %s", err)
 	}
 	// Check that field 0 has a mob
 	if len(game.Fields[0].Mobs) != 1 {

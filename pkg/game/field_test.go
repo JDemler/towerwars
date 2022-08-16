@@ -9,16 +9,17 @@ func prepareField(hasTower bool, hasMob bool) *Field {
 	field := NewField(0, NewPlayer(), standardTWMap())
 	if hasTower {
 		// add tower by handling an event
-		if (!field.HandleEvent(BuildEvent{fieldId: 0, X: 5, Y: 5, TowerType: "FastBullet"}, []*Field{}, &TestGameConfig)) {
+		_, err := field.HandleEvent(BuildEvent{fieldId: 0, X: 5, Y: 5, TowerType: "FastBullet"}, []*Field{}, &TestGameConfig)
+		if err != nil {
 			panic("Failed to build tower")
 		}
 	}
 	if hasMob {
 		// add mob by handling an event
-		if (!field.HandleEvent(BuyMobEvent{fieldId: 0, MobType: "SlowMob", TargetFieldId: 0}, []*Field{field}, &TestGameConfig)) {
-			panic("BuyMobEvent failed")
+		_, err := field.HandleEvent(BuyMobEvent{fieldId: 0, MobType: "SlowMob", TargetFieldId: 0}, []*Field{field}, &TestGameConfig)
+		if err != nil {
+			panic("Failed to buy mob")
 		}
-
 	}
 	return field
 }
@@ -107,7 +108,8 @@ func TestBuyMobEventNotExecuted(t *testing.T) {
 	if len(targetField.Mobs) != 0 {
 		t.Errorf("Expected 0 mob, got %d", len(targetField.Mobs))
 	}
-	if sourceField.HandleEvent(BuyMobEvent{fieldId: 0, MobType: "Circle", TargetFieldId: 1}, []*Field{targetField}, &StandardGameConfig) {
+	_, err := sourceField.HandleEvent(BuyMobEvent{fieldId: 0, MobType: "Circle", TargetFieldId: 1}, []*Field{targetField}, &StandardGameConfig)
+	if err == nil {
 		t.Errorf("Expected BuyMobEvent to not be executed")
 	}
 	if len(targetField.Mobs) != 0 {
@@ -123,7 +125,8 @@ func TestBuyTower(t *testing.T) {
 		t.Error("Expected 1,1 to be empty")
 	}
 
-	if !field.HandleEvent(BuildEvent{fieldId: 0, X: 1, Y: 1, TowerType: "Arrow"}, []*Field{}, &StandardGameConfig) {
+	_, err := field.HandleEvent(BuildEvent{fieldId: 0, X: 1, Y: 1, TowerType: "Arrow"}, []*Field{}, &StandardGameConfig)
+	if err != nil {
 		t.Error("Expected tower to be built")
 	}
 	if len(field.Towers) != 1 {

@@ -8,7 +8,7 @@ import (
 func TestMobMovesTowardsTargetInXDirection(t *testing.T) {
 	mob := Mob{X: 0, Y: 0, Health: 100, TargetX: 1, TargetY: 0, Speed: 1}
 	twmap := standardTWMap()
-	mob.Update(0.1, twmap)
+	mob.Update(0.1, twmap, 0)
 	if mob.X != 0.1 {
 		t.Errorf("Expected X to be 0.1, got %f", mob.X)
 	}
@@ -21,7 +21,7 @@ func TestMobMovesTowardsTargetInXDirection(t *testing.T) {
 func TestMobMovesTowardsTargetInYDirection(t *testing.T) {
 	mob := Mob{X: 0, Y: 0, Health: 100, TargetX: 0, TargetY: 1, Speed: 1}
 	twmap := standardTWMap()
-	mob.Update(0.1, twmap)
+	mob.Update(0.1, twmap, 0)
 	if mob.X != 0 {
 		t.Errorf("Expected X to be 0, got %f", mob.X)
 	}
@@ -34,7 +34,7 @@ func TestMobMovesTowardsTargetInYDirection(t *testing.T) {
 func TestMobMovesTowardsTargetInXAndYDirection(t *testing.T) {
 	mob := Mob{X: 0, Y: 0, Health: 100, TargetX: 1, TargetY: 1, Speed: 1}
 	twmap := standardTWMap()
-	mob.Update(0.1, twmap)
+	mob.Update(0.1, twmap, 0)
 	if mob.X < 0.07 {
 		t.Errorf("Expected X to be 0.1, got %f", mob.X)
 	}
@@ -47,7 +47,7 @@ func TestMobMovesTowardsTargetInXAndYDirection(t *testing.T) {
 func TestMobStopsAtTargetWhenSpeedExceedsDistrance(t *testing.T) {
 	mob := Mob{X: 0, Y: 0, Health: 100, TargetX: 1, TargetY: 1, Speed: 1}
 	twmap := standardTWMap()
-	mob.Update(2, twmap)
+	mob.Update(2, twmap, 0)
 	if mob.X != 1 {
 		t.Errorf("Expected X to be 1, got %f", mob.X)
 	}
