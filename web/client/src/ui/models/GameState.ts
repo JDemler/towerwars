@@ -137,15 +137,11 @@ export class BulletModel {
     coordinate: GridCoordinate;
     speed: number;
     damage: number;
-    irrelevant: boolean;
-    target: MobModel;
 
-    constructor(coordinate: GridCoordinate, speed: number, damage: number, irrelevant: boolean, target: MobModel) {
+    constructor(coordinate: GridCoordinate, speed: number, damage: number) {
         this.coordinate = coordinate;
         this.speed = speed;
         this.damage = damage;
-        this.irrelevant = irrelevant;
-        this.target = target;
     }
 
     static fromJSON(json: any): BulletModel {
@@ -153,8 +149,6 @@ export class BulletModel {
             new GridCoordinate(json.x / ServerTileSize, json.y / ServerTileSize),
             json.speed,
             json.damage,
-            json.irrelevant,
-            MobModel.fromJSON(json.target),
         );
     }
 }

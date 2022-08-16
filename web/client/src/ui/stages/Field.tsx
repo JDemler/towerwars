@@ -4,6 +4,7 @@ import BackgroundLayer from "../background/BackgroundLayer";
 import Mob from "../entities/Mob";
 import Turret from "../entities/Turret";
 import { FieldModel } from '../models/GameState';
+import Bullet from '../entities/Bullet';
 
 export interface FieldProps extends StageProps {
     field: FieldModel;
@@ -23,6 +24,9 @@ const Field: React.FC<FieldProps> = ({ field, onTileClick }) => {
             }
             {field.mobs.map((mob, i) => 
                 <Mob key={i} coordinate={mob.coordinate} />)
+            }
+            {field.bullets.map((bullet, i) => 
+                <Bullet key={i} coordinate={bullet.coordinate} />)
             }
         </Layer>
       </Stage>
