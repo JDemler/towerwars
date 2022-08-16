@@ -31,10 +31,11 @@ export async function registerEvent(event: FieldEvent) {
             throw new Error('Network response was not ok.');
         }
 
-        const result = (await response.json()) as Game;
+        const result = await response.json();
         return result;
     } catch (error) {
         console.error(error);
+        console.error(event);
     }
 }
 

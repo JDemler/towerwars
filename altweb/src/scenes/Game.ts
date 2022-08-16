@@ -4,7 +4,7 @@ import { connect, getGame, getMobTypes, getTowerTypes, joinGame, registerEvent }
 import { drawTWMap } from '../data/twmap';
 import { TowerType, MobType } from '../data/gameConfig';
 import { drawTower } from '../data/tower';
-import { drawMob } from '../data/mob';
+import { drawMob, Mob } from '../data/mob';
 
 export default class GameScene extends Phaser.Scene {
   // properties
@@ -16,6 +16,7 @@ export default class GameScene extends Phaser.Scene {
   offsetX: number = 0;
   offsetY: number = 0;
   websocket: WebSocket | undefined = undefined;
+  mobs: Mob[] = [];
 
   constructor() {
     super('GameScene');
@@ -43,6 +44,7 @@ export default class GameScene extends Phaser.Scene {
       this.websocket = ws;
       this.websocket.onmessage = (event) => {
         console.log(event.data);
+        this.handleEvent(JSON.parse(event.data));
       }
     });
 
@@ -53,7 +55,7 @@ export default class GameScene extends Phaser.Scene {
         // draw fields    
         this.gameState.fields.forEach((field, i) => {
           this.offsetX = field.id * 400;
-          drawTWMap(field.twmap, this.buildTower(field.id), this);
+          // drawTWMap(field.twmap, this.buildTower(field.id), this);
           this.drawBuyMobButtons(field.id);
         });
       }
@@ -81,29 +83,48 @@ export default class GameScene extends Phaser.Scene {
     }
   }
 
+  setOffsetForField(fieldId: number): void {
+    this.offsetX = fieldId * 400;
+    this.offsetY = 0;
+  }
+
+  handleEvent(event: any): void {
+    if (event.type === "mobCreated") {
+      var mob = event.payload.mob;
+      this.setOffsetForField(event.payload.fieldId);
+      var gameObj = this.add.circle(mob.x + this.offsetX, mob.y + this.offsetY, 15, 0x000000);
+      mob.gameObj = this.physics.add.existing(gameObj);
+      this.physics.moveTo(mob.gameObj, mob.targetX + this.offsetX, mob.targetY + this.offsetY, mob.speed);
+
+      console.log(mob.gameObj);
+      this.mobs.push(mob);
+    } else if (event.type === "mobUpdate") {
+      var mob = event.payload.mob;
+      this.setOffsetForField(event.payload.fieldId);
+      for (var i = 0; i < this.mobs.length; i++) {
+        if (this.mobs[i].id === mob.id) {
+          this.mobs[i].x = mob.x;
+          this.mobs[i].y = mob.y;
+          this.mobs[i].gameObj.setPosition(mob.x + this.offsetX, mob.y + this.offsetY);
+          // Set movement towards targetx and targety
+          this.physics.moveTo(this.mobs[i].gameObj, mob.targetX + this.offsetX, mob.targetY + this.offsetY, mob.speed);
+        }
+      }
+    } else if (event.type === "mobDestroyed") {
+      for (var i = this.mobs.length - 1; i > 0; i--) {
+        if (this.mobs[i].id === event.payload.mobId) {
+          this.mobs[i].gameObj.destroy();
+          this.mobs.splice(i, 1);
+        }
+      }
+    }
+  }
+
 
   update(time: number, delta: number): void {
     if (!this.serverAlive) {
       return;
     }
-    getGame().then(game => {
-      if (game) {
-        this.gameState = game;
-        // draw new mobs
-        this.gameState.fields.forEach(field => {
-          this.offsetX = field.id * 400;
-          field.mobs.forEach(mob => {
-            drawMob(mob, this);
-          });
-          field.towers.forEach(tower => {
-            drawTower(tower, this);
-          });
-        });
-      };
-    }).catch(error => {
-      this.serverAlive = false;
-      console.log(error);
-    });
   }
 
   drawBuyMobButtons(fieldId: number): void {

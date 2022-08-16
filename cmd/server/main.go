@@ -122,9 +122,18 @@ func (s *Server) readFromWS(ws *websocket.Conn) {
 	}
 }
 
-func writeToWS(ws *websocket.Conn, c chan game.GameEvent) {
-	defer close(c)
-	defer ws.Close()
+func (s *Server) writeToWS(ws *websocket.Conn, c chan game.GameEvent) {
+	defer func() {
+		//remove channel from list
+		for i, ch := range s.writeChannels {
+			if ch == c {
+				s.writeChannels = append(s.writeChannels[:i], s.writeChannels[i+1:]...)
+				break
+			}
+		}
+		ws.Close()
+		close(c)
+	}()
 	for {
 		event := <-c
 		err := ws.WriteJSON(event)
@@ -156,7 +165,7 @@ func (s *Server) WebSocket(w http.ResponseWriter, r *http.Request) {
 	// start reading from websocket
 	go s.readFromWS(conn)
 	// start writing to websocket
-	go writeToWS(conn, gameEventChan)
+	go s.writeToWS(conn, gameEventChan)
 }
 
 // gameLoop

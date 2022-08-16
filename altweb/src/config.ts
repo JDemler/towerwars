@@ -6,7 +6,14 @@ export default {
   type: Phaser.AUTO,
   parent: 'game',
   backgroundColor: '#33A5E7',
-  fps: { target: 1, forceSetTimeOut: true },
+  fps: { target: 60, forceSetTimeOut: true },
+  physics: {
+    default: 'arcade',
+    arcade: {
+      gravity: { y: 0 },
+      debug: false
+    }
+  },
   scale: {
     width: 800,
     height: 600,

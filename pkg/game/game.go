@@ -29,7 +29,7 @@ func NewPlayer() *Player {
 	return &Player{
 		Money:  100,
 		Income: 10,
-		Lives:  3,
+		Lives:  30,
 	}
 }
 

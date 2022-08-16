@@ -11,6 +11,7 @@ export type Mob = {
     health: number;
     maxHealth: number;
     mobtype: string;
+    gameObj: Phaser.Types.Physics.Arcade.GameObjectWithBody;
 }
 
 export function drawMob(mob: Mob, scene: GameScene) {
