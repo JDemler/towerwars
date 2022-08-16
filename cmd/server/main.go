@@ -8,10 +8,13 @@ import (
 	"time"
 
 	"towerwars/pkg/game"
+
+	"github.com/gorilla/websocket"
 )
 
 type Server struct {
-	game *game.Game
+	game          *game.Game
+	writeChannels []chan game.GameEvent
 }
 
 func NewServer() *Server {
@@ -21,8 +24,8 @@ func NewServer() *Server {
 }
 
 // Update the game
-func (s *Server) Update(delta float64) {
-	s.game.Update(delta)
+func (s *Server) Update(delta float64) []*game.GameEvent {
+	return s.game.Update(delta)
 }
 
 // Http Handler returning the game state
@@ -62,12 +65,20 @@ func (s *Server) RegisterEvent(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// HandleEvent
-	if !s.game.HandleEvent(event) {
+	events, error := s.game.HandleEvent(event)
+	if error != nil {
 		fmt.Println("Could not handle event")
+		fmt.Println(error)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
+	// send events to all clients
+	for _, event := range events {
+		for _, c := range s.writeChannels {
+			c <- *event
+		}
+	}
 	// return success
 	w.WriteHeader(http.StatusOK)
 }
@@ -82,6 +93,72 @@ func (s *Server) GetMobTypes(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(s.game.MobTypes())
 }
 
+func (s *Server) readFromWS(ws *websocket.Conn) {
+	defer ws.Close()
+	for {
+		var event game.FieldEvent
+		err := ws.ReadJSON(&event)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		// debug message
+		fmt.Println("Received event through ws")
+		fmt.Println(event)
+		// HandleEvent
+		events, error := s.game.HandleEvent(event)
+		if error != nil {
+			fmt.Println("Could not handle event")
+			fmt.Println(error)
+			return
+		}
+
+		// send events to all clients
+		for _, event := range events {
+			for _, c := range s.writeChannels {
+				c <- *event
+			}
+		}
+	}
+}
+
+func writeToWS(ws *websocket.Conn, c chan game.GameEvent) {
+	defer close(c)
+	defer ws.Close()
+	for {
+		event := <-c
+		err := ws.WriteJSON(event)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+	}
+}
+
+// Serve Websocket
+func (s *Server) WebSocket(w http.ResponseWriter, r *http.Request) {
+	upgrader := websocket.Upgrader{
+		ReadBufferSize:  1024,
+		WriteBufferSize: 1024,
+		CheckOrigin: func(r *http.Request) bool {
+			return true
+		},
+	}
+	conn, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	// create channels
+	gameEventChan := make(chan game.GameEvent)
+	// register channels
+	s.writeChannels = append(s.writeChannels, gameEventChan)
+	// start reading from websocket
+	go s.readFromWS(conn)
+	// start writing to websocket
+	go writeToWS(conn, gameEventChan)
+}
+
 // gameLoop
 func (s *Server) gameLoop() {
 	last := time.Now()
@@ -91,7 +168,12 @@ func (s *Server) gameLoop() {
 		if len(s.game.Fields) > 1 {
 			s.game.Start()
 		}
-		s.Update(delta)
+		events := s.Update(delta)
+		for _, event := range events {
+			for _, c := range s.writeChannels {
+				c <- *event
+			}
+		}
 		time.Sleep(time.Second / 60)
 	}
 }
@@ -126,5 +208,6 @@ func main() {
 	http.HandleFunc("/register_event", s.RegisterEvent)
 	http.HandleFunc("/tower_types", s.GetTowerTypes)
 	http.HandleFunc("/mob_types", s.GetMobTypes)
+	http.HandleFunc("/ws", s.WebSocket)
 	http.ListenAndServe(":8080", logAndAddCorsHeadersToRequest(http.DefaultServeMux))
 }

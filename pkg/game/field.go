@@ -27,7 +27,7 @@ func NewField(id int, player *Player, twmap *TWMap) *Field {
 }
 
 // HandleEvent for field
-func (field *Field) HandleEvent(event Event, otherFields []*Field, gc *GameConfig) bool {
+func (field *Field) HandleEvent(event Event, otherFields []*Field, gameConfig *GameConfig) ([]*GameEvent, error) {
 	// Iterate over event targetfieldids and get targetfields
 	targetFields := []*Field{}
 	for _, targetFieldId := range event.TargetFieldIds() {
@@ -37,42 +37,82 @@ func (field *Field) HandleEvent(event Event, otherFields []*Field, gc *GameConfi
 			}
 		}
 	}
-
-	if !event.TryExecute(field, targetFields, gc) {
+	events, err := event.TryExecute(field, targetFields, gameConfig)
+	if err != nil {
 		//Log failure to execute event
 		fmt.Printf("Failed to execute event: %+v", event)
-		return false
+		return []*GameEvent{}, err
 	}
-	return true
+	return events, nil
 }
 
-func (field *Field) Update(delta float64) {
-
+func (field *Field) Update(delta float64) []*GameEvent {
+	events := []*GameEvent{}
 	// Update Towers
 	for i := 0; i < len(field.Towers); i++ {
 		bullets := field.Towers[i].Update(delta, field.Mobs, field.getNextBulletId)
+		// Add bullets to field
 		field.Bullets = append(field.Bullets, bullets...)
+		// For every bullet create an event
+		for _, bullet := range bullets {
+			events = append(events, &GameEvent{
+				Type: "bulletCreated",
+				Payload: BulletCreatedEvent{
+					FieldId: field.Id,
+					Bullet:  bullet,
+				},
+			})
+		}
 	}
 
 	// Update bullets and remove irrelevant bullets from the game
 	for i := len(field.Bullets) - 1; i >= 0; i-- {
 		if !field.Bullets[i].Update(delta) || field.Bullets[i].Target.IsDead() {
+			// Create BulletDestroyedEvent
+			events = append(events, &GameEvent{
+				Type: "bulletDestroyed",
+				Payload: BulletDestroyedEvent{
+					FieldId:  field.Id,
+					BulletId: field.Bullets[i].Id,
+				},
+			})
+			// Remove bullet from field
 			field.Bullets = append(field.Bullets[:i], field.Bullets[i+1:]...)
+
 		}
 	}
 	// Update mobs
 	for i := len(field.Mobs) - 1; i >= 0; i-- {
-		field.Mobs[i].Update(delta, field.TWMap)
+		mobEvents := field.Mobs[i].Update(delta, field.TWMap, field.Id)
+		// Add events to events
+		events = append(events, mobEvents...)
 		// Check if mobs health is 0 or less, remove mob from game and payout player money
 		if field.Mobs[i].Health <= 0 {
 			field.Player.Money += field.Mobs[i].Reward
+			// Create MobDestroyedEvent
+			events = append(events, &GameEvent{
+				Type: "mobDestroyed",
+				Payload: MobDestroyedEvent{
+					FieldId: field.Id,
+					MobId:   field.Mobs[i].Id,
+				},
+			})
 			field.Mobs = append(field.Mobs[:i], field.Mobs[i+1:]...)
 		} else if field.Mobs[i].Reached {
 			// Check if mob has reached the end of the map, remove mob from game and reduce liver of player
 			field.Player.Lives -= 1
+			// Create MobDestroyedEvent
+			events = append(events, &GameEvent{
+				Type: "mobDestroyed",
+				Payload: MobDestroyedEvent{
+					FieldId: field.Id,
+					MobId:   field.Mobs[i].Id,
+				},
+			})
 			field.Mobs = append(field.Mobs[:i], field.Mobs[i+1:]...)
 		}
 	}
+	return events
 }
 
 func (field *Field) getNextMobId() int {

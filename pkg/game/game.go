@@ -1,6 +1,7 @@
 package game
 
 import (
+	"fmt"
 	"math"
 )
 
@@ -66,19 +67,20 @@ func (game *Game) getFieldAt(id int) *Field {
 	return nil
 }
 
-func (game *Game) HandleEvent(fieldEvent FieldEvent) bool {
+func (game *Game) HandleEvent(fieldEvent FieldEvent) ([]*GameEvent, error) {
 	event := fieldEvent.Unpack()
 	targetField := game.getFieldAt(event.FieldId())
 	if targetField != nil {
 		return targetField.HandleEvent(event, game.Fields, game.config)
 	}
-	return false
+	return []*GameEvent{}, fmt.Errorf("Field not found")
 }
 
-func (game *Game) Update(delta float64) {
+func (game *Game) Update(delta float64) []*GameEvent {
+	events := []*GameEvent{}
 	// Only do something when the game is playing
 	if game.State != PlayingState {
-		return
+		return events
 	}
 	// reduce income cooldown
 	game.IncomeCooldown = math.Max(game.IncomeCooldown-delta, 0)
@@ -98,12 +100,14 @@ func (game *Game) Update(delta float64) {
 			continue
 		}
 
-		game.Fields[i].Update(delta)
+		fieldEvents := game.Fields[i].Update(delta)
+		events = append(events, fieldEvents...)
 	}
 	// Set game over if there is only one player left
 	if len(game.Fields) <= 1 {
 		game.State = GameOverState
 	}
+	return events
 }
 
 // Return TowerTypes

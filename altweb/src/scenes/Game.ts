@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { Game } from '../data/game';
-import { getGame, getMobTypes, getTowerTypes, joinGame, registerEvent } from '../api';
+import { connect, getGame, getMobTypes, getTowerTypes, joinGame, registerEvent } from '../api';
 import { drawTWMap } from '../data/twmap';
 import { TowerType, MobType } from '../data/gameConfig';
 import { drawTower } from '../data/tower';
@@ -15,6 +15,7 @@ export default class GameScene extends Phaser.Scene {
   mobTypes: MobType[] = []
   offsetX: number = 0;
   offsetY: number = 0;
+  websocket: WebSocket | undefined = undefined;
 
   constructor() {
     super('GameScene');
@@ -38,6 +39,13 @@ export default class GameScene extends Phaser.Scene {
   }
 
   create() {
+    connect().then(ws => {
+      this.websocket = ws;
+      this.websocket.onmessage = (event) => {
+        console.log(event.data);
+      }
+    });
+
     getGame().then(game => {
       //if game is not undefined assign it
       if (game) {
@@ -56,21 +64,23 @@ export default class GameScene extends Phaser.Scene {
 
   buildTower(fieldId: number): (x: number, y: number) => void {
     var towerType = this.towerTypes[0];
-    return (function (x: number, y: number) {
+    var ws = this.websocket;
+    return (x: number, y: number) => {
       console.log("Build tower on field " + fieldId + " at " + x + "," + y);
-      registerEvent({
-        fieldId: fieldId,
-        eventType: "buildTower",
-        payload: JSON.stringify({
-          x: x,
-          y: y,
-          towerType: towerType.name
-        })
-      })
-        .then(() => console.log("Tower built"))
-        .catch(error => console.log(error));
-    })
+      if (ws) {
+        ws.send(JSON.stringify({
+          fieldId: fieldId,
+          eventType: "buildTower",
+          payload: JSON.stringify({
+            towerType: towerType.name,
+            x: x,
+            y: y
+          })
+        }));
+      }
+    }
   }
+
 
   update(time: number, delta: number): void {
     if (!this.serverAlive) {

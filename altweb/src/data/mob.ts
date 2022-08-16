@@ -2,6 +2,7 @@ import GameScene from "../scenes/Game";
 
 
 export type Mob = {
+    id: number;
     x: number;
     y: number;
     speed: number;

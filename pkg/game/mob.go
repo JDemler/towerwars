@@ -37,7 +37,7 @@ func (mob *Mob) IsDead() bool {
 	return mob.Health <= 0 || mob.Reached
 }
 
-func (mob *Mob) Update(delta float64, twMap *TWMap) {
+func (mob *Mob) Update(delta float64, twMap *TWMap, fieldId int) []*GameEvent {
 	// Calc differences in Target vs Position
 	dx := mob.TargetX - mob.X
 	dy := mob.TargetY - mob.Y
@@ -56,5 +56,7 @@ func (mob *Mob) Update(delta float64, twMap *TWMap) {
 	}
 	if mob.X == mob.TargetX && mob.Y == mob.TargetY {
 		mob.calcDirection(twMap)
+		return []*GameEvent{&GameEvent{Type: "mobUpdate", Payload: MobUpdateEvent{FieldId: fieldId, Mob: mob}}}
 	}
+	return []*GameEvent{}
 }

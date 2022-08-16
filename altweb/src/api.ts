@@ -38,6 +38,12 @@ export async function registerEvent(event: FieldEvent) {
     }
 }
 
+// connects to websocket
+export async function connect(): Promise<WebSocket> {
+    const ws = new WebSocket('ws://localhost:8080/ws');
+    return ws;
+}
+
 export async function joinGame() {
     try {
         const response = await fetch('http://localhost:8080/add_player');

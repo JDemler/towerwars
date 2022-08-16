@@ -60,7 +60,7 @@ func TestMobStopsAtTargetWhenSpeedExceedsDistrance(t *testing.T) {
 func TestMobIsStillAliveWhenHealthIsGreaterThanZero(t *testing.T) {
 	mob := Mob{X: 0, Y: 0, Health: 100, TargetX: 1, TargetY: 1, Speed: 1}
 	twmap := standardTWMap()
-	mob.Update(0.1, twmap)
+	mob.Update(0.1, twmap, 0)
 	if mob.Health <= 0 {
 		t.Error("Expected mob to be alive")
 	}
@@ -70,7 +70,7 @@ func TestMobIsStillAliveWhenHealthIsGreaterThanZero(t *testing.T) {
 func TestMobIsDeadWhenHealthIsZero(t *testing.T) {
 	mob := Mob{X: 0, Y: 0, Health: 0, TargetX: 1, TargetY: 1, Speed: 1}
 	twmap := standardTWMap()
-	mob.Update(0.1, twmap)
+	mob.Update(0.1, twmap, 0)
 	if mob.Health > 0 {
 		t.Error("Expected mob to be dead")
 	}
@@ -80,7 +80,7 @@ func TestMobIsDeadWhenHealthIsZero(t *testing.T) {
 func TestMobGetsNewTargetWhenTargetIsReached(t *testing.T) {
 	mob := Mob{X: 0, Y: 0, Health: 100, TargetX: 0, TargetY: 0, Speed: 1}
 	twmap := standardTWMap()
-	mob.Update(1, twmap)
+	mob.Update(1, twmap, 0)
 	if mob.TargetX != TileSize+TileSize/2 {
 		t.Errorf("Expected TargetX to be 0, got %f", mob.TargetX)
 	}
@@ -94,7 +94,7 @@ func TestMobHealthIsSetToZeroWhenItReachesEndOfTWMap(t *testing.T) {
 	mob := Mob{X: 0, Y: 0, Health: 100, TargetX: 0, TargetY: 0, Speed: 10}
 	twmap := standardTWMap()
 	for i := 0; i < 100; i++ {
-		mob.Update(1, twmap)
+		mob.Update(1, twmap, 0)
 	}
 	if !mob.IsDead() {
 		t.Error("Expected mob to be dead")

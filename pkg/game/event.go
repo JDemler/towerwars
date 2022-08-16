@@ -5,6 +5,46 @@ import (
 	"fmt"
 )
 
+type GameEvent struct {
+	Type    string `json:"type"`
+	Payload any    `json:"payload"`
+}
+
+type MobCreatedEvent struct {
+	FieldId int  `json:"fieldId"`
+	Mob     *Mob `json:"mob"`
+}
+
+type TowerCreatedEvent struct {
+	FieldId int    `json:"fieldId"`
+	Tower   *Tower `json:"tower"`
+}
+
+type BulletCreatedEvent struct {
+	FieldId int     `json:"fieldId"`
+	Bullet  *Bullet `json:"bullet"`
+}
+
+type MobDestroyedEvent struct {
+	FieldId int `json:"fieldId"`
+	MobId   int `json:"mobId"`
+}
+
+type MobUpdateEvent struct {
+	FieldId int  `json:"fieldId"`
+	Mob     *Mob `json:"mob"`
+}
+
+type TowerDestroyedEvent struct {
+	FieldId int `json:"fieldId"`
+	TowerId int `json:"towerId"`
+}
+
+type BulletDestroyedEvent struct {
+	FieldId  int `json:"fieldId"`
+	BulletId int `json:"bulletId"`
+}
+
 type FieldEvent struct {
 	FieldId int    `json:"fieldId"`
 	Type    string `json:"eventType"`
@@ -27,7 +67,7 @@ func (e FieldEvent) Unpack() Event {
 }
 
 type Event interface {
-	TryExecute(sourceField *Field, targetFields []*Field, gc *GameConfig) bool
+	TryExecute(sourceField *Field, targetFields []*Field, gc *GameConfig) ([]*GameEvent, error)
 	FieldId() int
 	TargetFieldIds() []int
 	ToJson() string
@@ -45,31 +85,39 @@ func NewBuildEvent(fieldId int) BuildEvent {
 }
 
 // implement Event for BuildEvent
-func (e BuildEvent) TryExecute(sourceField *Field, targetFields []*Field, gc *GameConfig) bool {
+func (e BuildEvent) TryExecute(sourceField *Field, targetFields []*Field, gc *GameConfig) ([]*GameEvent, error) {
 	// Debuglog event
 	fmt.Printf("BuildEvent: %+v\n", e)
 	// Check if position is within twmap bounds
 	if e.X < 0 || e.X >= sourceField.TWMap.Width || e.Y < 0 || e.Y >= sourceField.TWMap.Height {
-		return false
+		return nil, fmt.Errorf("Position out of bounds")
 	}
 	// check if tower is already built
 	if sourceField.TWMap.IsOccupied(e.X, e.Y) {
-		return false
+		return nil, fmt.Errorf("Position already occupied")
 	}
 	// Get TowerType from gameConfig
 	towerType := gc.TowerType(e.TowerType)
 	if towerType == nil {
-		return false
+		return nil, fmt.Errorf("Invalid tower type")
 	}
 	// Check if player can affort tower
 	if sourceField.Player.Money < towerType.Cost {
-		return false
+		return nil, fmt.Errorf("Player cannot afford tower")
 	}
 	tower := towerType.Tower(float64(e.X)*TileSize+TileSize/2, float64(e.Y)*TileSize+TileSize/2)
 	//Occupy tower position in twmap
 	sourceField.TWMap.Occupy(e.X, e.Y)
 	sourceField.Towers = append(sourceField.Towers, tower)
-	return true
+	return []*GameEvent{
+		{
+			Type: "towerCreated",
+			Payload: TowerCreatedEvent{
+				FieldId: sourceField.Id,
+				Tower:   tower,
+			},
+		},
+	}, nil
 }
 
 func (e BuildEvent) FieldId() int {
@@ -107,7 +155,7 @@ func NewBuyMobEvent(fieldId int) BuyMobEvent {
 }
 
 // implement Event for BuyMobEvent
-func (e BuyMobEvent) TryExecute(sourceField *Field, targetFields []*Field, config *GameConfig) bool {
+func (e BuyMobEvent) TryExecute(sourceField *Field, targetFields []*Field, config *GameConfig) ([]*GameEvent, error) {
 	// Debuglog event
 	fmt.Printf("BuyMobEvent: %+v\n", e)
 	// Check if player can afford mob
@@ -115,17 +163,18 @@ func (e BuyMobEvent) TryExecute(sourceField *Field, targetFields []*Field, confi
 	if mobType == nil {
 		// Invalid mob type
 		fmt.Println("Invalid mob type")
-		return false
+		return nil, fmt.Errorf("Invalid mob type")
 	}
 	if sourceField.Player.Money < mobType.Cost {
 		// Player cannot afford mob
 		fmt.Println("Player cannot afford mob")
-		return false
+		return nil, fmt.Errorf("Player cannot afford mob")
 	}
 	// Reduce player money
 	sourceField.Player.Money -= mobType.Cost
 	// Increase player income
 	sourceField.Player.Income += mobType.Income
+	gameEvents := []*GameEvent{}
 	// range over targetFields and add mob to all of them
 	for _, targetField := range targetFields {
 		//Get startposition
@@ -133,8 +182,15 @@ func (e BuyMobEvent) TryExecute(sourceField *Field, targetFields []*Field, confi
 		mobId := targetField.getNextMobId()
 		mob := mobType.Mob(float64(startX)*TileSize+TileSize/2, float64(startY)*TileSize+TileSize/2, mobId)
 		targetField.Mobs = append(targetField.Mobs, mob)
+		gameEvents = append(gameEvents, &GameEvent{
+			Type: "mobCreated",
+			Payload: MobCreatedEvent{
+				FieldId: targetField.Id,
+				Mob:     mob,
+			},
+		})
 	}
-	return true
+	return gameEvents, nil
 }
 
 func (e BuyMobEvent) FieldId() int {
