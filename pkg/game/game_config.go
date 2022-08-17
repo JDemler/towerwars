@@ -6,6 +6,7 @@ type GameConfig struct {
 	TowerTypes []*TowerType
 	MobTypes   []*MobType
 	TWMap      MapConstructor
+	StartStats *Player
 }
 
 type TowerType struct {
@@ -46,6 +47,11 @@ var StandardGameConfig = GameConfig{
 		{Name: "Circle", Health: 100, Speed: 60, Reward: 2, Income: 2, Cost: 10},
 	},
 	TWMap: standardTWMap,
+	StartStats: &Player{
+		Money:  50,
+		Income: 15,
+		Lives:  30,
+	},
 }
 
 var TestGameConfig = GameConfig{

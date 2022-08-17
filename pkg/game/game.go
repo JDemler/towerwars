@@ -29,9 +29,9 @@ type Game struct {
 func NewPlayer(id int) *Player {
 	return &Player{
 		Id:     id,
-		Money:  100,
-		Income: 10,
-		Lives:  30,
+		Money:  StandardGameConfig.StartStats.Money,
+		Income: StandardGameConfig.StartStats.Income,
+		Lives:  StandardGameConfig.StartStats.Lives,
 	}
 }
 
