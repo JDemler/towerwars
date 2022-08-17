@@ -40,7 +40,7 @@ func (field *Field) HandleEvent(event Event, otherFields []*Field, gameConfig *G
 	events, err := event.TryExecute(field, targetFields, gameConfig)
 	if err != nil {
 		//Log failure to execute event
-		fmt.Printf("Failed to execute event: %+v", event)
+		fmt.Printf("Failed to execute event: %+v\n", event)
 		return []*GameEvent{}, err
 	}
 	return events, nil

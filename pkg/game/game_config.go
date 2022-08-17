@@ -65,6 +65,12 @@ var TestGameConfig = GameConfig{
 		{Name: "SlowMob", Health: 100, Speed: 50, Reward: 2, Income: 2, Cost: 10},
 		{Name: "StationaryMob", Health: 100, Speed: 0, Reward: 2, Income: 2, Cost: 10},
 	},
+	TWMap: standardTWMap,
+	StartStats: &Player{
+		Money:  100,
+		Income: 10,
+		Lives:  30,
+	},
 }
 
 // Lookup function for TowerType

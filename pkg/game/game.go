@@ -18,21 +18,13 @@ type Player struct {
 }
 
 type Game struct {
-	Fields         []*Field    `json:"fields"`
-	Elapsed        float64     `json:"elapsed"`
-	IncomeCooldown float64     `json:"incomeCooldown"`
-	MobRespawnTime float64     `json:"-"`
-	State          string      `json:"state"`
-	config         *GameConfig `json:"-"`
-}
-
-func NewPlayer(id int) *Player {
-	return &Player{
-		Id:     id,
-		Money:  StandardGameConfig.StartStats.Money,
-		Income: StandardGameConfig.StartStats.Income,
-		Lives:  StandardGameConfig.StartStats.Lives,
-	}
+	Fields         []*Field     `json:"fields"`
+	Elapsed        float64      `json:"elapsed"`
+	IncomeCooldown float64      `json:"incomeCooldown"`
+	MobRespawnTime float64      `json:"-"`
+	State          string       `json:"state"`
+	config         *GameConfig  `json:"-"`
+	events         []*GameEvent `json:"-"`
 }
 
 func NewGame() *Game {
@@ -47,9 +39,21 @@ func NewGame() *Game {
 }
 
 // Add Player to Game
-func (game *Game) AddPlayer(player *Player) {
-	player.Id = len(game.Fields)
+func (game *Game) AddPlayer() {
+	player := &Player{
+		Id:     len(game.Fields),
+		Money:  game.config.StartStats.Money,
+		Income: game.config.StartStats.Income,
+		Lives:  game.config.StartStats.Lives,
+	}
 	game.Fields = append(game.Fields, NewField(len(game.Fields), player, game.config.TWMap()))
+	game.events = append(game.events, &GameEvent{
+		Type: "playerJoined",
+		Payload: PlayerJoinedEvent{
+			Player: player,
+		},
+	})
+
 }
 
 // Start game if there are more than two players
@@ -58,6 +62,9 @@ func (game *Game) Start() {
 		return
 	}
 	game.State = PlayingState
+	game.events = append(game.events, &GameEvent{
+		Type: "gameStarted",
+	})
 }
 
 // Returns field with Id or nil if not found
@@ -83,7 +90,8 @@ func (game *Game) HandleEvent(fieldEvent FieldEvent) ([]*GameEvent, error) {
 }
 
 func (game *Game) Update(delta float64) []*GameEvent {
-	events := []*GameEvent{}
+	events := game.events
+	game.events = []*GameEvent{}
 	// Only do something when the game is playing
 	if game.State != PlayingState {
 		return events

@@ -6,7 +6,7 @@ import (
 
 // prepare a field containing a single tower and a single mob using the standardtwmap
 func prepareField(hasTower bool, hasMob bool) *Field {
-	field := NewField(0, NewPlayer(0), standardTWMap())
+	field := NewField(0, TestGameConfig.Player(0), standardTWMap())
 	if hasTower {
 		// add tower by handling an event
 		_, err := field.HandleEvent(BuildEvent{fieldId: 0, X: 5, Y: 5, TowerType: "FastBullet"}, []*Field{}, &TestGameConfig)
@@ -108,7 +108,7 @@ func TestBuyMobEventNotExecuted(t *testing.T) {
 	if len(targetField.Mobs) != 0 {
 		t.Errorf("Expected 0 mob, got %d", len(targetField.Mobs))
 	}
-	_, err := sourceField.HandleEvent(BuyMobEvent{fieldId: 0, MobType: "Circle", TargetFieldId: 1}, []*Field{targetField}, &StandardGameConfig)
+	_, err := sourceField.HandleEvent(BuyMobEvent{fieldId: 0, MobType: "FastMob", TargetFieldId: 1}, []*Field{targetField}, &TestGameConfig)
 	if err == nil {
 		t.Errorf("Expected BuyMobEvent to not be executed")
 	}

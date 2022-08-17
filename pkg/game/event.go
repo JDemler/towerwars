@@ -10,6 +10,12 @@ type GameEvent struct {
 	Payload any    `json:"payload"`
 }
 
+type PlayerJoinedEvent struct {
+	Player *Player `json:"player"`
+}
+
+type GameStartedEvent struct{}
+
 type MobCreatedEvent struct {
 	FieldId int  `json:"fieldId"`
 	Mob     *Mob `json:"mob"`

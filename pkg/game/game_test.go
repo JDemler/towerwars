@@ -12,10 +12,10 @@ func prepareGame() *Game {
 		MobRespawnTime: 5,
 		IncomeCooldown: 30,
 		State:          WaitingState,
-		config:         &StandardGameConfig,
+		config:         &TestGameConfig,
 	}
-	game.AddPlayer(NewPlayer(0))
-	game.AddPlayer(NewPlayer(1))
+	game.AddPlayer()
+	game.AddPlayer()
 	return &game
 }
 
@@ -38,6 +38,39 @@ func TestMakeTiles(t *testing.T) {
 	}
 	if tiles[1][1].Y != 1 {
 		t.Errorf("Expected Y to be 1, got %d", tiles[1][1].Y)
+	}
+}
+
+// When two players join the game, the game should start and send appropriate events
+func TestGameStartsWhenTwoPlayersJoin(t *testing.T) {
+	game := prepareGame()
+	playerJoinedEvents := game.Update(0) //Gets player joined events
+	if len(playerJoinedEvents) != 2 {
+		t.Errorf("Expected 2 player joined events, got %d", len(playerJoinedEvents))
+	}
+	// check event type
+	if playerJoinedEvents[0].Type != "playerJoined" {
+		t.Errorf("Expected event type to be playerJoined, got %s", playerJoinedEvents[0].Type)
+	}
+	if playerJoinedEvents[1].Type != "playerJoined" {
+		t.Errorf("Expected event type to be playerJoined, got %s", playerJoinedEvents[1].Type)
+	}
+	if game.State != WaitingState {
+		t.Errorf("Expected game to be in waiting state, got %s", game.State)
+	}
+	// Start game
+	game.Start()
+	// Check that game has started
+	if game.State != PlayingState {
+		t.Errorf("Expected game to be in playing state, got %s", game.State)
+	}
+	// Check that gameStarted event was sent
+	gameStartedEvent := game.Update(0)
+	if len(gameStartedEvent) != 1 { // two player joined, one game started
+		t.Errorf("Expected 1 event, got %d", len(gameStartedEvent))
+	}
+	if gameStartedEvent[0].Type != "gameStarted" {
+		t.Errorf("Expected gameStarted event, got %s", gameStartedEvent[0].Type)
 	}
 }
 
@@ -97,7 +130,7 @@ func TestBuildTower(t *testing.T) {
 	game := prepareGame()
 	game.Start()
 	// Build tower on field 1
-	_, err := game.HandleEvent(FieldEvent{FieldId: 1, Type: "buildTower", Payload: BuildEvent{fieldId: 0, X: 1, Y: 1, TowerType: "Arrow"}.ToJson()})
+	_, err := game.HandleEvent(FieldEvent{FieldId: 1, Type: "buildTower", Payload: BuildEvent{fieldId: 0, X: 1, Y: 1, TowerType: "FastBullet"}.ToJson()})
 	if err != nil {
 		t.Errorf("Expected no error, got %s", err)
 	}
@@ -112,7 +145,7 @@ func TestBuyMob(t *testing.T) {
 	game := prepareGame()
 	game.Start()
 	// Buy mob on field 0
-	_, err := game.HandleEvent(FieldEvent{FieldId: 1, Type: "buyMob", Payload: BuyMobEvent{fieldId: 1, MobType: "Circle", TargetFieldId: 0}.ToJson()})
+	_, err := game.HandleEvent(FieldEvent{FieldId: 1, Type: "buyMob", Payload: BuyMobEvent{fieldId: 1, MobType: "FastMob", TargetFieldId: 0}.ToJson()})
 	if err != nil {
 		t.Errorf("Expected no error, got %s", err)
 	}
