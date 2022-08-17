@@ -56,7 +56,7 @@ func (mob *Mob) Update(delta float64, twMap *TWMap, fieldId int) []*GameEvent {
 	}
 	if mob.X == mob.TargetX && mob.Y == mob.TargetY {
 		mob.calcDirection(twMap)
-		return []*GameEvent{&GameEvent{Type: "mobUpdate", Payload: MobUpdateEvent{FieldId: fieldId, Mob: mob}}}
+		return []*GameEvent{{Type: "mobUpdate", Payload: MobUpdateEvent{FieldId: fieldId, Mob: mob}}}
 	}
 	return []*GameEvent{}
 }

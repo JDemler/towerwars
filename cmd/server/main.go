@@ -100,7 +100,6 @@ func (s *Server) readFromWS(ws *websocket.Conn) {
 		err := ws.ReadJSON(&event)
 		if err != nil {
 			fmt.Println(err)
-			return
 		}
 		// debug message
 		fmt.Println("Received event through ws")
@@ -110,7 +109,6 @@ func (s *Server) readFromWS(ws *websocket.Conn) {
 		if error != nil {
 			fmt.Println("Could not handle event")
 			fmt.Println(error)
-			return
 		}
 
 		// send events to all clients
