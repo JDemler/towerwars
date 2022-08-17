@@ -18,6 +18,14 @@ export default class Demo extends Phaser.Scene {
     super('LobbyScene');
   }
 
+  //descructor
+  destroy() {
+    if (this.websocket) {
+      console.log("Closing Lobby websocket");
+      this.websocket.close();
+    }
+  }
+
   preload() {
     this.load.image('logo', 'assets/phaser3-logo.png');
     getGame().then(game => {
@@ -66,12 +74,14 @@ export default class Demo extends Phaser.Scene {
   }
 
   handleEvent(event: any) {
+    console.log(event)
     switch (event.type) {
-      case "playerAdded":
+      case "playerJoined":
         console.log("Player joined: " + event.payload.player.id);
         break;
       case "gameStateChanged":
-        this.gameState = event.payload.gameState;
+        console.log("Game state changed to: " + event.payload.gameState);
+        this.gameState.state = event.payload.gameState;
         break;
     }
   }
@@ -86,8 +96,10 @@ export default class Demo extends Phaser.Scene {
   }
 
   update(time: number, delta: number): void {
+    //console.log(this.gameState);
     if (this.gameState && this.gameState.state === 'Playing') {
       this.scene.start('GameScene', { mobTypes: this.mobTypes, towerTypes: this.towerTypes, playerId: this.playerId });
+      this.destroy();
     }
   }
 }

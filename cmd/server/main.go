@@ -14,7 +14,20 @@ import (
 
 type Server struct {
 	game          *game.Game
-	writeChannels []chan game.GameEvent
+	writeChannels []*WsChannel
+	channelCount  int
+}
+
+type WsChannel struct {
+	id        int
+	open      bool
+	Channel   chan game.GameEvent
+	Websocket *websocket.Conn
+}
+
+func (ws *WsChannel) Close() {
+	ws.open = false
+	ws.Websocket.Close()
 }
 
 func NewServer() *Server {
@@ -75,7 +88,9 @@ func (s *Server) RegisterEvent(w http.ResponseWriter, r *http.Request) {
 	// send events to all clients
 	for _, event := range events {
 		for _, c := range s.writeChannels {
-			c <- *event
+			if c.open {
+				c.Channel <- *event
+			}
 		}
 	}
 	// return success
@@ -92,11 +107,25 @@ func (s *Server) GetMobTypes(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(s.game.MobTypes())
 }
 
-func (s *Server) readFromWS(ws *websocket.Conn) {
-	defer ws.Close()
+func (s *Server) readFromWS(ws *WsChannel) {
+	defer func() {
+		fmt.Println("Stopped readToWS loop!")
+		for i, ch := range s.writeChannels {
+			if ch.id == ws.id {
+				fmt.Println("Removing channel from writeChannels")
+				fmt.Println("writeChannels len before: ", len(s.writeChannels))
+				s.writeChannels = append(s.writeChannels[:i], s.writeChannels[i+1:]...)
+				fmt.Println("writeChannels len: ", len(s.writeChannels))
+			}
+		}
+		ws.Close()
+	}()
 	for {
+		if !ws.open {
+			return
+		}
 		var event game.FieldEvent
-		err := ws.ReadJSON(&event)
+		err := ws.Websocket.ReadJSON(&event)
 		if err != nil {
 			fmt.Println(err)
 			fmt.Println("Closing readFromWS loop!")
@@ -116,30 +145,39 @@ func (s *Server) readFromWS(ws *websocket.Conn) {
 		// send events to all clients
 		for _, event := range events {
 			for _, c := range s.writeChannels {
-				if c != nil {
-					c <- *event
+				if c.open {
+					c.Channel <- *event
 				}
 			}
 		}
 	}
 }
 
-func (s *Server) writeToWS(ws *websocket.Conn, c chan game.GameEvent) {
+func (s *Server) writeToWS(ws *WsChannel) {
 	defer func() {
-		//remove channel from list
+		fmt.Println("Stopped writeToWS loop!")
 		for i, ch := range s.writeChannels {
-			if ch == c {
+			if ch.id == ws.id {
+				fmt.Println("Removing channel from writeChannels")
+				fmt.Println("writeChannels len before: ", len(s.writeChannels))
 				s.writeChannels = append(s.writeChannels[:i], s.writeChannels[i+1:]...)
-				break
+				fmt.Println("writeChannels len: ", len(s.writeChannels))
 			}
 		}
 		ws.Close()
-		close(c)
 	}()
 	for {
-		event := <-c
-		err := ws.WriteJSON(event)
+		if !ws.open {
+			return
+		}
+		event := <-ws.Channel
+		if ws == nil {
+			fmt.Println("Websocket was nil!")
+			return
+		}
+		err := ws.Websocket.WriteJSON(event)
 		if err != nil {
+			fmt.Println("Error in writeToWS loop!")
 			fmt.Println(err)
 			return
 		}
@@ -162,12 +200,19 @@ func (s *Server) WebSocket(w http.ResponseWriter, r *http.Request) {
 	}
 	// create channels
 	gameEventChan := make(chan game.GameEvent)
+	wsChannel := &WsChannel{
+		id:        s.channelCount,
+		open:      true,
+		Channel:   gameEventChan,
+		Websocket: conn,
+	}
+	s.channelCount++
 	// register channels
-	s.writeChannels = append(s.writeChannels, gameEventChan)
+	s.writeChannels = append(s.writeChannels, wsChannel)
 	// start reading from websocket
-	go s.readFromWS(conn)
+	go s.readFromWS(wsChannel)
 	// start writing to websocket
-	go s.writeToWS(conn, gameEventChan)
+	go s.writeToWS(wsChannel)
 }
 
 // gameLoop
@@ -184,7 +229,9 @@ func (s *Server) gameLoop() {
 		events := s.Update(delta)
 		for _, event := range events {
 			for _, c := range s.writeChannels {
-				c <- *event
+				if c.open {
+					c.Channel <- *event
+				}
 			}
 		}
 		time.Sleep(time.Second / 60)
