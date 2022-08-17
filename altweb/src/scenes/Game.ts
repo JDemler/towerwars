@@ -1,10 +1,8 @@
 import Phaser from 'phaser';
 import { Game } from '../data/game';
 import { connect, getGame, getMobTypes, getTowerTypes, joinGame, registerEvent } from '../api';
-import { drawTWMap } from '../data/twmap';
 import { TowerType, MobType } from '../data/gameConfig';
-import { drawTower } from '../data/tower';
-import { drawMob, Mob } from '../data/mob';
+import { GameField } from '../gameObjects/field';
 
 export default class GameScene extends Phaser.Scene {
   // properties
@@ -16,7 +14,7 @@ export default class GameScene extends Phaser.Scene {
   offsetX: number = 0;
   offsetY: number = 0;
   websocket: WebSocket | undefined = undefined;
-  mobs: Mob[] = [];
+  fields: GameField[] = [];
 
   constructor() {
     super('GameScene');
@@ -54,33 +52,13 @@ export default class GameScene extends Phaser.Scene {
         this.gameState = game;
         // draw fields    
         this.gameState.fields.forEach((field, i) => {
-          this.offsetX = field.id * 400;
-          // drawTWMap(field.twmap, this.buildTower(field.id), this);
-          this.drawBuyMobButtons(field.id);
+          var gameField = new GameField(this, field);
+          this.fields.push(gameField);
         });
       }
     }).catch(error => {
       console.log(error);
     })
-  }
-
-  buildTower(fieldId: number): (x: number, y: number) => void {
-    var towerType = this.towerTypes[0];
-    var ws = this.websocket;
-    return (x: number, y: number) => {
-      console.log("Build tower on field " + fieldId + " at " + x + "," + y);
-      if (ws) {
-        ws.send(JSON.stringify({
-          fieldId: fieldId,
-          eventType: "buildTower",
-          payload: JSON.stringify({
-            towerType: towerType.name,
-            x: x,
-            y: y
-          })
-        }));
-      }
-    }
   }
 
   setOffsetForField(fieldId: number): void {
@@ -89,34 +67,13 @@ export default class GameScene extends Phaser.Scene {
   }
 
   handleEvent(event: any): void {
-    if (event.type === "mobCreated") {
-      var mob = event.payload.mob;
-      this.setOffsetForField(event.payload.fieldId);
-      var gameObj = this.add.circle(mob.x + this.offsetX, mob.y + this.offsetY, 15, 0x000000);
-      mob.gameObj = this.physics.add.existing(gameObj);
-      this.physics.moveTo(mob.gameObj, mob.targetX + this.offsetX, mob.targetY + this.offsetY, mob.speed);
-
-      console.log(mob.gameObj);
-      this.mobs.push(mob);
-    } else if (event.type === "mobUpdate") {
-      var mob = event.payload.mob;
-      this.setOffsetForField(event.payload.fieldId);
-      for (var i = 0; i < this.mobs.length; i++) {
-        if (this.mobs[i].id === mob.id) {
-          this.mobs[i].x = mob.x;
-          this.mobs[i].y = mob.y;
-          this.mobs[i].gameObj.setPosition(mob.x + this.offsetX, mob.y + this.offsetY);
-          // Set movement towards targetx and targety
-          this.physics.moveTo(this.mobs[i].gameObj, mob.targetX + this.offsetX, mob.targetY + this.offsetY, mob.speed);
-        }
-      }
-    } else if (event.type === "mobDestroyed") {
-      for (var i = this.mobs.length - 1; i > 0; i--) {
-        if (this.mobs[i].id === event.payload.mobId) {
-          this.mobs[i].gameObj.destroy();
-          this.mobs.splice(i, 1);
-        }
-      }
+    this.setOffsetForField(event.payload.fieldId);
+    var field = this.fields.find(f => f.id == event.payload.fieldId);
+    if (field) {
+      field.handleEvent(event);
+    } else {
+      console.error("Field not found for event!");
+      console.error(event)
     }
   }
 
@@ -128,25 +85,6 @@ export default class GameScene extends Phaser.Scene {
   }
 
   drawBuyMobButtons(fieldId: number): void {
-    this.mobTypes.forEach((mobType, i) => {
-      this.add.text(100 + this.offsetX + (i * 100), 500, mobType.name, {
-        font: '48px Arial',
-      })
-        .setInteractive({ useHandCursor: true })
-        .on('pointerdown', () => {
-          registerEvent({
-            fieldId: fieldId,
-            eventType: "buyMob",
-            payload: JSON.stringify({
-              mobType: mobType.name,
-              targetFieldId: 1 - fieldId
-            })
-          })
-            .then(() => console.log("Mob bought"))
-            .catch(error => console.log(error));
-        }
-        );
-    }
-    );
+
   }
 }

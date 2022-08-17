@@ -11,9 +11,10 @@ const PlayingState = "Playing"
 const GameOverState = "GameOver"
 
 type Player struct {
-	Money  int
-	Income int
-	Lives  int
+	Id     int `json:"id"`
+	Money  int `json:"money"`
+	Income int `json:"income"`
+	Lives  int `json:"lives"`
 }
 
 type Game struct {
@@ -25,8 +26,9 @@ type Game struct {
 	config         *GameConfig `json:"-"`
 }
 
-func NewPlayer() *Player {
+func NewPlayer(id int) *Player {
 	return &Player{
+		Id:     id,
 		Money:  100,
 		Income: 10,
 		Lives:  30,
@@ -46,6 +48,7 @@ func NewGame() *Game {
 
 // Add Player to Game
 func (game *Game) AddPlayer(player *Player) {
+	player.Id = len(game.Fields)
 	game.Fields = append(game.Fields, NewField(len(game.Fields), player, game.config.TWMap()))
 }
 
@@ -69,6 +72,9 @@ func (game *Game) getFieldAt(id int) *Field {
 
 func (game *Game) HandleEvent(fieldEvent FieldEvent) ([]*GameEvent, error) {
 	event := fieldEvent.Unpack()
+	if event == nil {
+		return nil, fmt.Errorf("Invalid event")
+	}
 	targetField := game.getFieldAt(event.FieldId())
 	if targetField != nil {
 		return targetField.HandleEvent(event, game.Fields, game.config)
@@ -88,6 +94,14 @@ func (game *Game) Update(delta float64) []*GameEvent {
 	if game.IncomeCooldown == 0 {
 		for _, field := range game.Fields {
 			field.Payout()
+			// addPlayerUpdateEvent
+			events = append(events, &GameEvent{
+				Type: "playerUpdated",
+				Payload: PlayerUpdatedEvent{
+					FieldId: field.Id,
+					Player:  field.Player,
+				},
+			})
 		}
 		game.IncomeCooldown = 30
 	}

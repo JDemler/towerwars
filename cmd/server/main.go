@@ -42,7 +42,7 @@ func (s *Server) AddPlayer(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// add player to game
-	player := game.NewPlayer()
+	player := game.NewPlayer(0)
 	s.game.AddPlayer(player)
 
 	// return success
@@ -100,7 +100,10 @@ func (s *Server) readFromWS(ws *websocket.Conn) {
 		err := ws.ReadJSON(&event)
 		if err != nil {
 			fmt.Println(err)
+			fmt.Println("Closing readFromWS loop!")
+			return
 		}
+
 		// debug message
 		fmt.Println("Received event through ws")
 		fmt.Println(event)
@@ -114,7 +117,9 @@ func (s *Server) readFromWS(ws *websocket.Conn) {
 		// send events to all clients
 		for _, event := range events {
 			for _, c := range s.writeChannels {
-				c <- *event
+				if c != nil {
+					c <- *event
+				}
 			}
 		}
 	}

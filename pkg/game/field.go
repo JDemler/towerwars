@@ -48,6 +48,7 @@ func (field *Field) HandleEvent(event Event, otherFields []*Field, gameConfig *G
 
 func (field *Field) Update(delta float64) []*GameEvent {
 	events := []*GameEvent{}
+	playerUpdated := false
 	// Update Towers
 	for i := 0; i < len(field.Towers); i++ {
 		bullets := field.Towers[i].Update(delta, field.Mobs, field.getNextBulletId)
@@ -89,6 +90,7 @@ func (field *Field) Update(delta float64) []*GameEvent {
 		// Check if mobs health is 0 or less, remove mob from game and payout player money
 		if field.Mobs[i].Health <= 0 {
 			field.Player.Money += field.Mobs[i].Reward
+			playerUpdated = true
 			// Create MobDestroyedEvent
 			events = append(events, &GameEvent{
 				Type: "mobDestroyed",
@@ -101,6 +103,7 @@ func (field *Field) Update(delta float64) []*GameEvent {
 		} else if field.Mobs[i].Reached {
 			// Check if mob has reached the end of the map, remove mob from game and reduce liver of player
 			field.Player.Lives -= 1
+			playerUpdated = true
 			// Create MobDestroyedEvent
 			events = append(events, &GameEvent{
 				Type: "mobDestroyed",
@@ -111,6 +114,16 @@ func (field *Field) Update(delta float64) []*GameEvent {
 			})
 			field.Mobs = append(field.Mobs[:i], field.Mobs[i+1:]...)
 		}
+	}
+	// If player has been updated, create PlayerUpdatedEvent
+	if playerUpdated {
+		events = append(events, &GameEvent{
+			Type: "playerUpdated",
+			Payload: PlayerUpdatedEvent{
+				FieldId: field.Id,
+				Player:  field.Player,
+			},
+		})
 	}
 	return events
 }

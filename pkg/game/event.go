@@ -45,6 +45,11 @@ type BulletDestroyedEvent struct {
 	BulletId int `json:"bulletId"`
 }
 
+type PlayerUpdatedEvent struct {
+	FieldId int     `json:"fieldId"`
+	Player  *Player `json:"player"`
+}
+
 type FieldEvent struct {
 	FieldId int    `json:"fieldId"`
 	Type    string `json:"eventType"`
@@ -109,12 +114,20 @@ func (e BuildEvent) TryExecute(sourceField *Field, targetFields []*Field, gc *Ga
 	//Occupy tower position in twmap
 	sourceField.TWMap.Occupy(e.X, e.Y)
 	sourceField.Towers = append(sourceField.Towers, tower)
+	sourceField.Player.Money -= towerType.Cost
 	return []*GameEvent{
 		{
 			Type: "towerCreated",
 			Payload: TowerCreatedEvent{
 				FieldId: sourceField.Id,
 				Tower:   tower,
+			},
+		},
+		{
+			Type: "playerUpdated",
+			Payload: PlayerUpdatedEvent{
+				FieldId: sourceField.Id,
+				Player:  sourceField.Player,
 			},
 		},
 	}, nil
@@ -190,6 +203,14 @@ func (e BuyMobEvent) TryExecute(sourceField *Field, targetFields []*Field, confi
 			},
 		})
 	}
+	// Send playerUpdated event
+	gameEvents = append(gameEvents, &GameEvent{
+		Type: "playerUpdated",
+		Payload: PlayerUpdatedEvent{
+			FieldId: sourceField.Id,
+			Player:  sourceField.Player,
+		},
+	})
 	return gameEvents, nil
 }
 

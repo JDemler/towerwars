@@ -38,7 +38,7 @@ func (m *MobType) Mob(x float64, y float64, id int) *Mob {
 // Standard game config
 var StandardGameConfig = GameConfig{
 	TowerTypes: []*TowerType{
-		{Name: "Arrow", Damage: 1, Range: 300, FireRate: 0.2, Cost: 5, BulletSpeed: 150},
+		{Name: "Arrow", Damage: 1, Range: 300, FireRate: 0.4, Cost: 5, BulletSpeed: 180},
 		{Name: "Siege", Damage: 5, Range: 150, FireRate: 0.7, Cost: 15, BulletSpeed: 75},
 	},
 	MobTypes: []*MobType{

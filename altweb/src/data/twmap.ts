@@ -30,7 +30,6 @@ function drawTile(tile: Tile, onClick: (x: number, y: number) => void, scene: Ga
     if ((tile.x + tile.y) % 2 === 0) {
         color = 0xDDDDDD;
     }
-    console.log(tile.x, tile.y);
 
     scene.add.rectangle(tile.x * TileSize + TileSize / 2 + scene.offsetX, tile.y * TileSize + TileSize / 2 + scene.offsetY, TileSize, TileSize, color)
         .setInteractive()
