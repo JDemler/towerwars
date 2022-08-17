@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { Game } from '../data/game';
-import { getGame, getMobTypes, getTowerTypes, joinGame } from '../api';
+import { connect, getGame, getMobTypes, getTowerTypes, joinGame } from '../api';
 import { MobType, TowerType } from '../data/gameConfig';
 
 export default class Demo extends Phaser.Scene {
@@ -13,7 +13,7 @@ export default class Demo extends Phaser.Scene {
   towerTypes: TowerType[] = []
   mobTypes: MobType[] = []
   playerId: number = 0;
-
+  websocket: WebSocket | undefined;
   constructor() {
     super('LobbyScene');
   }
@@ -48,6 +48,14 @@ export default class Demo extends Phaser.Scene {
   }
 
   create() {
+    connect().then(ws => {
+      this.websocket = ws;
+      this.websocket.onmessage = (event) => {
+        console.log(event.data);
+        this.handleEvent(JSON.parse(event.data));
+      }
+    });
+
     // Join game button
     const joinGameButton = this.add.text(400, 300, 'Join Game', {
       font: '48px Arial',
@@ -55,6 +63,17 @@ export default class Demo extends Phaser.Scene {
     })
       .setInteractive({ useHandCursor: true })
       .on('pointerdown', this.startGame)
+  }
+
+  handleEvent(event: any) {
+    switch (event.type) {
+      case "playerAdded":
+        console.log("Player joined: " + event.payload.player.id);
+        break;
+      case "gameStateChanged":
+        this.gameState = event.payload.gameState;
+        break;
+    }
   }
 
   startGame() {

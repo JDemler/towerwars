@@ -63,7 +63,10 @@ func (game *Game) Start() {
 	}
 	game.State = PlayingState
 	game.events = append(game.events, &GameEvent{
-		Type: "gameStarted",
+		Type: "gameStateChanged",
+		Payload: GameStateChangedEvent{
+			GameState: game.State,
+		},
 	})
 }
 

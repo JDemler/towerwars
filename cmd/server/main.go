@@ -176,8 +176,10 @@ func (s *Server) gameLoop() {
 	for {
 		delta := float64(time.Now().Sub(last).Milliseconds()) / 1000.0
 		last = time.Now()
-		if len(s.game.Fields) > 1 {
+		if s.game.State == game.WaitingState && len(s.game.Fields) > 1 {
 			s.game.Start()
+			// log that game started
+			fmt.Println("Game started")
 		}
 		events := s.Update(delta)
 		for _, event := range events {

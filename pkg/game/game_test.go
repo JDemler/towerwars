@@ -65,12 +65,17 @@ func TestGameStartsWhenTwoPlayersJoin(t *testing.T) {
 		t.Errorf("Expected game to be in playing state, got %s", game.State)
 	}
 	// Check that gameStarted event was sent
-	gameStartedEvent := game.Update(0)
-	if len(gameStartedEvent) != 1 { // two player joined, one game started
-		t.Errorf("Expected 1 event, got %d", len(gameStartedEvent))
+	gameStateChangedEvent := game.Update(0)
+	if len(gameStateChangedEvent) != 1 { // two player joined, one game started
+		t.Errorf("Expected 1 event, got %d", len(gameStateChangedEvent))
 	}
-	if gameStartedEvent[0].Type != "gameStarted" {
-		t.Errorf("Expected gameStarted event, got %s", gameStartedEvent[0].Type)
+	if gameStateChangedEvent[0].Type != "gameStateChanged" {
+		t.Errorf("Expected gameStateChanged event, got %s", gameStateChangedEvent[0].Type)
+	}
+	// Check that events payload can be casted to GameStateChangedEvent
+	gameStateChangedEventPayload := gameStateChangedEvent[0].Payload.(GameStateChangedEvent)
+	if gameStateChangedEventPayload.GameState != PlayingState {
+		t.Errorf("Expected game state to be playing, got %s", gameStateChangedEventPayload.GameState)
 	}
 }
 

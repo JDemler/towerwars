@@ -14,7 +14,9 @@ type PlayerJoinedEvent struct {
 	Player *Player `json:"player"`
 }
 
-type GameStartedEvent struct{}
+type GameStateChangedEvent struct {
+	GameState string `json:"gameState"`
+}
 
 type MobCreatedEvent struct {
 	FieldId int  `json:"fieldId"`
