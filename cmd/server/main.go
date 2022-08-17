@@ -42,8 +42,7 @@ func (s *Server) AddPlayer(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// add player to game
-	player := game.NewPlayer(0)
-	s.game.AddPlayer(player)
+	s.game.AddPlayer()
 
 	// return success
 	w.WriteHeader(http.StatusOK)
