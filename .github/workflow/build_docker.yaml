@@ -1,0 +1,23 @@
+name : Build SocialMediaWars Docker Image and Push it to ACR
+
+on:
+  push:
+    branches: [master]
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2  
+
+      - uses: azure/docker-login@v1
+        with:
+          login-server: ${{ secrets.ACR_LOGIN_SERVER }}
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
+      
+      - run: |
+          docker build -f Dockerfile.server -t ${{ secrets.ACR_LOGIN_SERVER }}/socialmediawars:${{ github.sha }} .
+          docker push ${{ secrets.ACR_LOGIN_SERVER }}/socialmediawars:${{ github.sha }}

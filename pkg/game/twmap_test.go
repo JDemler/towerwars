@@ -17,6 +17,19 @@ func simpleTWMap() *TWMap {
 	}
 }
 
+// simple long map for testing
+func simpleLongTWMap() *TWMap {
+	return &TWMap{
+		XStart: 0,
+		YStart: 0,
+		XEnd:   0,
+		YEnd:   9,
+		Width:  2,
+		Height: 10,
+		Tiles:  makeTiles(2, 10),
+	}
+}
+
 // Test that tile is occupied after being occupied
 func TestTileIsOccupied(t *testing.T) {
 	simpleMap := simpleTWMap()
@@ -65,4 +78,34 @@ func TestCurrentPath(t *testing.T) {
 	if simpleMap.currentPath[2].x != 2 || simpleMap.currentPath[2].y != 2 {
 		t.Error("Third tile in current path should be 2,2")
 	}
+}
+
+// Test that occupying a tile in the path does not lead mobs to go to 0,0 again
+func TestOccupyingTileInPath(t *testing.T) {
+	simpleMap := simpleLongTWMap()
+	simpleMap.calculatePath()
+	if len(simpleMap.currentPath) != 10 {
+		t.Errorf("Current path should be length 10, but is length %d", len(simpleMap.currentPath))
+	}
+	mob := &Mob{
+		X: 0,
+		Y: 0,
+	}
+	mob.calcDirection(simpleMap)
+	// Check that mob is moving to 0,1
+	if mob.TargetX != (TileSize/2) || mob.TargetY != (TileSize+TileSize/2) {
+		t.Error("Mob should be moving to 1,1 but is moving to", mob.TargetX, mob.TargetY)
+	}
+	mob.X = TileSize / 2
+	mob.Y = TileSize + TileSize/2
+	mob.calcDirection(simpleMap)
+	// Occupy tile 1,1
+	simpleMap.Occupy(0, 2)
+	// Check that mob is not moving towards 1,2
+	mob.calcDirection(simpleMap)
+	if mob.TargetX != (TileSize+TileSize/2) && mob.TargetY != (TileSize*2+TileSize/2) {
+		t.Error("Mob should not be moving to 0,0 but is moving to", mob.TargetX, mob.TargetY)
+	}
+	t.Errorf("Mob should be moving to 2,2 but is moving to %f,%f", mob.TargetX, mob.TargetY)
+
 }
