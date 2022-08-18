@@ -2,7 +2,7 @@ import { createContext, PropsWithChildren, useContext, useEffect, useMemo, useRe
 import GameState from '../models/GameState';
 import React from 'react';
 import ApiClient from '../lib/clients/ApiClient';
-import { PlayerModel, FieldModel, TowerModel, MobModel } from '../models';
+import { PlayerModel, FieldModel, TowerModel, MobModel, BulletModel } from '../models';
 import WebSocketClient from '../lib/clients/WebSocketClient';
 import GridCoordinate from '../lib/GridCoordinate';
 import { BuildTurretEvent, BuyMobEvent } from '../lib/FieldEvent';
@@ -24,6 +24,10 @@ type Action =
     | { type: "add-mob"; fieldId: number, mob: MobModel }
     | { type: "update-mob"; fieldId: number, mob: MobModel }
     | { type: "delete-mob"; fieldId: number, mobId: number }
+    // Bullet actions
+    | { type: "add-bullet"; fieldId: number, bullet: BulletModel }
+    | { type: "update-bullet"; fieldId: number, bullet: BulletModel }
+    | { type: "delete-bullet"; fieldId: number, bulletId: number }
 
 function reducer(state: GameState | undefined, action: Action): GameState | undefined {
 
@@ -100,6 +104,26 @@ function reducer(state: GameState | undefined, action: Action): GameState | unde
             if (updatedField === undefined) return;
 
             updatedField.mobs = updatedField.mobs.filter(mob => mob.id !== action.mobId);
+
+            return newState;
+
+        // Bullet actions
+        case 'add-bullet':
+            if (updatedField === undefined) return newState;
+
+            updatedField.bullets.push(action.bullet);
+
+            return newState;
+        case 'update-bullet':
+            if (updatedField === undefined) return newState;
+
+            updatedField.bullets = [...updatedField.bullets.filter(bullet => bullet.id !== action.bullet.id), action.bullet];
+
+            return newState;
+        case 'delete-bullet':
+            if (updatedField === undefined) return;
+
+            updatedField.bullets = updatedField.bullets.filter(bullet => bullet.id !== action.bulletId);
 
             return newState;
 
@@ -235,8 +259,14 @@ function handleWebSocketEvent(event: any, dispatch: React.Dispatch<Action>) {
         case "mobDestroyed":
             dispatch({ type: 'delete-mob', fieldId, mobId: event.payload.mobId });
             break;
+        case "bulletCreated":
+            dispatch({ type: 'add-bullet', fieldId, bullet: BulletModel.fromJSON(event.payload.bullet) });
+            break;
+        case "bulletDestroyed":
+            dispatch({ type: 'delete-bullet', fieldId, bulletId: event.payload.bulletId });
+            break;
         default:
-            console.log("Unknown event type:", event.type);
+            console.log("Unknown event type:", event.type, event);
     }
 }
 
