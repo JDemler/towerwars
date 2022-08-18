@@ -1,6 +1,5 @@
 import Konva from 'konva';
-import { RectConfig } from 'konva/lib/shapes/Rect';
-import { KonvaNodeComponent, KonvaNodeEvents, Rect } from 'react-konva';
+import { KonvaNodeEvents, Rect } from 'react-konva';
 import GridCoordinate from '../../lib/GridCoordinate';
 import { GridSize } from '../../lib/GridSize';
 
