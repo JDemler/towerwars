@@ -1,7 +1,7 @@
-import ApiClient from "../../lib/clients/ApiClient";
 import { useGameState } from '../../hooks/useGameState';
 
 export interface LobbySceneProps {
+
 }
 
 const LobbyScene: React.FC<LobbySceneProps> = () => {

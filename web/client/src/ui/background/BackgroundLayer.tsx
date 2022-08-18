@@ -9,9 +9,6 @@ export interface BackgroundProps {
     onTileClick?: (coordinate: GridCoordinate) => void;
 }
 
-
-// React component that draws a single 1x1 rect based on the given GridCoordinate. 
-// The fill color is determined by the coordinate in a chessboard pattern.
 const BackgroundLayer: React.FC<BackgroundProps> = ({ width, height, onTileClick }) => {
     
     // Return BackgroundTile for each tile in the grid based on the width and height of the background

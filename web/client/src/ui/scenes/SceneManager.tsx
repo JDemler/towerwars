@@ -5,8 +5,6 @@ import GameScene from './GameScene';
 const SceneManager: React.FC = () => {
     const gameState = useGameStateOpt();
 
-    // console.log('GameState: ', gameState, gameState?.state);
-
     if (gameState?.gameState === undefined) {
         return <div>Loading...</div>;
     }

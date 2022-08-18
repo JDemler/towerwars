@@ -1,4 +1,3 @@
-import GridCoordinate from "../../lib/GridCoordinate";
 import { FieldModelProvider } from "../../hooks/useFieldModel";
 import { useGameState } from "../../hooks/useGameState";
 import Field from "../stages/Field";
@@ -6,8 +5,6 @@ import Field from "../stages/Field";
 export interface GameSceneProps {
 }
 
-// React component that draws a single 1x1 rect based on the given GridCoordinate. 
-// The fill color is determined by the coordinate in a chessboard pattern.
 const GameScene: React.FC<GameSceneProps> = () => {
     const { gameState, buyMob, buildTurret } = useGameState();
 
@@ -15,36 +12,6 @@ const GameScene: React.FC<GameSceneProps> = () => {
 
     if (!gameState) 
       return <></>;
-  
-    // GameLoop
-    // TODO: Use blocking call to getGameState() to avoid rendering while waiting for response.
-    // useEffect(() => {
-    //   const interval = setInterval(() => {
-    //     ApiClient.getGameState()
-    //       .then(gameState => {
-    //         // console.log(gameState)
-    //         setGameState(gameState);
-    //       }).catch(err => {
-    //         console.error('Error while fetching gameState', err);
-    //       })
-    //   }, 300);
-  
-    //   return () => clearInterval(interval);
-    // }, []);
-  
-    // const buyMob = () => {
-    //   if (playerId === undefined || enemyId === undefined) {
-    //     return console.error('Not a player');
-    //   }
-    //   ApiClient.registerEvent(new BuyMobEvent(playerId, enemyId, 'Circle'));
-    // }
-  
-    // const buildTurret = (coordinate: GridCoordinate) => {
-    //   if (playerId === undefined) {
-    //     return console.error('Not a player');
-    //   }
-    //   ApiClient.registerEvent(new BuildTurretEvent(playerId, coordinate.x, coordinate.y, 'Arrow'));
-    // }
 
     return (
         <div style={{ height: '100vh' }}>

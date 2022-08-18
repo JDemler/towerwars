@@ -6,8 +6,6 @@ export interface MobProps {
     coordinate: GridCoordinate;
 }
 
-// React component that draws a single 1x1 rect based on the given GridCoordinate. 
-// The fill color is determined by the coordinate in a chessboard pattern.
 const Mob: React.FC<MobProps> = ({ coordinate }) => {
     const size = new GridSize(0.5, 0.5);
 

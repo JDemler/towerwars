@@ -6,9 +6,6 @@ export interface TurretProps {
     coordinate: GridCoordinate;
 }
 
-
-// React component that draws a single 1x1 rect based on the given GridCoordinate. 
-// The fill color is determined by the coordinate in a chessboard pattern.
 const Turret: React.FC<TurretProps> = ({ coordinate }) => {
     const size = new GridSize(0.8, 0.8);
     

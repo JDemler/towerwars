@@ -9,7 +9,6 @@ export interface BackgroundTileProps extends KonvaRect {
     coordinate: GridCoordinate;
 }
 
-
 // React component that draws a single 1x1 rect based on the given GridCoordinate. 
 // The fill color is determined by the coordinate in a chessboard pattern.
 const BackgroundTile: React.FC<BackgroundTileProps> = ({ coordinate, ...props }) => {

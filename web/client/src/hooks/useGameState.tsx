@@ -1,4 +1,4 @@
-import { createContext, PropsWithChildren, useContext, useEffect, useMemo, useReducer, useState } from 'react';
+import { createContext, PropsWithChildren, useContext, useEffect, useReducer, useState } from 'react';
 import GameState from '../models/GameState';
 import React from 'react';
 import ApiClient from '../lib/clients/ApiClient';
@@ -34,7 +34,7 @@ function reducer(state: GameState | undefined, action: Action): GameState | unde
     console.log("<-", action.type, action);
 
     const newState = structuredClone(state) as GameState | undefined;
-    const updatedField = (action as any).fieldId != undefined && newState !== undefined
+    const updatedField = (action as any).fieldId !== undefined && newState !== undefined
         ? newState.fields.find(field => field.id === (action as any).fieldId)
         : undefined;
 
