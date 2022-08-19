@@ -1,10 +1,14 @@
 import { FieldEvent } from '../FieldEvent';
+import { isAbsoluteUrl } from '../helpers';
 
 const getWebsocketUrl = () => {
-    const webSocketUrl = process.env.REACT_APP_WS_URL; // `ws://localhost:8080/`;
+    let webSocketUrl = process.env.REACT_APP_WS_URL; // `ws://localhost:8080/`;
 
     if (webSocketUrl === undefined)
         throw new Error("WebSocket URL is not defined");
+
+    if (!isAbsoluteUrl(webSocketUrl))
+        webSocketUrl = `ws://${window.location.host}${webSocketUrl}`;
 
     return webSocketUrl;
 }

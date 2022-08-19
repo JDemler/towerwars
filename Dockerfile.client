@@ -2,6 +2,8 @@
 FROM node:18.7.0-alpine as build
 WORKDIR /app
 ENV PATH /app/node_modules/.bin:$PATH
+ENV REACT_APP_API_URL /api/
+ENV REACT_APP_WS_URL /api/ws
 COPY web/client/package.json ./
 COPY web/client/package-lock.json ./
 RUN npm ci --silent

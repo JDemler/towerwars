@@ -1,11 +1,16 @@
 import GameState from "../../models/GameState";
 import { FieldEvent } from '../FieldEvent';
+import { isAbsoluteUrl } from '../helpers';
 
 // const ServerURL = "127.0.0.1:8080";
 const getApiRoot = () => {
-    const url = process.env.REACT_APP_API_URL;
+    let url = process.env.REACT_APP_API_URL;
+
     if (url === undefined)
         throw new Error("API URL is not defined");
+
+    if (!isAbsoluteUrl(url))
+        url = `${window.location.protocol}//${window.location.host}${url}`;
 
     return url;
 } 
