@@ -20,10 +20,10 @@ jobs:
 
       - name: Build the Docker for server code      
         run: |
-          docker build -f Dockerfile.server -t ${{ secrets.ACR_LOGIN_SERVER }}/socialmediawars:${{ github.sha }} .
+          docker build -f Dockerfile.server -t ${{ secrets.ACR_LOGIN_SERVER }}/socialmediawars:${{ github.sha }} -t {{ secrets.ACR_LOGIN_SERVER }}/socialmediawars:latest .
           docker push ${{ secrets.ACR_LOGIN_SERVER }}/socialmediawars:${{ github.sha }}
 
       - name: Build the Docker for client code
         run: |
-          docker build -f Dockerfile.client -t ${{ secrets.ACR_LOGIN_SERVER }}/socialmediawars-client:${{ github.sha }} .
+          docker build -f Dockerfile.client -t ${{ secrets.ACR_LOGIN_SERVER }}/socialmediawars-client:${{ github.sha }} -t {{ secrets.ACR_LOGIN_SERVER }}/socialmediawars-client:latest .
           docker push ${{ secrets.ACR_LOGIN_SERVER }}/socialmediawars-client:${{ github.sha }}
