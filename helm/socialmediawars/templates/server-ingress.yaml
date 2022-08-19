@@ -13,6 +13,6 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: test5-socialmediawars
+            name: socialmediawars-server
             port:
               number: 80
