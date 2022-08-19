@@ -15,7 +15,7 @@ client:
 
 altclient:
   image:
-    repository: socialmaulwars.azurecr.io/socialmediawars-client
+    repository: socialmaulwars.azurecr.io/socialmediawars-altclient
     pullPolicy: Always    
     tag: "latest"
   service:
