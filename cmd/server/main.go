@@ -220,6 +220,20 @@ func (s *Server) WebSocket(w http.ResponseWriter, r *http.Request) {
 	go s.writeToWS(wsChannel)
 }
 
+// Reset
+func (s *Server) reset() {
+	// Wait for five seconds
+	time.Sleep(5 * time.Second)
+	s.game = game.NewGame()
+	// Close all channels
+	for _, c := range s.writeChannels {
+		c.Close()
+	}
+
+	// Start new game
+	s.gameLoop()
+}
+
 // gameLoop
 func (s *Server) gameLoop() {
 	last := time.Now()
@@ -240,6 +254,10 @@ func (s *Server) gameLoop() {
 			}
 		}
 		time.Sleep(time.Second / 60)
+		if s.game.State == game.GameOverState {
+			go s.reset()
+			return
+		}
 	}
 }
 

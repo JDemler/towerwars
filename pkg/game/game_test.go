@@ -159,3 +159,26 @@ func TestBuyMob(t *testing.T) {
 		t.Errorf("Expected field to have 1 mob, got %d", len(game.Fields[1].Mobs))
 	}
 }
+
+// When game is over gameStateChanged event should be sent
+func TestGameOverEvent(t *testing.T) {
+	game := prepareGame()
+	game.Start()
+	game.Update(0)
+	// Set live of player 0 to 0
+	game.Fields[0].Player.Lives = 0
+	// Check that game over event was sent
+	gameStateChangedEvent := game.Update(0)
+	//debuglog gameStateChangedEvent
+	if len(gameStateChangedEvent) != 1 { // one game over
+		t.Errorf("Expected 1 event, got %d", len(gameStateChangedEvent))
+	}
+	if gameStateChangedEvent[0].Type != "gameStateChanged" {
+		t.Errorf("Expected gameStateChanged event, got %s", gameStateChangedEvent[0].Type)
+	}
+	// Check that events payload can be casted to GameStateChangedEvent
+	gameStateChangedEventPayload := gameStateChangedEvent[0].Payload.(GameStateChangedEvent)
+	if gameStateChangedEventPayload.GameState != GameOverState {
+		t.Errorf("Expected game state to be game over, got %s", gameStateChangedEventPayload.GameState)
+	}
+}

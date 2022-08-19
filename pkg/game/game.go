@@ -121,6 +121,25 @@ func (game *Game) Update(delta float64) []*GameEvent {
 	for i := len(game.Fields) - 1; i >= 0; i-- {
 		// Check if player is still alive
 		if game.Fields[i].Player.Lives <= 0 {
+			// for all mobs and bullets on that field send destroy events
+			for _, mob := range game.Fields[i].Mobs {
+				events = append(events, &GameEvent{
+					Type: "mobDestroyed",
+					Payload: MobDestroyedEvent{
+						FieldId: game.Fields[i].Id,
+						MobId:   mob.Id,
+					},
+				})
+			}
+			for _, bullet := range game.Fields[i].Bullets {
+				events = append(events, &GameEvent{
+					Type: "bulletDestroyed",
+					Payload: BulletDestroyedEvent{
+						FieldId:  game.Fields[i].Id,
+						BulletId: bullet.Id,
+					},
+				})
+			}
 			game.Fields = append(game.Fields[:i], game.Fields[i+1:]...)
 			continue
 		}
@@ -131,6 +150,35 @@ func (game *Game) Update(delta float64) []*GameEvent {
 	// Set game over if there is only one player left
 	if len(game.Fields) <= 1 {
 		game.State = GameOverState
+		events = append(events, &GameEvent{
+			Type: "gameStateChanged",
+			Payload: GameStateChangedEvent{
+				GameState: game.State,
+			},
+		})
+		// for all mobs and bullets on that field send destroy events
+		for _, mob := range game.Fields[0].Mobs {
+			events = append(events, &GameEvent{
+				Type: "mobDestroyed",
+				Payload: MobDestroyedEvent{
+					FieldId: game.Fields[0].Id,
+					MobId:   mob.Id,
+				},
+			})
+		}
+		for _, bullet := range game.Fields[0].Bullets {
+			events = append(events, &GameEvent{
+				Type: "bulletDestroyed",
+				Payload: BulletDestroyedEvent{
+					FieldId:  game.Fields[0].Id,
+					BulletId: bullet.Id,
+				},
+			})
+		}
+	}
+	// debug log event len
+	if len(events) > 0 {
+		fmt.Println(len(events))
 	}
 	return events
 }
