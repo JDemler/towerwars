@@ -15,7 +15,7 @@ export default class GameScene extends Phaser.Scene {
   offsetY: number = 0;
   websocket: WebSocket | undefined = undefined;
   fields: GameField[] = [];
-
+  fpsLabel: Phaser.GameObjects.Text | undefined = undefined;
   constructor() {
     super('GameScene');
     this.gameState = {
@@ -23,6 +23,7 @@ export default class GameScene extends Phaser.Scene {
       income_cooldown: 0,
       state: "waiting"
     };
+
   }
 
   init(data: { towerTypes: TowerType[], mobTypes: MobType[], playerId: number }): void {
@@ -38,6 +39,7 @@ export default class GameScene extends Phaser.Scene {
   }
 
   create() {
+    this.fpsLabel = this.add.text(0, 560, "FPS: " + this.game.loop.actualFps);
     connect().then(ws => {
       this.websocket = ws;
       this.websocket.onmessage = (event) => {
@@ -68,23 +70,29 @@ export default class GameScene extends Phaser.Scene {
 
   handleEvent(event: any): void {
     this.setOffsetForField(event.payload.fieldId);
-    var field = this.fields.find(f => f.id == event.payload.fieldId);
-    if (field) {
-      field.handleEvent(event);
+    if (event.payload.fieldId !== undefined) {
+      var field = this.fields.find(f => f.id == event.payload.fieldId);
+      if (field) {
+        field.handleEvent(event);
+      } else {
+        console.error("Field not found for event!");
+        console.error(event)
+      }
     } else {
-      console.error("Field not found for event!");
-      console.error(event)
+      switch (event.type) {
+        case "gameStateChanged":
+          this.gameState.state = event.payload.gameState;
+          break;
+      }
     }
   }
 
 
   update(time: number, delta: number): void {
+    this.fpsLabel?.setText("FPS: " + this.game.loop.actualFps);
     if (!this.serverAlive) {
       return;
     }
   }
 
-  drawBuyMobButtons(fieldId: number): void {
-
-  }
 }
