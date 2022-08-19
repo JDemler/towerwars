@@ -1,15 +1,20 @@
 import { Circle } from 'react-konva';
-import GridCoordinate from '../../lib/GridCoordinate';
 import { GridSize } from '../../lib/GridSize';
+import MobModel from '../../models/MobModel';
+import useTransition from '../../hooks/useTransition';
 
 export interface MobProps {
-    coordinate: GridCoordinate;
+    model: MobModel;
 }
 
-const Mob: React.FC<MobProps> = ({ coordinate }) => {
+const Mob: React.FC<MobProps> = ({ model }) => {
     const size = new GridSize(0.5, 0.5);
+    
+    const { coordinate, targetCoordinate, speed } = model;
 
-    return <Circle x={coordinate.tileCenterX} y={coordinate.tileCenterY} width={size.tileWidth} height={size.tileHeight} fill="blue" />;
+    const currentCoordinate = useTransition(coordinate, targetCoordinate, speed);
+
+    return <Circle x={currentCoordinate.tileX} y={currentCoordinate.tileY} width={size.tileWidth} height={size.tileHeight} fill="blue" />;
 }
 
 export default Mob;

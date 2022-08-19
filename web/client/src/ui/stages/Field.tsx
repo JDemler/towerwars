@@ -18,13 +18,13 @@ const Field: React.FC<FieldProps> = ({ onTileClick }) => {
         <BackgroundLayer width={field.map.size.width} height={field.map.size.height} onTileClick={onTileClick} />
         <Layer>
             {field.towers.map(tower => 
-                <Turret key={`${tower.coordinate.x},${tower.coordinate.y}`} coordinate={tower.coordinate} />)
+                <Turret key={tower.id ?? `${tower.coordinate.x},${tower.coordinate.y}`} model={tower} />)
             }
-            {field.mobs.map((mob, i) => 
-                <Mob key={i} coordinate={mob.coordinate} />)
+            {field.mobs.map((mob) => 
+                <Mob key={mob.id} model={mob} />)
             }
-            {field.bullets.map((bullet, i) => 
-                <Bullet key={i} coordinate={bullet.coordinate} />)
+            {field.bullets.map((bullet) => 
+                <Bullet key={bullet.id} model={bullet} />)
             }
         </Layer>
       </Stage>
