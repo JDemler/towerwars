@@ -38,22 +38,23 @@ func NewGame() *Game {
 	}
 }
 
-// Add Player to Game
-func (game *Game) AddPlayer() {
+// Add Player to Game. Return its key
+func (game *Game) AddPlayer() string {
 	player := &Player{
 		Id:     len(game.Fields),
 		Money:  game.config.StartStats.Money,
 		Income: game.config.StartStats.Income,
 		Lives:  game.config.StartStats.Lives,
 	}
-	game.Fields = append(game.Fields, NewField(len(game.Fields), player, game.config.TWMap()))
+	field := NewField(len(game.Fields), player, game.config.TWMap())
+	game.Fields = append(game.Fields, field)
 	game.events = append(game.events, &GameEvent{
 		Type: "playerJoined",
 		Payload: PlayerJoinedEvent{
 			Player: player,
 		},
 	})
-
+	return field.Key
 }
 
 // Start game if there are more than two players
@@ -87,6 +88,12 @@ func (game *Game) HandleEvent(fieldEvent FieldEvent) ([]*GameEvent, error) {
 	}
 	targetField := game.getFieldAt(event.FieldId())
 	if targetField != nil {
+		// Check that event.key and field.key match
+		if fieldEvent.Key != targetField.Key {
+			// Currently only log a message. In the future return an error to the client
+			fmt.Printf("Invalid key for field %d. Expected %s, got %s", event.FieldId(), targetField.Key, fieldEvent.Key)
+			//return nil, fmt.Errorf("Invalid key! Player unauthorized")
+		}
 		return targetField.HandleEvent(event, game.Fields, game.config)
 	}
 	return []*GameEvent{}, fmt.Errorf("Field not found")

@@ -46,6 +46,12 @@ func (s *Server) GetGameState(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(s.game)
 }
 
+// added player struct
+type AddedPlayer struct {
+	Key     string `json:"key"`
+	FieldId int    `json:"fieldId"`
+}
+
 func (s *Server) AddPlayer(w http.ResponseWriter, r *http.Request) {
 	// Check if game is still in waiting state
 	if s.game.State != game.WaitingState {
@@ -53,14 +59,13 @@ func (s *Server) AddPlayer(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-
-	// add player to game
-	s.game.AddPlayer()
-
+	// add player to game and get its key
+	key := s.game.AddPlayer()
+	fieldId := len(s.game.Fields) - 1
 	// return success
 	w.WriteHeader(http.StatusOK)
 	// return player id
-	json.NewEncoder(w).Encode(len(s.game.Fields) - 1)
+	json.NewEncoder(w).Encode(AddedPlayer{Key: key, FieldId: fieldId})
 
 	//log player joined
 	fmt.Println("Player joined")

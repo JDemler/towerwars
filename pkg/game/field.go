@@ -1,9 +1,14 @@
 package game
 
-import "fmt"
+import (
+	"fmt"
+	"math/rand"
+	"time"
+)
 
 type Field struct {
 	Id            int       `json:"id"`
+	Key           string    `json:"-"`
 	Player        *Player   `json:"player"`
 	TWMap         *TWMap    `json:"twmap"`
 	Mobs          []*Mob    `json:"mobs"`
@@ -13,9 +18,19 @@ type Field struct {
 	bulletCounter int       `json:"-"` // counter for bullet ids
 }
 
+func randomString(length int) string {
+	rand.Seed(time.Now().UnixNano())
+	b := make([]byte, length)
+	rand.Read(b)
+	return fmt.Sprintf("%x", b)[:length]
+}
+
 func NewField(id int, player *Player, twmap *TWMap) *Field {
+	// Generate a random key for the field
+	key := randomString(16)
 	return &Field{
 		Id:            id,
+		Key:           key,
 		Player:        player,
 		TWMap:         twmap,
 		Mobs:          []*Mob{},

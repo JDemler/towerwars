@@ -60,6 +60,7 @@ type PlayerUpdatedEvent struct {
 
 type FieldEvent struct {
 	FieldId int    `json:"fieldId"`
+	Key     string `json:"key"`
 	Type    string `json:"eventType"`
 	Payload string `json:"payload"`
 }

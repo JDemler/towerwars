@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build --base=/altclient/",
     "serve": "vite preview"
   },
   "repository": {
