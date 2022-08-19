@@ -1,5 +1,14 @@
 import { FieldEvent } from '../FieldEvent';
 
+const getWebsocketUrl = () => {
+    const webSocketUrl = process.env.REACT_APP_WS_URL; // `ws://localhost:8080/`;
+
+    if (webSocketUrl === undefined)
+        throw new Error("WebSocket URL is not defined");
+
+    return webSocketUrl;
+}
+
 export default class WebSocketClient {
     webSocket: WebSocket;
 
@@ -8,7 +17,7 @@ export default class WebSocketClient {
     }
 
     connect(): WebSocket {
-        this.webSocket = new WebSocket('ws://localhost:8080/ws');
+        this.webSocket = new WebSocket(getWebsocketUrl());
 
         return this.webSocket;
     }
