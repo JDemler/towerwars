@@ -4,7 +4,7 @@ metadata:
   name: {{ include "socialmediawars.fullname" . }}
   labels:
     {{- include "socialmediawars.labels" . | nindent 4 }}
-    app.kubernetes.io/name: {{ include "socialmediawars.name" . }}
+    app.kubernetes.io/name: socialmediawars-server
 spec:
   type: {{ .Values.server.service.type }}
   ports:
@@ -14,4 +14,4 @@ spec:
       name: http
   selector:
     {{- include "socialmediawars.selectorLabels" . | nindent 4 }}
-    app.kubernetes.io/name: {{ include "socialmediawars.name" . }}
+    app.kubernetes.io/name: socialmediawars-server
