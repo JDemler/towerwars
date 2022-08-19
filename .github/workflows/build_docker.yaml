@@ -17,7 +17,13 @@ jobs:
           login-server: ${{ secrets.ACR_LOGIN_SERVER }}
           username: ${{ secrets.ACR_USERNAME }}
           password: ${{ secrets.ACR_PASSWORD }}
-      
-      - run: |
+
+      - name: Build the Docker for server code      
+        run: |
           docker build -f Dockerfile.server -t ${{ secrets.ACR_LOGIN_SERVER }}/socialmediawars:${{ github.sha }} .
           docker push ${{ secrets.ACR_LOGIN_SERVER }}/socialmediawars:${{ github.sha }}
+
+      - name: Build the Docker for client code
+        run: |
+          docker build -f Dockerfile.client -t ${{ secrets.ACR_LOGIN_SERVER }}/socialmediawars-client:${{ github.sha }} .
+          docker push ${{ secrets.ACR_LOGIN_SERVER }}/socialmediawars-client:${{ github.sha }}
