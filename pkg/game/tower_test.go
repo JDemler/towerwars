@@ -17,6 +17,21 @@ func TestTowerShootsAtMob(t *testing.T) {
 	}
 }
 
+// Test that bullet has correct mobid
+func TestBulletHasCorrectMobId(t *testing.T) {
+	tower := Tower{X: 0, Y: 0, Damage: 10, Range: 1, FireRate: 1, Cooldown: 0}
+	mob := Mob{X: 0, Y: 0, Health: 100, Id: 1}
+	bullets := tower.Update(0, []*Mob{&mob}, func() int { return 1 })
+	if bullets[0].TargetId != mob.Id {
+		t.Errorf("Expected bullet to have mob id %d, got %d", mob.Id, bullets[0].TargetId)
+	}
+	mob2 := Mob{X: 0, Y: 0, Health: 100, Id: 2}
+	bullets = tower.Update(2, []*Mob{&mob2}, func() int { return 2 })
+	if bullets[0].TargetId != mob2.Id {
+		t.Errorf("Expected bullet to have mob id %d, got %d", mob2.Id, bullets[0].TargetId)
+	}
+}
+
 // Test that tower does not shoot at mob when out of range
 func TestTowerDoesNotShootAtMob(t *testing.T) {
 	tower := Tower{X: 0, Y: 0, Damage: 10, Range: 1, FireRate: 1, Cooldown: 0}

@@ -10,6 +10,7 @@ type Bullet struct {
 	Damage     int     `json:"damage"`
 	Irrelevant bool    `json:"-"`
 	Target     *Mob    `json:"-"`
+	TargetId   int     `json:"targetId"`
 }
 
 // update bullet returning if it is still relevant to the game

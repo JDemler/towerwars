@@ -30,7 +30,7 @@ func (tower *Tower) Update(delta float64, mobs []*Mob, getId func() int) []*Bull
 			tower.Cooldown += tower.FireRate
 			bulletId := getId()
 			// create bullet
-			return []*Bullet{{Id: bulletId, X: tower.X, Y: tower.Y, Target: mobs[j], Damage: tower.Damage, Speed: tower.BulletSpeed}}
+			return []*Bullet{{Id: bulletId, X: tower.X, Y: tower.Y, Target: mobs[j], Damage: tower.Damage, Speed: tower.BulletSpeed, TargetId: mobs[j].Id}}
 		}
 	}
 	return []*Bullet{}
