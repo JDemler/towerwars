@@ -19,9 +19,14 @@ const GameScene: React.FC<GameSceneProps> = () => {
             <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-evenly', alignContent: 'space-evenly', height: '100%' }}>
                 {gameState.fields.map(field =>
                     <div key={field.id} style={{ margin: '8px' }}>
-                        <FieldModelProvider fieldId={field.id}>
-                            <Field onTileClick={coordinate => { console.log('tile clicked', coordinate); buildTurret(coordinate) }} />
-                        </FieldModelProvider>
+                        <div>
+                            <p>Lives: {field.player.lives}</p>
+                            <p>Money: {field.player.money}</p>
+                            <p>Income: {field.player.income}</p>
+                            <FieldModelProvider fieldId={field.id}>
+                                <Field onTileClick={coordinate => { console.log('tile clicked', coordinate); buildTurret(coordinate) }} />
+                            </FieldModelProvider>
+                        </div>
                     </div>
                 )}
             </div>
