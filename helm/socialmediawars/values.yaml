@@ -7,19 +7,26 @@ replicaCount: 1
 client:
   image:
     repository: socialmaulwars.azurecr.io/socialmediawars-client
-    pullPolicy: IfNotPresent
-    # Overrides the image tag whose default is the chart appVersion.
-    tag: ""
+    pullPolicy: Always    
+    tag: "latest"
   service:
     type: ClusterIP
-    port: 80     
+    port: 80
+
+altclient:
+  image:
+    repository: socialmaulwars.azurecr.io/socialmediawars-client
+    pullPolicy: Always    
+    tag: "latest"
+  service:
+    type: ClusterIP
+    port: 80         
 
 server:
   image:
     repository: socialmaulwars.azurecr.io/socialmediawars
-    pullPolicy: IfNotPresent
-    # Overrides the image tag whose default is the chart appVersion.
-    tag: ""   
+    pullPolicy: Always    
+    tag: "latest"   
   service:
     type: ClusterIP
     port: 80 
