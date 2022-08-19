@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "socialmediawars.fullname" . }}
+  labels:
+    {{- include "socialmediawars.labels" . | nindent 4 }}
+    app.kubernetes.io/name: {{ include "socialmediawars.name" . }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "socialmediawars.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/name: {{ include "socialmediawars.name" . }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "socialmediawars.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/name: {{ include "socialmediawars.name" . }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}          
+          image: "{{ .Values.server.image.repository }}:{{ .Values.server.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.server.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /status
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /status
+              port: http
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}      
