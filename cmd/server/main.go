@@ -254,7 +254,13 @@ func logAndAddCorsHeadersToRequest(handler http.Handler) http.Handler {
 		if r.Method == "OPTIONS" {
 			return
 		}
-		handler.ServeHTTP(w, r)
+		if r.URL.Path == "/" {
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode("Ok")
+			return
+		} else {
+			handler.ServeHTTP(w, r)
+		}
 	})
 }
 
