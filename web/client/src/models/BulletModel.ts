@@ -7,6 +7,7 @@ interface BulletModel {
     coordinate: GridCoordinate;
     speed: number;
     damage: number;
+    targetId: number;
 }
 
 namespace BulletModel {
@@ -19,6 +20,7 @@ namespace BulletModel {
             ),
             speed: json.speed,
             damage: json.damage,
+            targetId: json.targetId,
         };
     }
 }

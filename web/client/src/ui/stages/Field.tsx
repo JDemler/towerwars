@@ -18,14 +18,19 @@ const Field: React.FC<FieldProps> = ({ onTileClick }) => {
         <BackgroundLayer width={field.map.size.width} height={field.map.size.height} onTileClick={onTileClick} />
         <Layer>
             {field.towers.map(tower => 
-                <Turret key={tower.id ?? `${tower.coordinate.x},${tower.coordinate.y}`} model={tower} />)
-            }
+                <Turret key={tower.id ?? `${tower.coordinate.x},${tower.coordinate.y}`} model={tower} />
+            )}
             {field.mobs.map((mob) => 
-                <Mob key={mob.id} model={mob} />)
-            }
-            {field.bullets.map((bullet) => 
-                <Bullet key={bullet.id} model={bullet} />)
-            }
+                <Mob key={mob.id} model={mob} />
+            )}
+            {field.bullets.map((bullet) => {
+                const targetMob = field.mobs.find(mob => mob.id === bullet.targetId);
+
+                if (targetMob === undefined)
+                    return;
+
+                return <Bullet key={bullet.id} model={bullet} targetMob={targetMob} />
+            })}
         </Layer>
       </Stage>
     );
