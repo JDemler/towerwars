@@ -107,6 +107,11 @@ func (s *Server) GetMobTypes(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(s.game.MobTypes())
 }
 
+func (s *Server) GetStatus(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(s.game.State)
+}
+
 func (s *Server) readFromWS(ws *WsChannel) {
 	defer func() {
 		fmt.Println("Stopped readToWS loop!")
@@ -263,6 +268,7 @@ func main() {
 
 		http.DefaultServeMux.ServeHTTP(w, r)
 	})
+	http.HandleFunc("/status", s.GetStatus)
 	http.HandleFunc("/game", s.GetGameState)
 	http.HandleFunc("/add_player", s.AddPlayer)
 	http.HandleFunc("/register_event", s.RegisterEvent)
