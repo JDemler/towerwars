@@ -2,6 +2,8 @@ import { Circle } from 'react-konva';
 import { GridSize } from '../../lib/GridSize';
 import MobModel from '../../models/MobModel';
 import useTransition from '../../hooks/useTransition';
+import { getDurationFromServerSpeed } from '../../lib/GridCoordinate';
+import { useMemo } from 'react';
 
 export interface MobProps {
     model: MobModel;
@@ -12,7 +14,11 @@ const Mob: React.FC<MobProps> = ({ model }) => {
     
     const { coordinate, targetCoordinate, speed } = model;
 
-    const currentCoordinate = useTransition(coordinate, targetCoordinate, speed);
+    const duration = useMemo(() => 
+        getDurationFromServerSpeed(coordinate, targetCoordinate, speed)
+    , [coordinate, targetCoordinate, speed]);
+
+    const currentCoordinate = useTransition(coordinate, targetCoordinate, duration);
 
     return <Circle x={currentCoordinate.tileX} y={currentCoordinate.tileY} width={size.tileWidth} height={size.tileHeight} fill="blue" />;
 }

@@ -5,10 +5,10 @@ import useTweenState from './useTweenState';
 const useTransition = (
   startCoordinate: GridCoordinate,
   targetCoordinate: GridCoordinate,
-  speed: number
+  duration: number
 ) => {
-  const [tweenedStateX, tweenX] = useTweenState(startCoordinate.x, { duration: 800, transitionName: 'lerp' });
-  const [tweenedStateY, tweenY] = useTweenState(startCoordinate.y, { duration: 800, transitionName: 'lerp' });
+  const [tweenedStateX, tweenX] = useTweenState(startCoordinate.x, { duration: duration, transitionName: 'lerp' });
+  const [tweenedStateY, tweenY] = useTweenState(startCoordinate.y, { duration: duration, transitionName: 'lerp' });
 
   useEffect(() => {
     tweenX(targetCoordinate.x);

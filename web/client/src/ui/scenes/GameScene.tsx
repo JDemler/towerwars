@@ -23,6 +23,7 @@ const GameScene: React.FC<GameSceneProps> = () => {
                             <p>Lives: {field.player.lives}</p>
                             <p>Money: {field.player.money}</p>
                             <p>Income: {field.player.income}</p>
+                            
                             <FieldModelProvider fieldId={field.id}>
                                 <Field onTileClick={coordinate => { console.log('tile clicked', coordinate); buildTurret(coordinate) }} />
                             </FieldModelProvider>
