@@ -177,11 +177,24 @@ export const GameStateProvider: React.FC<PropsWithChildren> = ({ children }) => 
 
     // Api Client 
     useEffect(() => {
-        ApiClient.getGameState().then(gameState => {
-            dispatch({ type: "set-gameState", gameState });
-        }).catch(error => {
-            console.error(error);
-        })
+        ApiClient.getGameState()
+            .then(gameState => {
+                dispatch({ type: "set-gameState", gameState });
+
+                // Try loading the added player from the session storage
+                if (gameState.state !== "WaitingForPlayers") {
+                    const sessionAddedPlayer = sessionStorage.getItem("addedPlayer");
+
+                    if (sessionAddedPlayer !== null) {
+                        const addedPlayer = JSON.parse(sessionAddedPlayer);
+                        setPlayer(addedPlayer);
+
+                        console.log("Loaded added player from session storage:", addedPlayer);
+                    }
+                }
+            }).catch(error => {
+                console.error(error);
+            })
     }, []);
 
     // Join Game
@@ -189,6 +202,7 @@ export const GameStateProvider: React.FC<PropsWithChildren> = ({ children }) => 
         ApiClient.joinGame(playerName)
             .then(addedPlayerModel => {
                 setPlayer(addedPlayerModel);
+                sessionStorage.setItem('addedPlayer', JSON.stringify(addedPlayerModel));
                 console.log('Joined', addedPlayerModel);
             }).catch(err => {
                 console.error('Error while joining game', err);
@@ -243,6 +257,11 @@ function handleWebSocketEvent(event: any, dispatch: React.Dispatch<Action>) {
             }).catch(error => {
                 console.error(error);
             })
+
+            // On Gameover, cleanup the player info in the session storage
+            if (event.payload.gameState === "GameOver") {
+                sessionStorage.removeItem('addedPlayer');
+            }
             break;
         case "playerUpdated":
             dispatch({ type: 'update-player', fieldId, player: PlayerModel.fromJSON(event.payload.player) });

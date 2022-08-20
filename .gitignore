@@ -25,3 +25,5 @@ web/client/node_modules
 
 # Typescript output
 web/client/dist
+
+/todo.md
