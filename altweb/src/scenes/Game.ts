@@ -35,11 +35,18 @@ export default class GameScene extends Phaser.Scene {
   }
 
   preload() {
-
+    // Load images from assets folder
+    this.load.path = 'assets/mobimgs/';
+    this.load.image('confusedKid', 'confused_kid.jpg');
+    this.load.image('facebookAddict', 'facebook_addict.jpg');
+    this.load.image('facebookMom', 'facebook_mom.jpg');
+    this.load.image('facebookTroll', 'facebook_troll.jpg');
+    this.load.image('karen', 'karen.jpg');
+    this.load.image('niceGuy', 'nice_guy.jpg');
   }
 
   create() {
-    this.fpsLabel = this.add.text(0, 560, "FPS: " + this.game.loop.actualFps);
+    this.fpsLabel = this.add.text(0, 600, "FPS: " + this.game.loop.actualFps);
     connect().then(ws => {
       this.websocket = ws;
       this.websocket.onmessage = (event) => {

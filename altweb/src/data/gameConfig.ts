@@ -14,6 +14,8 @@ export type TowerLevel = {
 
 export type MobType = {
     name: string;
+    description: string;
+    key: string;
     price: number;
     speed: number;
     health: number;

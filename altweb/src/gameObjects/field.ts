@@ -8,6 +8,8 @@ import { GameMob } from "./mob";
 import { GamePlayer } from "./player";
 import { GameTower } from "./tower";
 
+const mobBtnSize = 96;
+
 export class GameField extends Phaser.GameObjects.GameObject {
     //properties
     id: number;
@@ -16,6 +18,7 @@ export class GameField extends Phaser.GameObjects.GameObject {
     towers: GameTower[] = [];
     player: GamePlayer;
     scene: GameScene;
+    mobButtons: Phaser.GameObjects.Image[] = [];
     constructor(scene: GameScene, field: Field) {
         super(scene, 'GameField');
         this.id = field.id;
@@ -24,7 +27,9 @@ export class GameField extends Phaser.GameObjects.GameObject {
         this.field = field;
         drawTWMap(this.field.twmap, (x, y) => { this.buildTower(x, y) }, this.scene);
         this.player = new GamePlayer(scene, field.player);
-        this.drawMobButtons();
+        if (scene.playerId == field.player.id) {
+            this.drawMobButtons();
+        }
     }
 
     buildTower(x: number, y: number): void {
@@ -95,12 +100,7 @@ export class GameField extends Phaser.GameObjects.GameObject {
 
     drawMobButtons() {
         this.scene.mobTypes.forEach((mobType, i) => {
-            this.scene.add.text(
-                100 + this.scene.offsetX + (i * 100)
-                , 500
-                , mobType.name, {
-                font: '48px Arial',
-            })
+            var button = this.scene.add.image(mobBtnSize / 2 + i * mobBtnSize, 550, mobType.key)
                 .setInteractive({ useHandCursor: true })
                 .on('pointerdown', () => {
                     this.scene.websocket?.send(
@@ -114,6 +114,8 @@ export class GameField extends Phaser.GameObjects.GameObject {
                         })
                     );
                 });
+            button.setDisplaySize(mobBtnSize, mobBtnSize)
+            this.mobButtons.push(button);
         });
     }
 
