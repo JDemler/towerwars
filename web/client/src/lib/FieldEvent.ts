@@ -10,7 +10,7 @@ export class FieldEvent {
         this.fieldId = player.fieldId;
         this.key = player.key;
         this.eventType = eventType;
-        this.payload = JSON.stringify(payload);
+        this.payload = payload;
     }
 }
 
