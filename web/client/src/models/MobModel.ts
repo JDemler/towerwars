@@ -26,7 +26,7 @@ namespace MobModel {
             ),
             speed: json.speed,
             health: json.health,
-            maxHealth: json.max_health,
+            maxHealth: json.maxHealth,
             reward: json.reward,
             type: json.type,
         };
