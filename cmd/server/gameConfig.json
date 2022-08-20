@@ -10,15 +10,15 @@
                     "damage": 1,
                     "range": 250,
                     "fireRate": 0.5,
-                    "bulletSpeed": 250
+                    "bulletSpeed": 350
                 },
                 {
                     "level": 2,
                     "cost": 30,
-                    "damage": 3,
-                    "range": 350,
+                    "damage": 2,
+                    "range": 300,
                     "fireRate": 0.4,
-                    "bulletSpeed": 250
+                    "bulletSpeed": 350
                 }
             ]
         },
@@ -28,19 +28,19 @@
             "levels": [
                 {
                     "level": 1,
-                    "cost": 15,
+                    "cost": 20,
                     "damage": 5,
-                    "range": 450,
+                    "range": 290,
                     "fireRate": 1.5,
-                    "bulletSpeed": 150
+                    "bulletSpeed": 250
                 },
                 {
                     "level": 2,
-                    "cost": 30,
+                    "cost": 60,
                     "damage": 10,
-                    "range": 550,
+                    "range": 450,
                     "fireRate": 1.5,
-                    "bulletSpeed": 50
+                    "bulletSpeed": 300
                 }
             ]
         },
@@ -50,19 +50,19 @@
             "levels": [
                 {
                     "level": 1,
-                    "cost": 30,
+                    "cost": 120,
                     "damage": 5,
                     "range": 500,
                     "fireRate": 0.5,
-                    "bulletSpeed": 200
+                    "bulletSpeed": 400
                 },
                 {
                     "level": 2,
-                    "cost": 30,
+                    "cost": 230,
                     "damage": 7,
                     "range": 600,
                     "fireRate": 0.4,
-                    "bulletSpeed": 200
+                    "bulletSpeed": 420
                 }
             ]
         }
@@ -72,8 +72,8 @@
             "name": "Confused Kid",
             "description": "Not really sure what they are supposed to do on Facebook. But their grandparents forced them to join.",
             "key": "confusedKid",
-            "health": 10,
-            "speed": 100,
+            "health": 30,
+            "speed": 50,
             "reward": 1,
             "income": 3,
             "cost": 5
@@ -82,8 +82,8 @@
             "name": "Facebook Troll",
             "description": "They are the reason you don't have a profile picture.",
             "key": "facebookTroll",
-            "health": 20,
-            "speed": 150,
+            "health": 50,
+            "speed": 60,
             "reward": 2,
             "income": 6,
             "cost": 10
@@ -92,8 +92,8 @@
             "name": "Facebook Mom",
             "description": "She's always posting pictures of her kids. You don't care.",
             "key": "facebookMom",
-            "health": 30,
-            "speed": 200,
+            "health": 80,
+            "speed": 75,
             "reward": 4,
             "income": 12,
             "cost": 20
@@ -102,8 +102,8 @@
             "name": "Nice Guy",
             "description": "He's always trying to be your friend. He's really creepy.",
             "key": "niceGuy",
-            "health": 40,
-            "speed": 250,
+            "health": 100,
+            "speed": 90,
             "reward": 6,
             "income": 15,
             "cost": 30
@@ -112,21 +112,21 @@
             "name": "Facebook Addict",
             "description": "They can't go more than 5 minutes without checking their feed.",
             "key": "facebookAddict",
-            "health": 50,
-            "speed": 300,
+            "health": 120,
+            "speed": 100,
             "reward": 8,
             "income": 20,
-            "cost": 40
+            "cost": 50
         },
         {
             "name": "Karen",
             "description": "She's always complaining about something. She's a real buzzkill.",
             "key": "karen",
-            "health": 60,
-            "speed": 350,
+            "health": 150,
+            "speed": 110,
             "reward": 10,
             "income": 25,
-            "cost": 50
+            "cost": 100
         }
     ],
     "map": {
