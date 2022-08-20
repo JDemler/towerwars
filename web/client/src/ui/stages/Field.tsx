@@ -3,7 +3,6 @@ import GridCoordinate from "../../lib/GridCoordinate";
 import BackgroundLayer from "../background/BackgroundLayer";
 import Mob from "../entities/Mob";
 import Turret from "../entities/Turret";
-import Bullet from '../entities/Bullet';
 import { useFieldModel } from "../../hooks/useFieldModel";
 
 export interface FieldProps extends StageProps {

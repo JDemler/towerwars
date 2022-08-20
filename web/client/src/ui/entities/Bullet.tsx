@@ -3,7 +3,7 @@ import { Circle } from 'react-konva';
 import useTransition from '../../hooks/useTransition';
 import GridCoordinate, { getDurationFromServerSpeed } from '../../lib/GridCoordinate';
 import { GridSize } from '../../lib/GridSize';
-import { MobModel, BulletModel } from '../../models';
+import { BulletModel } from '../../models';
 
 export interface BulletProps {
     model: BulletModel;
