@@ -22,17 +22,25 @@ type TWMap struct {
 	currentPath []position `json:"-"`
 }
 
+// IsInBounds checks if x,y is in the bounds of the map
+func (twMap *TWMap) IsInBounds(x, y int) bool {
+	return x >= 0 && x < twMap.Width && y >= 0 && y < twMap.Height
+}
+
 func (twMap *TWMap) GetNeighbors(tile *Tile) []*Tile {
 	var neighbors []*Tile
-	for i := -1; i <= 1; i++ {
-		for j := -1; j <= 1; j++ {
-			if i == 0 && j == 0 {
-				continue
-			}
-			if tile.X+i >= 0 && tile.X+i < twMap.Width && tile.Y+j >= 0 && tile.Y+j < twMap.Height {
-				neighbors = append(neighbors, twMap.Tiles[tile.X+i][tile.Y+j])
-			}
-		}
+	// go over left, right, up and down and add the neighbors
+	if twMap.IsInBounds(tile.X-1, tile.Y) {
+		neighbors = append(neighbors, twMap.getAt(tile.X-1, tile.Y))
+	}
+	if twMap.IsInBounds(tile.X+1, tile.Y) {
+		neighbors = append(neighbors, twMap.getAt(tile.X+1, tile.Y))
+	}
+	if twMap.IsInBounds(tile.X, tile.Y-1) {
+		neighbors = append(neighbors, twMap.getAt(tile.X, tile.Y-1))
+	}
+	if twMap.IsInBounds(tile.X, tile.Y+1) {
+		neighbors = append(neighbors, twMap.getAt(tile.X, tile.Y+1))
 	}
 	return neighbors
 }
@@ -101,12 +109,25 @@ func (twMap *TWMap) getAt(x int, y int) *Tile {
 }
 
 func (twMap *TWMap) NextStep(x int, y int) (int, int, error) {
-	// use a* search algorithm to find the next step
-	twMap.calculatePath()
+	if len(twMap.currentPath) == 0 {
+		twMap.calculatePath()
+	}
 	//Find current step in current path
 	for i := 0; i < len(twMap.currentPath)-1; i++ {
 		if twMap.currentPath[i].x == x && twMap.currentPath[i].y == y {
 			return twMap.currentPath[i+1].x, twMap.currentPath[i+1].y, nil
+		}
+	}
+	// current x,y is not on the path, must be off, probably because towers were placed or removed
+	// Calculate path especially for this x,y
+	path, err := twMap.findPath(x, y)
+	if err != nil {
+		return 0, 0, err
+	}
+	pathPositions := path.path([]position{})
+	for i := 0; i < len(pathPositions)-1; i++ {
+		if pathPositions[i].x == x && pathPositions[i].y == y {
+			return pathPositions[i+1].x, pathPositions[i+1].y, nil
 		}
 	}
 	return 0, 0, errors.New("No next step")
@@ -122,7 +143,9 @@ func (twMap *TWMap) calculatePath() {
 }
 
 func (twMap *TWMap) findPath(x int, y int) (*Tile, error) {
-	openTiles := tileList([]*Tile{twMap.getAt(x, y)})
+	startTile := twMap.getAt(x, y)
+	startTile.predecessor = nil
+	openTiles := tileList([]*Tile{startTile})
 	closedTiles := tileList([]*Tile{})
 
 	for openTiles.Len() > 0 {

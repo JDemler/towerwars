@@ -183,10 +183,6 @@ func (game *Game) Update(delta float64) []*GameEvent {
 			})
 		}
 	}
-	// debug log event len
-	if len(events) > 0 {
-		fmt.Println(len(events))
-	}
 	return events
 }
 

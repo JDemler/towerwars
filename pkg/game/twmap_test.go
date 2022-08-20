@@ -66,17 +66,17 @@ func TestCurrentPath(t *testing.T) {
 	simpleMap := simpleTWMap()
 	simpleMap.calculatePath()
 	// Check that current path is correct
-	if len(simpleMap.currentPath) != 3 {
-		t.Errorf("Current path should be length 3, but is length %d", len(simpleMap.currentPath))
+	if len(simpleMap.currentPath) != 5 {
+		t.Errorf("Current path should be length 5, but is length %d", len(simpleMap.currentPath))
 	}
 	if simpleMap.currentPath[0].x != 0 || simpleMap.currentPath[0].y != 0 {
 		t.Error("First tile in current path should be 0,0")
 	}
-	if simpleMap.currentPath[1].x != 1 || simpleMap.currentPath[1].y != 1 {
-		t.Error("Second tile in current path should be 1,1")
+	if simpleMap.currentPath[1].x != 1 || simpleMap.currentPath[1].y != 0 {
+		t.Errorf("Second tile in current path should be 1,1 but is %d,%d", simpleMap.currentPath[1].x, simpleMap.currentPath[1].y)
 	}
-	if simpleMap.currentPath[2].x != 2 || simpleMap.currentPath[2].y != 2 {
-		t.Error("Third tile in current path should be 2,2")
+	if simpleMap.currentPath[2].x != 2 || simpleMap.currentPath[2].y != 0 {
+		t.Errorf("Third tile in current path should be 2,2 but is %d,%d", simpleMap.currentPath[2].x, simpleMap.currentPath[2].y)
 	}
 }
 
@@ -106,6 +106,4 @@ func TestOccupyingTileInPath(t *testing.T) {
 	if mob.TargetX != (TileSize+TileSize/2) && mob.TargetY != (TileSize*2+TileSize/2) {
 		t.Error("Mob should not be moving to 0,0 but is moving to", mob.TargetX, mob.TargetY)
 	}
-	t.Errorf("Mob should be moving to 2,2 but is moving to %f,%f", mob.TargetX, mob.TargetY)
-
 }

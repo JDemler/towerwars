@@ -82,10 +82,10 @@ func TestMobGetsNewTargetWhenTargetIsReached(t *testing.T) {
 	twmap := standardTWMap()
 	mob.Update(1, twmap, 0)
 	if mob.TargetX != TileSize+TileSize/2 {
-		t.Errorf("Expected TargetX to be 0, got %f", mob.TargetX)
+		t.Errorf("Expected TargetX to be 48, got %f", mob.TargetX)
 	}
-	if mob.TargetY != TileSize+TileSize/2 {
-		t.Errorf("Expected TargetY to be 0, got %f", mob.TargetY)
+	if mob.TargetY != TileSize/2 {
+		t.Errorf("Expected TargetY to be 16, got %f", mob.TargetY)
 	}
 }
 
