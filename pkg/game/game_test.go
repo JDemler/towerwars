@@ -133,7 +133,7 @@ func TestBuildTower(t *testing.T) {
 	game := prepareGame()
 	game.Start()
 	// Build tower on field 1
-	_, err := game.HandleEvent(FieldEvent{FieldId: 1, Type: "buildTower", Payload: BuildEvent{fieldId: 0, X: 1, Y: 1, TowerType: "FastBullet"}.ToJson()})
+	_, err := game.HandleEvent(FieldEvent{FieldId: 1, Type: "buildTower", Payload: BuildEvent{X: 1, Y: 1, TowerType: "FastBullet"}})
 	if err != nil {
 		t.Errorf("Expected no error, got %s", err)
 	}
@@ -148,7 +148,7 @@ func TestBuyMob(t *testing.T) {
 	game := prepareGame()
 	game.Start()
 	// Buy mob on field 0
-	_, err := game.HandleEvent(FieldEvent{FieldId: 1, Type: "buyMob", Payload: BuyMobEvent{fieldId: 1, MobType: "FastMob", TargetFieldId: 0}.ToJson()})
+	_, err := game.HandleEvent(FieldEvent{FieldId: 1, Type: "buyMob", Payload: BuyMobEvent{MobType: "FastMob", TargetFieldId: 0}})
 	if err != nil {
 		t.Errorf("Expected no error, got %s", err)
 	}

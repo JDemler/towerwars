@@ -84,19 +84,15 @@ func (game *Game) getFieldAt(id int) *Field {
 }
 
 func (game *Game) HandleEvent(fieldEvent FieldEvent) ([]*GameEvent, error) {
-	event := fieldEvent.Unpack()
-	if event == nil {
-		return nil, fmt.Errorf("Invalid event")
-	}
-	targetField := game.getFieldAt(event.FieldId())
+	targetField := game.getFieldAt(fieldEvent.FieldId)
 	if targetField != nil {
 		// Check that event.key and field.key match
 		if fieldEvent.Key != targetField.Key {
 			// Currently only log a message. In the future return an error to the client
-			fmt.Printf("Invalid key for field %d. Expected %s, got %s", event.FieldId(), targetField.Key, fieldEvent.Key)
+			fmt.Printf("Invalid key for field %d. Expected %s, got %s", fieldEvent.FieldId, targetField.Key, fieldEvent.Key)
 			//return nil, fmt.Errorf("Invalid key! Player unauthorized")
 		}
-		return targetField.HandleEvent(event, game.Fields, game.config)
+		return targetField.HandleEvent(fieldEvent.Payload, game.Fields, game.config)
 	}
 	return []*GameEvent{}, fmt.Errorf("Field not found")
 }

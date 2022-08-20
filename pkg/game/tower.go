@@ -5,6 +5,7 @@ import (
 )
 
 type Tower struct {
+	Id          int     `json:"id"`
 	X           float64 `json:"x"`
 	Y           float64 `json:"y"`
 	Damage      int     `json:"damage"`
@@ -12,7 +13,17 @@ type Tower struct {
 	FireRate    float64 `json:"fire_rate"`
 	Cooldown    float64 `json:"cooldown"`
 	Level       int     `json:"level"`
+	Type        string  `json:"type"`
 	BulletSpeed float64 `json:"-"`
+}
+
+// upgrade tower from towerlevel
+func (t *Tower) Upgrade(towerLevel *TowerLevel) {
+	t.Damage = towerLevel.Damage
+	t.Range = towerLevel.Range
+	t.FireRate = towerLevel.FireRate
+	t.BulletSpeed = towerLevel.BulletSpeed
+	t.Level = towerLevel.Level
 }
 
 // update tower

@@ -16,6 +16,7 @@ type Field struct {
 	Towers        []*Tower  `json:"towers"`
 	mobCounter    int       `json:"-"` // counter for mob ids
 	bulletCounter int       `json:"-"` // counter for bullet ids
+	towerCounter  int       `json:"-"` // counter for tower ids
 }
 
 func randomString(length int) string {
@@ -38,7 +39,18 @@ func NewField(id int, player *Player, twmap *TWMap) *Field {
 		Towers:        []*Tower{},
 		mobCounter:    0,
 		bulletCounter: 0,
+		towerCounter:  0,
 	}
+}
+
+// GetTowerById returns a tower by its id
+func (f *Field) GetTowerById(id int) *Tower {
+	for _, t := range f.Towers {
+		if t.Id == id {
+			return t
+		}
+	}
+	return nil
 }
 
 // HandleEvent for field
@@ -151,6 +163,11 @@ func (field *Field) getNextMobId() int {
 func (field *Field) getNextBulletId() int {
 	field.bulletCounter++
 	return field.bulletCounter
+}
+
+func (field *Field) getNextTowerId() int {
+	field.towerCounter++
+	return field.towerCounter
 }
 
 // payout income to player

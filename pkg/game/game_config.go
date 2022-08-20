@@ -58,13 +58,17 @@ type TowerLevel struct {
 	BulletSpeed float64 `json:"bulletSpeed"`
 }
 
-func (t *TowerType) Tower(x float64, y float64, level int) *Tower {
+func (t *TowerType) Tower(x float64, y float64, level int, id int) *Tower {
 	towerLevel := t.Level(level)
 	if towerLevel == nil {
 		fmt.Printf("Invalid tower level %d for tower type %s\n", level, t.Name)
 		return nil
 	}
-	return &Tower{X: x, Y: y, Level: level, Damage: towerLevel.Damage, Range: towerLevel.Range, FireRate: towerLevel.FireRate, BulletSpeed: towerLevel.BulletSpeed, Cooldown: 0}
+	return &Tower{Id: id, X: x,
+		Y: y, Level: level, Damage: towerLevel.Damage,
+		Range: towerLevel.Range, FireRate: towerLevel.FireRate,
+		BulletSpeed: towerLevel.BulletSpeed, Cooldown: 0,
+		Type: t.Name}
 }
 
 type MobType struct {
@@ -104,7 +108,10 @@ var StandardGameConfig = GameConfig{
 var TestGameConfig = GameConfig{
 	TowerTypes: []*TowerType{
 		{Name: "FastBullet", Levels: []*TowerLevel{{Level: 1, Damage: 1, Range: 300, FireRate: 1, Cost: 5, BulletSpeed: 150}}},
-		{Name: "SlowBullet", Levels: []*TowerLevel{{Level: 1, Damage: 5, Range: 150, FireRate: 1, Cost: 15, BulletSpeed: 25}}},
+		{Name: "SlowBullet", Levels: []*TowerLevel{
+			{Level: 1, Damage: 5, Range: 150, FireRate: 1, Cost: 15, BulletSpeed: 25},
+			{Level: 2, Damage: 10, Range: 150, FireRate: 1, Cost: 15, BulletSpeed: 25},
+			{Level: 3, Damage: 15, Range: 150, FireRate: 1, Cost: 15, BulletSpeed: 25}}},
 		{Name: "StationaryBullet", Levels: []*TowerLevel{{Level: 1, Damage: 5, Range: 150, FireRate: 1, Cost: 15, BulletSpeed: 0}}},
 	},
 	MobTypes: []*MobType{

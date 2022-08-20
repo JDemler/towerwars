@@ -43,6 +43,11 @@ type MobUpdateEvent struct {
 	Mob     *Mob `json:"mob"`
 }
 
+type TowerUpgradedEvent struct {
+	FieldId int    `json:"fieldId"`
+	Tower   *Tower `json:"tower"`
+}
+
 type TowerDestroyedEvent struct {
 	FieldId int `json:"fieldId"`
 	TowerId int `json:"towerId"`
@@ -62,40 +67,48 @@ type FieldEvent struct {
 	FieldId int    `json:"fieldId"`
 	Key     string `json:"key"`
 	Type    string `json:"eventType"`
-	Payload string `json:"payload"`
+	Payload Event  `json:"payload"`
 }
 
-// Unpack FieldEvent to Event
-func (e FieldEvent) Unpack() Event {
-	switch e.Type {
+func (e *FieldEvent) UnmarshalJSON(data []byte) error {
+	var f struct {
+		FieldId int             `json:"fieldId"`
+		Key     string          `json:"key"`
+		Type    string          `json:"eventType"`
+		Payload json.RawMessage `json:"payload"`
+	}
+	if err := json.Unmarshal(data, &f); err != nil {
+		return err
+	}
+	e.FieldId = f.FieldId
+	e.Key = f.Key
+	e.Type = f.Type
+	switch f.Type {
 	case "buildTower":
-		res := NewBuildEvent(e.FieldId)
-		json.Unmarshal([]byte(e.Payload), &res)
-		return res
+		var payload BuildEvent
+		if err := json.Unmarshal(f.Payload, &payload); err != nil {
+			return err
+		}
+		e.Payload = &payload
 	case "buyMob":
-		res := NewBuyMobEvent(e.FieldId)
-		json.Unmarshal([]byte(e.Payload), &res)
-		return res
+		var payload BuyMobEvent
+		if err := json.Unmarshal(f.Payload, &payload); err != nil {
+			return err
+		}
+		e.Payload = &payload
 	}
 	return nil
 }
 
 type Event interface {
 	TryExecute(sourceField *Field, targetFields []*Field, gc *GameConfig) ([]*GameEvent, error)
-	FieldId() int
 	TargetFieldIds() []int
-	ToJson() string
 }
 
 type BuildEvent struct {
-	fieldId   int
 	X         int    `json:"x"`
 	Y         int    `json:"y"`
 	TowerType string `json:"towerType"`
-}
-
-func NewBuildEvent(fieldId int) BuildEvent {
-	return BuildEvent{fieldId: fieldId}
 }
 
 // implement Event for BuildEvent
@@ -123,7 +136,7 @@ func (e BuildEvent) TryExecute(sourceField *Field, targetFields []*Field, gc *Ga
 	if sourceField.Player.Money < towerLevel.Cost*100 {
 		return nil, fmt.Errorf("Player cannot afford tower")
 	}
-	tower := towerType.Tower(float64(e.X)*TileSize+TileSize/2, float64(e.Y)*TileSize+TileSize/2, 1)
+	tower := towerType.Tower(float64(e.X)*TileSize+TileSize/2, float64(e.Y)*TileSize+TileSize/2, 1, sourceField.getNextTowerId())
 	//Occupy tower position in twmap
 	sourceField.TWMap.Occupy(e.X, e.Y)
 	sourceField.Towers = append(sourceField.Towers, tower)
@@ -146,18 +159,8 @@ func (e BuildEvent) TryExecute(sourceField *Field, targetFields []*Field, gc *Ga
 	}, nil
 }
 
-func (e BuildEvent) FieldId() int {
-	return e.fieldId
-}
-
 func (e BuildEvent) TargetFieldIds() []int {
 	return []int{}
-}
-
-func (e BuildEvent) ToJson() string {
-	// encode e using json.Marshal
-	json, _ := json.Marshal(e)
-	return string(json)
 }
 
 type SellEvent struct {
@@ -166,8 +169,52 @@ type SellEvent struct {
 }
 
 type UpgradeEvent struct {
-	X int
-	Y int
+	TowerId int `json:"towerId"`
+}
+
+// implement Event for UpgradeEvent
+func (e UpgradeEvent) TryExecute(sourceField *Field, targetFields []*Field, gc *GameConfig) ([]*GameEvent, error) {
+	// Check if tower exists
+	tower := sourceField.GetTowerById(e.TowerId)
+	if tower == nil {
+		return nil, fmt.Errorf("Tower not found")
+	}
+	// Get TowerType from gameConfig
+	towerType := gc.TowerType(tower.Type)
+	if towerType == nil {
+		return nil, fmt.Errorf("Invalid tower type %s", tower.Type)
+	}
+	towerLevel := towerType.Level(tower.Level + 1)
+	if towerLevel == nil {
+		return nil, fmt.Errorf("Invalid tower level %d", tower.Level+1)
+	}
+	// Check if player can affort tower
+	if sourceField.Player.Money < towerLevel.Cost*100 {
+		return nil, fmt.Errorf("Player cannot afford tower")
+	}
+	// Upgrade tower
+	tower.Upgrade(towerLevel)
+	sourceField.Player.Money -= towerLevel.Cost * 100
+	return []*GameEvent{
+		{
+			Type: "towerUpgraded",
+			Payload: TowerUpgradedEvent{
+				FieldId: sourceField.Id,
+				Tower:   tower,
+			},
+		},
+		{
+			Type: "playerUpdated",
+			Payload: PlayerUpdatedEvent{
+				FieldId: sourceField.Id,
+				Player:  sourceField.Player,
+			},
+		},
+	}, nil
+}
+
+func (e UpgradeEvent) TargetFieldIds() []int {
+	return []int{}
 }
 
 type BuyMobEvent struct {
@@ -227,16 +274,6 @@ func (e BuyMobEvent) TryExecute(sourceField *Field, targetFields []*Field, confi
 	return gameEvents, nil
 }
 
-func (e BuyMobEvent) FieldId() int {
-	return e.fieldId
-}
-
 func (e BuyMobEvent) TargetFieldIds() []int {
 	return []int{e.TargetFieldId}
-}
-
-func (e BuyMobEvent) ToJson() string {
-	// encode e using json.Marshal
-	json, _ := json.Marshal(e)
-	return string(json)
 }

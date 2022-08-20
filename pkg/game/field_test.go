@@ -9,14 +9,14 @@ func prepareField(hasTower bool, hasMob bool) *Field {
 	field := NewField(0, TestGameConfig.Player(0), standardTWMap().GenerateMap())
 	if hasTower {
 		// add tower by handling an event
-		_, err := field.HandleEvent(BuildEvent{fieldId: 0, X: 5, Y: 5, TowerType: "FastBullet"}, []*Field{}, &TestGameConfig)
+		_, err := field.HandleEvent(BuildEvent{X: 5, Y: 5, TowerType: "FastBullet"}, []*Field{}, &TestGameConfig)
 		if err != nil {
 			panic("Failed to build tower")
 		}
 	}
 	if hasMob {
 		// add mob by handling an event
-		_, err := field.HandleEvent(BuyMobEvent{fieldId: 0, MobType: "SlowMob", TargetFieldId: 0}, []*Field{field}, &TestGameConfig)
+		_, err := field.HandleEvent(BuyMobEvent{MobType: "SlowMob", TargetFieldId: 0}, []*Field{field}, &TestGameConfig)
 		if err != nil {
 			panic("Failed to buy mob")
 		}
@@ -125,7 +125,7 @@ func TestBuyTower(t *testing.T) {
 		t.Error("Expected 1,1 to be empty")
 	}
 
-	_, err := field.HandleEvent(BuildEvent{fieldId: 0, X: 1, Y: 1, TowerType: "Arrow"}, []*Field{}, &StandardGameConfig)
+	_, err := field.HandleEvent(BuildEvent{X: 1, Y: 1, TowerType: "Arrow"}, []*Field{}, &StandardGameConfig)
 	if err != nil {
 		t.Error("Expected tower to be built")
 	}
@@ -234,5 +234,42 @@ func TestBulletId(t *testing.T) {
 	// other bullets have been fired, so the id should be higher than 3
 	if field.Bullets[0].Id <= 3 {
 		t.Errorf("Expected bullets to have different but ascending ids: %d", field.Bullets[0].Id)
+	}
+}
+
+// Test that towers can be upgraded with the UpgradeTowerEvent
+func TestUpgradeTower(t *testing.T) {
+	field := prepareField(false, false)
+	// Test that 1,1 is not occupied before BuyTowerEvent is executed
+	if field.TWMap.IsOccupied(1, 1) {
+		t.Error("Expected 1,1 to be empty")
+	}
+
+	// Buy tower
+	_, err := field.HandleEvent(BuildEvent{X: 1, Y: 1, TowerType: "SlowBullet"}, []*Field{}, &TestGameConfig)
+	if err != nil {
+		t.Error("Expected tower to be built")
+	}
+	if len(field.Towers) != 1 {
+		t.Errorf("Expected 1 tower, got %d", len(field.Towers))
+	}
+	if field.TWMap.IsOccupied(1, 1) != true {
+		t.Error("Expected TWMap is occupied at 1, 1")
+	}
+	// Upgrade tower
+	_, err = field.HandleEvent(UpgradeEvent{TowerId: 1}, []*Field{}, &TestGameConfig)
+	if err != nil {
+		t.Errorf("Expected tower to be upgraded but got %s", err)
+	}
+	if field.Towers[0].Damage != 10 {
+		t.Errorf("Expected tower damage to be 10, got %d", field.Towers[0].Damage)
+	}
+	// Upgrade tower
+	_, err = field.HandleEvent(UpgradeEvent{TowerId: 1}, []*Field{}, &TestGameConfig)
+	if err != nil {
+		t.Errorf("Expected tower to be upgraded but got %s", err)
+	}
+	if field.Towers[0].Damage != 15 {
+		t.Errorf("Expected tower damage to be 15, got %d", field.Towers[0].Damage)
 	}
 }

@@ -36,11 +36,11 @@ export class GameField extends Phaser.GameObjects.GameObject {
         this.scene.websocket?.send(JSON.stringify({
             fieldId: this.id,
             eventType: "buildTower",
-            payload: JSON.stringify({
+            payload: {
                 towerType: this.scene.towerTypes[0].name,
                 x: x,
                 y: y
-            })
+            }
         }));
     }
 
@@ -107,10 +107,10 @@ export class GameField extends Phaser.GameObjects.GameObject {
                         JSON.stringify({
                             fieldId: this.id,
                             eventType: "buyMob",
-                            payload: JSON.stringify({
+                            payload: {
                                 mobType: mobType.name,
                                 targetFieldId: 1 - this.id
-                            })
+                            }
                         })
                     );
                 });
