@@ -1,0 +1,145 @@
+{
+    "towerTypes": [
+        {
+            "name": "Like Button",
+            "description": "Liking your enemies will confuse them and hurt their feelings.",
+            "levels": [
+                {
+                    "level": 1,
+                    "cost": 10,
+                    "damage": 1,
+                    "range": 250,
+                    "fireRate": 0.5,
+                    "bulletSpeed": 250
+                },
+                {
+                    "level": 2,
+                    "cost": 30,
+                    "damage": 3,
+                    "range": 350,
+                    "fireRate": 0.4,
+                    "bulletSpeed": 250
+                }
+            ]
+        },
+        {
+            "name": "Profile Picture",
+            "description": "A picture so ugly your enemies will be blinded by it.",
+            "levels": [
+                {
+                    "level": 1,
+                    "cost": 15,
+                    "damage": 5,
+                    "range": 450,
+                    "fireRate": 1.5,
+                    "bulletSpeed": 150
+                },
+                {
+                    "level": 2,
+                    "cost": 30,
+                    "damage": 10,
+                    "range": 550,
+                    "fireRate": 1.5,
+                    "bulletSpeed": 50
+                }
+            ]
+        },
+        {
+            "name": "Comment",
+            "description": "A comment so stupid your enemies will start to question humanity.",
+            "levels": [
+                {
+                    "level": 1,
+                    "cost": 30,
+                    "damage": 5,
+                    "range": 500,
+                    "fireRate": 0.5,
+                    "bulletSpeed": 200
+                },
+                {
+                    "level": 2,
+                    "cost": 30,
+                    "damage": 7,
+                    "range": 600,
+                    "fireRate": 0.4,
+                    "bulletSpeed": 200
+                }
+            ]
+        }
+    ],
+    "mobTypes": [
+        {
+            "name": "Confused Kid",
+            "description": "Not really sure what they are supposed to do on Facebook. But their grandparents forced them to join.",
+            "key": "confusedKid",
+            "health": 10,
+            "speed": 100,
+            "reward": 1,
+            "income": 1,
+            "cost": 5
+        },
+        {
+            "name": "Facebook Troll",
+            "description": "They are the reason you don't have a profile picture.",
+            "key": "facebookTroll",
+            "health": 20,
+            "speed": 150,
+            "reward": 2,
+            "income": 2,
+            "cost": 10
+        },
+        {
+            "name": "Facebook Mom",
+            "description": "She's always posting pictures of her kids. You don't care.",
+            "key": "facebookMom",
+            "health": 30,
+            "speed": 200,
+            "reward": 4,
+            "income": 4,
+            "cost": 20
+        },
+        {
+            "name": "Nice Guy",
+            "description": "He's always trying to be your friend. He's really creepy.",
+            "key": "niceGuy",
+            "health": 40,
+            "speed": 250,
+            "reward": 6,
+            "income": 6,
+            "cost": 30
+        },
+        {
+            "name": "Facebook Addict",
+            "description": "They can't go more than 5 minutes without checking their feed.",
+            "key": "facebookAddict",
+            "health": 50,
+            "speed": 300,
+            "reward": 8,
+            "income": 8,
+            "cost": 40
+        },
+        {
+            "name": "Karen",
+            "description": "She's always complaining about something. She's a real buzzkill.",
+            "key": "karen",
+            "health": 60,
+            "speed": 350,
+            "reward": 10,
+            "income": 10,
+            "cost": 50
+        }
+    ],
+    "map": {
+        "width": 10,
+        "height": 10,
+        "startX": 0,
+        "startY": 0,
+        "endX": 9,
+        "endY": 9
+    },
+    "startStats": {
+        "money": 50,
+        "lives": 30,
+        "income": 15
+    }
+}

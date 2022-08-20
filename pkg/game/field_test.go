@@ -6,7 +6,7 @@ import (
 
 // prepare a field containing a single tower and a single mob using the standardtwmap
 func prepareField(hasTower bool, hasMob bool) *Field {
-	field := NewField(0, TestGameConfig.Player(0), standardTWMap())
+	field := NewField(0, TestGameConfig.Player(0), standardTWMap().GenerateMap())
 	if hasTower {
 		// add tower by handling an event
 		_, err := field.HandleEvent(BuildEvent{fieldId: 0, X: 5, Y: 5, TowerType: "FastBullet"}, []*Field{}, &TestGameConfig)

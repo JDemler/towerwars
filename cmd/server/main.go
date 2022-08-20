@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 	"time"
 
 	"towerwars/pkg/game"
@@ -31,8 +32,23 @@ func (ws *WsChannel) Close() {
 }
 
 func NewServer() *Server {
+	//Try to read config. Get config path from env variable
+	var configPath string
+	if os.Getenv("CONFIG_PATH") == "" {
+		fmt.Println("No config path set. Using default config")
+		configPath = "gameConfig.json"
+	} else {
+		fmt.Println("Using config from: ", os.Getenv("CONFIG_PATH"))
+		configPath = os.Getenv("CONFIG_PATH")
+	}
+	config, err := game.ReadConfigFromFile(configPath)
+	if err != nil {
+		fmt.Println("Could not read config")
+		fmt.Println(err)
+		return nil
+	}
 	return &Server{
-		game: game.NewGame(),
+		game: game.NewGame(config),
 	}
 }
 
@@ -239,7 +255,7 @@ func (s *Server) WebSocket(w http.ResponseWriter, r *http.Request) {
 func (s *Server) reset() {
 	// Wait for five seconds
 	time.Sleep(5 * time.Second)
-	s.game = game.NewGame()
+	s.game = game.NewGame(&game.StandardGameConfig)
 	// Close all channels
 	for _, c := range s.writeChannels {
 		c.Close()

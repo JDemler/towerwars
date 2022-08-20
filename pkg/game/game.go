@@ -28,14 +28,14 @@ type Game struct {
 	events         []*GameEvent `json:"-"`
 }
 
-func NewGame() *Game {
+func NewGame(config *GameConfig) *Game {
 	return &Game{
 		Fields:         []*Field{},
 		Elapsed:        0,
 		MobRespawnTime: 5,
 		IncomeCooldown: 30,
 		State:          WaitingState,
-		config:         &StandardGameConfig,
+		config:         config,
 	}
 }
 
@@ -48,7 +48,7 @@ func (game *Game) AddPlayer(playerName string) string {
 		Income: game.config.StartStats.Income,
 		Lives:  game.config.StartStats.Lives,
 	}
-	field := NewField(len(game.Fields), player, game.config.TWMap())
+	field := NewField(len(game.Fields), player, game.config.Map.GenerateMap())
 	game.Fields = append(game.Fields, field)
 	game.events = append(game.events, &GameEvent{
 		Type: "playerJoined",

@@ -1,14 +1,38 @@
 package game
 
-import "fmt"
-
-type MapConstructor func() *TWMap
+import (
+	"encoding/json"
+	"fmt"
+	"os"
+)
 
 type GameConfig struct {
-	TowerTypes []*TowerType
-	MobTypes   []*MobType
-	TWMap      MapConstructor
-	StartStats *Player
+	TowerTypes []*TowerType `json:"towerTypes"`
+	MobTypes   []*MobType   `json:"mobTypes"`
+	Map        *MapConfig   `json:"map"`
+	StartStats *Player      `json:"startStats"`
+}
+
+type MapConfig struct {
+	Width  int `json:"width"`
+	Height int `json:"height"`
+	StartX int `json:"startX"`
+	StartY int `json:"startY"`
+	EndX   int `json:"endX"`
+	EndY   int `json:"endY"`
+}
+
+func (mc *MapConfig) GenerateMap() *TWMap {
+	return &TWMap{
+		Width:       mc.Width,
+		Height:      mc.Height,
+		XStart:      mc.StartX,
+		YStart:      mc.StartY,
+		XEnd:        mc.EndX,
+		YEnd:        mc.EndY,
+		Tiles:       makeTiles(mc.Width, mc.Height),
+		currentPath: nil,
+	}
 }
 
 type TowerType struct {
@@ -30,8 +54,8 @@ type TowerLevel struct {
 	Cost        int     `json:"cost"`
 	Damage      int     `json:"damage"`
 	Range       float64 `json:"range"`
-	FireRate    float64 `json:"fire_rate"`
-	BulletSpeed float64 `json:"bullet_speed"`
+	FireRate    float64 `json:"fireRate"`
+	BulletSpeed float64 `json:"bulletSpeed"`
 }
 
 func (t *TowerType) Tower(x float64, y float64, level int) *Tower {
@@ -44,12 +68,14 @@ func (t *TowerType) Tower(x float64, y float64, level int) *Tower {
 }
 
 type MobType struct {
-	Name   string  `json:"name"`
-	Health int     `json:"health"`
-	Speed  float64 `json:"speed"`
-	Reward int     `json:"reward"`
-	Income int     `json:"income"`
-	Cost   int     `json:"cost"`
+	Name        string  `json:"name"`
+	Description string  `json:"description"`
+	Key         string  `json:"key"`
+	Health      int     `json:"health"`
+	Speed       float64 `json:"speed"`
+	Reward      int     `json:"reward"`
+	Income      int     `json:"income"`
+	Cost        int     `json:"cost"`
 }
 
 // Make Mob from MobType
@@ -67,7 +93,7 @@ var StandardGameConfig = GameConfig{
 		{Name: "Dot", Health: 50, Speed: 50, Reward: 1, Income: 1, Cost: 5},
 		{Name: "Circle", Health: 100, Speed: 60, Reward: 2, Income: 2, Cost: 10},
 	},
-	TWMap: standardTWMap,
+	Map: standardTWMap(),
 	StartStats: &Player{
 		Money:  50,
 		Income: 15,
@@ -86,12 +112,26 @@ var TestGameConfig = GameConfig{
 		{Name: "SlowMob", Health: 100, Speed: 50, Reward: 2, Income: 2, Cost: 10},
 		{Name: "StationaryMob", Health: 100, Speed: 0, Reward: 2, Income: 2, Cost: 10},
 	},
-	TWMap: standardTWMap,
+	Map: standardTWMap(),
 	StartStats: &Player{
 		Money:  100,
 		Income: 10,
 		Lives:  30,
 	},
+}
+
+func ReadConfigFromFile(filename string) (*GameConfig, error) {
+	// Read file and try to unmarshall it as GameConfig
+	data, err := os.ReadFile(filename)
+	if err != nil {
+		return nil, err
+	}
+	var config GameConfig
+	err = json.Unmarshal(data, &config)
+	if err != nil {
+		return nil, err
+	}
+	return &config, nil
 }
 
 // Lookup function for TowerType
