@@ -314,5 +314,8 @@ func main() {
 	http.HandleFunc("/tower_types", s.GetTowerTypes)
 	http.HandleFunc("/mob_types", s.GetMobTypes)
 	http.HandleFunc("/ws", s.WebSocket)
-	http.ListenAndServe(":8080", logAndAddCorsHeadersToRequest(http.DefaultServeMux))
+	err := http.ListenAndServe(":8080", logAndAddCorsHeadersToRequest(http.DefaultServeMux))
+	if err != nil {
+		panic(err)
+	}
 }

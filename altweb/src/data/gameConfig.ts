@@ -1,10 +1,15 @@
 export type TowerType = {
     name: string;
-    price: number;
+    description: string;
+    levels: TowerLevel[];
+}
+
+export type TowerLevel = {
     damage: number;
     range: number;
     speed: number;
-    cooldown: number;        
+    cooldown: number;
+    cost: number;
 }
 
 export type MobType = {

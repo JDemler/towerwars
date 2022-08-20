@@ -1,5 +1,7 @@
 package game
 
+import "fmt"
+
 type MapConstructor func() *TWMap
 
 type GameConfig struct {
@@ -10,16 +12,35 @@ type GameConfig struct {
 }
 
 type TowerType struct {
-	Name        string  `json:"name"`
+	Name        string        `json:"name"`
+	Descritpion string        `json:"description"`
+	Levels      []*TowerLevel `json:"levels"`
+}
+
+// get the tower level for a given level
+func (t *TowerType) Level(level int) *TowerLevel {
+	if level < 1 || level > len(t.Levels) {
+		return nil
+	}
+	return t.Levels[level-1]
+}
+
+type TowerLevel struct {
+	Level       int     `json:"level"`
+	Cost        int     `json:"cost"`
 	Damage      int     `json:"damage"`
 	Range       float64 `json:"range"`
 	FireRate    float64 `json:"fire_rate"`
 	BulletSpeed float64 `json:"bullet_speed"`
-	Cost        int     `json:"cost"`
 }
 
-func (t *TowerType) Tower(x float64, y float64) *Tower {
-	return &Tower{X: x, Y: y, Damage: t.Damage, Range: t.Range, FireRate: t.FireRate, BulletSpeed: t.BulletSpeed, Cooldown: 0}
+func (t *TowerType) Tower(x float64, y float64, level int) *Tower {
+	towerLevel := t.Level(level)
+	if towerLevel == nil {
+		fmt.Printf("Invalid tower level %d for tower type %s\n", level, t.Name)
+		return nil
+	}
+	return &Tower{X: x, Y: y, Level: level, Damage: towerLevel.Damage, Range: towerLevel.Range, FireRate: towerLevel.FireRate, BulletSpeed: towerLevel.BulletSpeed, Cooldown: 0}
 }
 
 type MobType struct {
@@ -39,8 +60,8 @@ func (m *MobType) Mob(x float64, y float64, id int) *Mob {
 // Standard game config
 var StandardGameConfig = GameConfig{
 	TowerTypes: []*TowerType{
-		{Name: "Arrow", Damage: 1, Range: 300, FireRate: 0.4, Cost: 5, BulletSpeed: 180},
-		{Name: "Siege", Damage: 5, Range: 150, FireRate: 0.7, Cost: 15, BulletSpeed: 75},
+		{Name: "Arrow", Levels: []*TowerLevel{{Level: 1, Damage: 1, Range: 300, FireRate: 0.4, Cost: 5, BulletSpeed: 180}}},
+		{Name: "Siege", Levels: []*TowerLevel{{Level: 1, Damage: 5, Range: 150, FireRate: 0.7, Cost: 15, BulletSpeed: 75}}},
 	},
 	MobTypes: []*MobType{
 		{Name: "Dot", Health: 50, Speed: 50, Reward: 1, Income: 1, Cost: 5},
@@ -56,9 +77,9 @@ var StandardGameConfig = GameConfig{
 
 var TestGameConfig = GameConfig{
 	TowerTypes: []*TowerType{
-		{Name: "FastBullet", Damage: 1, Range: 300, FireRate: 1, Cost: 5, BulletSpeed: 150},
-		{Name: "SlowBullet", Damage: 5, Range: 150, FireRate: 1, Cost: 15, BulletSpeed: 25},
-		{Name: "StationaryBullet", Damage: 5, Range: 150, FireRate: 1, Cost: 15, BulletSpeed: 0},
+		{Name: "FastBullet", Levels: []*TowerLevel{{Level: 1, Damage: 1, Range: 300, FireRate: 1, Cost: 5, BulletSpeed: 150}}},
+		{Name: "SlowBullet", Levels: []*TowerLevel{{Level: 1, Damage: 5, Range: 150, FireRate: 1, Cost: 15, BulletSpeed: 25}}},
+		{Name: "StationaryBullet", Levels: []*TowerLevel{{Level: 1, Damage: 5, Range: 150, FireRate: 1, Cost: 15, BulletSpeed: 0}}},
 	},
 	MobTypes: []*MobType{
 		{Name: "FastMob", Health: 50, Speed: 70, Reward: 1, Income: 1, Cost: 5},
