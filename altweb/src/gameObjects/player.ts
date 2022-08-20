@@ -15,7 +15,7 @@ export class GamePlayer extends Phaser.GameObjects.GameObject {
         this.id = player.id;
         this.player = player;
         this.scene = scene;
-        this.playerLabel = this.scene.add.text(this.scene.offsetX, 400 + this.scene.offsetY, "Player " + this.id);
+        this.playerLabel = this.scene.add.text(this.scene.offsetX, 400 + this.scene.offsetY, "Player " + this.id + ": " + this.player.name);
         this.moneyLabel = this.scene.add.text(this.scene.offsetX, 420 + this.scene.offsetY, "Gold: " + this.player.money);
         this.livesLabel = this.scene.add.text(this.scene.offsetX, 440 + this.scene.offsetY, "Lives: " + this.player.lives);
         this.incomeLabel = this.scene.add.text(this.scene.offsetX, 460 + this.scene.offsetY, "Income: " + this.player.income);
@@ -23,7 +23,7 @@ export class GamePlayer extends Phaser.GameObjects.GameObject {
 
     updateFromPlayer(player: Player) {
         this.player = player;
-        this.playerLabel.setText("Player " + this.id);
+        this.playerLabel.setText("Player " + this.id + ": " + this.player.name);
         this.moneyLabel.setText("Gold: " + this.player.money);
         this.livesLabel.setText("Lives: " + this.player.lives);
         this.incomeLabel.setText("Income: " + this.player.income);

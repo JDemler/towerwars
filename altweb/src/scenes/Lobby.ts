@@ -13,9 +13,12 @@ export default class Demo extends Phaser.Scene {
   towerTypes: TowerType[] = []
   mobTypes: MobType[] = []
   playerId: number = 0;
+  playerKey: string = "";
+  username: string;
   websocket: WebSocket | undefined;
   constructor() {
     super('LobbyScene');
+    this.username = "hans23";
   }
 
   //descructor
@@ -56,6 +59,8 @@ export default class Demo extends Phaser.Scene {
   }
 
   create() {
+
+
     connect().then(ws => {
       this.websocket = ws;
       this.websocket.onmessage = (event) => {
@@ -87,9 +92,12 @@ export default class Demo extends Phaser.Scene {
   }
 
   startGame() {
-    joinGame().then(playerId => {
-      if (playerId) {
-        this.playerId = playerId;
+    this.username = "hans23";
+    joinGame(this.username).then(addedPlayer => {
+      if (addedPlayer) {
+        this.playerId = addedPlayer.fieldId;
+        this.playerKey = addedPlayer.key;
+
         console.log("Assigned to game");
       }
     });

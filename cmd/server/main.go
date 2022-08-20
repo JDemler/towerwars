@@ -59,8 +59,18 @@ func (s *Server) AddPlayer(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
+	// Read player name from body
+	var playerName string
+	err := json.NewDecoder(r.Body).Decode(&playerName)
+	if err != nil {
+		fmt.Println(err)
+		// Keep playername optional for now
+		// w.WriteHeader(http.StatusBadRequest)
+		// return
+		playerName = "hans"
+	}
 	// add player to game and get its key
-	key := s.game.AddPlayer()
+	key := s.game.AddPlayer(playerName)
 	fieldId := len(s.game.Fields) - 1
 	// return success
 	w.WriteHeader(http.StatusOK)

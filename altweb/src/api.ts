@@ -1,5 +1,6 @@
 import { Game } from './data/game';
 import { MobType, TowerType } from './data/gameConfig';
+import { AddedPlayer } from './data/player';
 
 const api_url = import.meta.env.VITE_API_URL || 'http://localhost:8080/';
 const ws_api_url = import.meta.env.VITE_WS_API_URL || 'ws://localhost:8080/';
@@ -71,15 +72,23 @@ export async function connect(): Promise<WebSocket> {
     return ws;
 }
 
-export async function joinGame() {
+export async function joinGame(name: string): Promise<AddedPlayer | undefined> {
     try {
-        const response = await fetch(api('add_player'));
+        const response = await fetch(api('add_player'),
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(name)
+            }
+        );
 
         if (!response.ok) {
             throw new Error('Network response was not ok.');
         }
 
-        const result = (await response.json()) as number;
+        const result = (await response.json()) as AddedPlayer;
         return result;
     } catch (error) {
         console.error(error);

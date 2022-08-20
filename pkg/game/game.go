@@ -11,10 +11,11 @@ const PlayingState = "Playing"
 const GameOverState = "GameOver"
 
 type Player struct {
-	Id     int `json:"id"`
-	Money  int `json:"money"`
-	Income int `json:"income"`
-	Lives  int `json:"lives"`
+	Id     int    `json:"id"`
+	Name   string `json:"name"`
+	Money  int    `json:"money"`
+	Income int    `json:"income"`
+	Lives  int    `json:"lives"`
 }
 
 type Game struct {
@@ -39,9 +40,10 @@ func NewGame() *Game {
 }
 
 // Add Player to Game. Return its key
-func (game *Game) AddPlayer() string {
+func (game *Game) AddPlayer(playerName string) string {
 	player := &Player{
 		Id:     len(game.Fields),
+		Name:   playerName,
 		Money:  game.config.StartStats.Money,
 		Income: game.config.StartStats.Income,
 		Lives:  game.config.StartStats.Lives,
