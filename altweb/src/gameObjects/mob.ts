@@ -33,6 +33,13 @@ export class GameMob extends Phaser.GameObjects.GameObject {
                 , this.mob.targetX + this.scene.offsetX
                 , this.mob.targetY + this.scene.offsetY
                 , this.mob.speed);
+        // FillColor from health/maxhealth (green to red)
+        let health = this.mob.health;
+        let maxHealth = this.mob.maxHealth;
+        let healthPercentage = health / maxHealth;
+        let red = Math.floor(255 * (1 - healthPercentage));
+        let green = Math.floor(255 * healthPercentage);
+        this.arc.setFillStyle(Phaser.Display.Color.GetColor(red, green, 0));
     }
 
     destroy() {

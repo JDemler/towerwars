@@ -13,7 +13,7 @@ type Mob struct {
 	TargetX   float64 `json:"targetX"`
 	TargetY   float64 `json:"targetY"`
 	Health    int     `json:"health"`
-	MaxHealth int     `json:"max_health"`
+	MaxHealth int     `json:"maxHealth"`
 	Reward    int     `json:"reward"`
 	Reached   bool    `json:"-"`
 	Type      string  `json:"type"`
