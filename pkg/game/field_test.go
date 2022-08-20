@@ -273,3 +273,38 @@ func TestUpgradeTower(t *testing.T) {
 		t.Errorf("Expected tower damage to be 15, got %d", field.Towers[0].Damage)
 	}
 }
+
+// Test that selling a tower frees up the path and gives money back to the player
+func TestSellTower(t *testing.T) {
+	field := prepareField(false, false)
+	// Test that 1,1 is not occupied before BuyTowerEvent is executed
+	if field.TWMap.IsOccupied(2, 0) {
+		t.Error("Expected 1,1 to be empty")
+	}
+	// Buy tower
+	_, err := field.HandleEvent(BuildEvent{X: 1, Y: 1, TowerType: "SlowBullet"}, []*Field{}, &TestGameConfig)
+	if err != nil {
+		t.Error("Expected tower to be built")
+	}
+	if len(field.Towers) != 1 {
+		t.Errorf("Expected 1 tower, got %d", len(field.Towers))
+	}
+	if field.TWMap.IsOccupied(1, 1) != true {
+		t.Error("Expected TWMap is occupied at 1, 1")
+	}
+	// Sell tower
+	_, err = field.HandleEvent(SellEvent{TowerId: 1}, []*Field{}, &TestGameConfig)
+	if err != nil {
+		t.Errorf("Expected tower to be sold but got %s", err)
+	}
+	if len(field.Towers) != 0 {
+		t.Errorf("Expected 0 towers, got %d", len(field.Towers))
+	}
+	if field.TWMap.IsOccupied(1, 1) != false {
+		t.Error("Expected TWMap is not occupied at 1, 1")
+	}
+	// 100 - 15 + (15 * 0.8) = 97
+	if field.Player.Money != 9700 {
+		t.Errorf("Expected 97 money, got %d", field.Player.Money)
+	}
+}

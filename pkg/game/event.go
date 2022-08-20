@@ -84,14 +84,26 @@ func (e *FieldEvent) UnmarshalJSON(data []byte) error {
 	e.Key = f.Key
 	e.Type = f.Type
 	switch f.Type {
+	case "buyMob":
+		var payload BuyMobEvent
+		if err := json.Unmarshal(f.Payload, &payload); err != nil {
+			return err
+		}
+		e.Payload = &payload
 	case "buildTower":
 		var payload BuildEvent
 		if err := json.Unmarshal(f.Payload, &payload); err != nil {
 			return err
 		}
 		e.Payload = &payload
-	case "buyMob":
-		var payload BuyMobEvent
+	case "sellTower":
+		var payload SellEvent
+		if err := json.Unmarshal(f.Payload, &payload); err != nil {
+			return err
+		}
+		e.Payload = &payload
+	case "upgradeTower":
+		var payload UpgradeEvent
 		if err := json.Unmarshal(f.Payload, &payload); err != nil {
 			return err
 		}
@@ -164,8 +176,41 @@ func (e BuildEvent) TargetFieldIds() []int {
 }
 
 type SellEvent struct {
-	X int
-	Y int
+	TowerId int `json:"towerId"`
+}
+
+// implement Event for SellEvent
+func (e SellEvent) TryExecute(sourceField *Field, targetFields []*Field, gc *GameConfig) ([]*GameEvent, error) {
+
+	// Check if tower exists
+	tower := sourceField.GetTowerById(e.TowerId)
+	if tower == nil {
+		return nil, fmt.Errorf("Tower %d does not exist", e.TowerId)
+	}
+	towerType := gc.TowerType(tower.Type)
+	sourceField.TWMap.Free(int((tower.X-TileSize/2)/TileSize), int((tower.Y-TileSize/2)/TileSize))
+	sourceField.removeTowerById(e.TowerId)
+	sourceField.Player.Money += towerType.Level(tower.Level).Cost * 80
+	return []*GameEvent{
+		{
+			Type: "towerDestroyed",
+			Payload: TowerDestroyedEvent{
+				FieldId: sourceField.Id,
+				TowerId: tower.Id,
+			},
+		},
+		{
+			Type: "playerUpdated",
+			Payload: PlayerUpdatedEvent{
+				FieldId: sourceField.Id,
+				Player:  sourceField.Player,
+			},
+		},
+	}, nil
+}
+
+func (e SellEvent) TargetFieldIds() []int {
+	return []int{}
 }
 
 type UpgradeEvent struct {

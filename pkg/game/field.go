@@ -53,6 +53,16 @@ func (f *Field) GetTowerById(id int) *Tower {
 	return nil
 }
 
+// remove tower by id
+func (field *Field) removeTowerById(id int) {
+	for i, t := range field.Towers {
+		if t.Id == id {
+			field.Towers = append(field.Towers[:i], field.Towers[i+1:]...)
+			return
+		}
+	}
+}
+
 // HandleEvent for field
 func (field *Field) HandleEvent(event Event, otherFields []*Field, gameConfig *GameConfig) ([]*GameEvent, error) {
 	// Iterate over event targetfieldids and get targetfields
