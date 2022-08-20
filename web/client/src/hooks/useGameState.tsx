@@ -2,7 +2,7 @@ import { createContext, PropsWithChildren, useContext, useEffect, useReducer, us
 import GameState from '../models/GameState';
 import React from 'react';
 import ApiClient from '../lib/clients/ApiClient';
-import { PlayerModel, FieldModel, TowerModel, MobModel, BulletModel } from '../models';
+import { PlayerModel, FieldModel, TowerModel, MobModel, BulletModel, AddedPlayerModel } from '../models';
 import WebSocketClient from '../lib/clients/WebSocketClient';
 import GridCoordinate from '../lib/GridCoordinate';
 import { BuildTurretEvent, BuyMobEvent } from '../lib/FieldEvent';
@@ -136,9 +136,9 @@ function reducer(state: GameState | undefined, action: Action): GameState | unde
 interface GameStateContextProps {
     gameState?: GameState;
 
-    joinGame: () => void;
-    playerId?: number;
-    enemyPlayerId?: number;
+    joinGame: (playerName: string) => void;
+    player?: AddedPlayerModel;
+    enemyPlayerFieldId?: number;
 
     buyMob: () => void;
     buildTurret: (coordinate: GridCoordinate) => void;
@@ -151,9 +151,9 @@ export const GameStateProvider: React.FC<PropsWithChildren> = ({ children }) => 
 
     const [webSocketClient, setWebSocketClient] = useState<WebSocketClient>();
 
-    const [playerId, setPlayerId] = useState<number | undefined>(1);
-    const enemyPlayerId = playerId !== undefined
-        ? 1 - playerId
+    const [player, setPlayer] = useState<AddedPlayerModel>();
+    const enemyPlayerFieldId = player !== undefined
+        ? 1 - player.fieldId
         : undefined
 
     // Websocket Client
@@ -185,11 +185,11 @@ export const GameStateProvider: React.FC<PropsWithChildren> = ({ children }) => 
     }, []);
 
     // Join Game
-    const joinGame = () => {
-        ApiClient.joinGame()
-            .then(playerId => {
-                setPlayerId(playerId);
-                console.log('Joined', playerId);
+    const joinGame = (playerName: string) => {
+        ApiClient.joinGame(playerName)
+            .then(addedPlayerModel => {
+                setPlayer(addedPlayerModel);
+                console.log('Joined', addedPlayerModel);
             }).catch(err => {
                 console.error('Error while joining game', err);
             })
@@ -197,19 +197,19 @@ export const GameStateProvider: React.FC<PropsWithChildren> = ({ children }) => 
 
     // Game Functions
     const buyMob = () => {
-        if (playerId === undefined || enemyPlayerId === undefined) {
+        if (player === undefined || enemyPlayerFieldId === undefined) {
             return console.error('Not a player');
         }
 
-        webSocketClient?.dispatchFieldEvent(new BuyMobEvent(playerId, enemyPlayerId, 'Circle'));
+        webSocketClient?.dispatchFieldEvent(new BuyMobEvent(player, enemyPlayerFieldId, 'Confused Kid'));
     }
 
     const buildTurret = (coordinate: GridCoordinate) => {
-        if (playerId === undefined) {
+        if (player === undefined) {
           return console.error('Not a player');
         }
         
-        webSocketClient?.dispatchFieldEvent(new BuildTurretEvent(playerId, coordinate.x, coordinate.y, 'Arrow'));
+        webSocketClient?.dispatchFieldEvent(new BuildTurretEvent(player, coordinate.x, coordinate.y, 'Like Button'));
     }
 
     return (
@@ -217,8 +217,8 @@ export const GameStateProvider: React.FC<PropsWithChildren> = ({ children }) => 
             gameState: state,
 
             joinGame,
-            playerId,
-            enemyPlayerId,
+            player: player,
+            enemyPlayerFieldId: enemyPlayerFieldId,
 
             buyMob,
             buildTurret,

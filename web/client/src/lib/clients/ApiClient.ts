@@ -1,6 +1,7 @@
 import GameState from "../../models/GameState";
 import { FieldEvent } from '../FieldEvent';
 import { isAbsoluteUrl } from '../helpers';
+import { AddedPlayerModel } from '../../models';
 
 // const ServerURL = "127.0.0.1:8080";
 const getApiRoot = () => {
@@ -26,11 +27,11 @@ export default class ApiClient {
     }
 
     // Function that adds the player to the game
-    static joinGame: () => Promise<number> = async () => {
+    static joinGame: (playerName: string) => Promise<AddedPlayerModel> = async () => {
         const response = await fetch(getApiUrl('add_player'));
-        const responseJson = await response.text();
+        const responseJson = await response.json();
 
-        return Number.parseInt(responseJson);
+        return AddedPlayerModel.fromJSON(responseJson);
     }
 
     // Fuction that pushes the payload with an event type for a specific fieldId to the /register_event endpoint

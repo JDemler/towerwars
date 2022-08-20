@@ -1,20 +1,22 @@
+import { AddedPlayerModel } from "../models";
+
 export class FieldEvent {
     fieldId: number;
+    key: string;
     eventType: string;
     payload: any;
 
-    constructor(fieldId: number, eventType: string, payload: any) {
-        this.fieldId = fieldId;
+    constructor(player: AddedPlayerModel, eventType: string, payload: any) {
+        this.fieldId = player.fieldId;
+        this.key = player.key;
         this.eventType = eventType;
         this.payload = JSON.stringify(payload);
     }
 }
 
-export type TurretType = 'Arrow';
-
 export class BuildTurretEvent extends FieldEvent {
-    constructor(fieldId: number, x: number, y: number, turretType: TurretType) {
-        super(fieldId, "buildTower", {
+    constructor(player: AddedPlayerModel, x: number, y: number, turretType: string) {
+        super(player, "buildTower", {
             x: x,
             y: y,
             towerType: turretType,
@@ -22,12 +24,10 @@ export class BuildTurretEvent extends FieldEvent {
     }
 }
 
-export type MobType = 'Circle';
-
 export class BuyMobEvent extends FieldEvent {
-    constructor(fieldId: number, targetFieldId: number, mobType: MobType) {
-        super(fieldId, "buyMob", {
-            fieldId: fieldId,
+    constructor(player: AddedPlayerModel, targetFieldId: number, mobType: string) {
+        super(player, "buyMob", {
+            fieldId: player,
             targetFieldId: targetFieldId,
             mobType: mobType,
         });

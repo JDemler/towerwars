@@ -20,6 +20,7 @@ const GameScene: React.FC<GameSceneProps> = () => {
                 {gameState.fields.map(field =>
                     <div key={field.id} style={{ margin: '8px' }}>
                         <div>
+                            <h3>{field.player.name}</h3>
                             <p>Lives: {field.player.lives}</p>
                             <p>Money: {field.player.money}</p>
                             <p>Income: {field.player.income}</p>
