@@ -21,16 +21,8 @@ const Field: React.FC<FieldProps> = ({ onTileClick }) => {
                 <Turret key={tower.id ?? `${tower.coordinate.x},${tower.coordinate.y}`} model={tower} />
             )}
             {field.mobs.map((mob) => 
-                <Mob key={mob.id} model={mob} />
+                <Mob key={mob.id} model={mob} bullets={field.bullets.filter(bullet => bullet.targetId === mob.id)} />
             )}
-            {field.bullets.map((bullet) => {
-                const targetMob = field.mobs.find(mob => mob.id === bullet.targetId);
-
-                if (targetMob === undefined)
-                    return;
-
-                return <Bullet key={bullet.id} model={bullet} targetMob={targetMob} />
-            })}
         </Layer>
       </Stage>
     );
