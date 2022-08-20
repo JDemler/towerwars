@@ -114,9 +114,9 @@ var TestGameConfig = GameConfig{
 	},
 	Map: standardTWMap(),
 	StartStats: &Player{
-		Money:  100,
+		Money:  10000,
 		Income: 10,
-		Lives:  30,
+		Lives:  50,
 	},
 }
 

@@ -75,7 +75,7 @@
             "health": 10,
             "speed": 100,
             "reward": 1,
-            "income": 1,
+            "income": 3,
             "cost": 5
         },
         {
@@ -85,7 +85,7 @@
             "health": 20,
             "speed": 150,
             "reward": 2,
-            "income": 2,
+            "income": 6,
             "cost": 10
         },
         {
@@ -95,7 +95,7 @@
             "health": 30,
             "speed": 200,
             "reward": 4,
-            "income": 4,
+            "income": 12,
             "cost": 20
         },
         {
@@ -105,7 +105,7 @@
             "health": 40,
             "speed": 250,
             "reward": 6,
-            "income": 6,
+            "income": 15,
             "cost": 30
         },
         {
@@ -115,7 +115,7 @@
             "health": 50,
             "speed": 300,
             "reward": 8,
-            "income": 8,
+            "income": 20,
             "cost": 40
         },
         {
@@ -125,7 +125,7 @@
             "health": 60,
             "speed": 350,
             "reward": 10,
-            "income": 10,
+            "income": 25,
             "cost": 50
         }
     ],
@@ -138,8 +138,8 @@
         "endY": 9
     },
     "startStats": {
-        "money": 50,
+        "money": 5000,
         "lives": 30,
-        "income": 15
+        "income": 50
     }
 }

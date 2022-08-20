@@ -33,7 +33,7 @@ func NewGame(config *GameConfig) *Game {
 		Fields:         []*Field{},
 		Elapsed:        0,
 		MobRespawnTime: 5,
-		IncomeCooldown: 30,
+		IncomeCooldown: 1,
 		State:          WaitingState,
 		config:         config,
 	}
@@ -123,7 +123,7 @@ func (game *Game) Update(delta float64) []*GameEvent {
 				},
 			})
 		}
-		game.IncomeCooldown = 30
+		game.IncomeCooldown = 1
 	}
 
 	game.Elapsed += delta

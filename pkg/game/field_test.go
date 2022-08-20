@@ -90,7 +90,7 @@ func TestBulletReachesEndOfTWMapAndAnotherMob(t *testing.T) {
 func TestBuyMobEvent(t *testing.T) {
 	field := prepareField(false, false)
 	field.HandleEvent(BuyMobEvent{fieldId: 0, MobType: "Circle", TargetFieldId: 0}, []*Field{field}, &StandardGameConfig)
-	if field.Player.Money != 90 {
+	if field.Player.Money != 9000 {
 		t.Errorf("Expected 90 money, got %d", field.Player.Money)
 	}
 	if field.Player.Income != 12 {

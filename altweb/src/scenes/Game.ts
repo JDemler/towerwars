@@ -35,7 +35,7 @@ export default class GameScene extends Phaser.Scene {
   }
 
   preload() {
-    // Load images from assets folder
+    // Load mob images from assets/mobimgs folder
     this.load.path = 'assets/mobimgs/';
     this.load.image('confusedKid', 'confused_kid.jpg');
     this.load.image('facebookAddict', 'facebook_addict.jpg');
@@ -43,6 +43,9 @@ export default class GameScene extends Phaser.Scene {
     this.load.image('facebookTroll', 'facebook_troll.jpg');
     this.load.image('karen', 'karen.jpg');
     this.load.image('niceGuy', 'nice_guy.jpg');
+    // Load mob sprites from assets/mobSprites folder
+    this.load.path = 'assets/mobSprites/';
+    this.load.spritesheet('blueball', 'blueball.png', { frameWidth: 128, frameHeight: 128 });
   }
 
   create() {

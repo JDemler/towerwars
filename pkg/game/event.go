@@ -120,14 +120,14 @@ func (e BuildEvent) TryExecute(sourceField *Field, targetFields []*Field, gc *Ga
 		return nil, fmt.Errorf("Invalid tower level %d", 1)
 	}
 	// Check if player can affort tower
-	if sourceField.Player.Money < towerLevel.Cost {
+	if sourceField.Player.Money < towerLevel.Cost*100 {
 		return nil, fmt.Errorf("Player cannot afford tower")
 	}
 	tower := towerType.Tower(float64(e.X)*TileSize+TileSize/2, float64(e.Y)*TileSize+TileSize/2, 1)
 	//Occupy tower position in twmap
 	sourceField.TWMap.Occupy(e.X, e.Y)
 	sourceField.Towers = append(sourceField.Towers, tower)
-	sourceField.Player.Money -= towerLevel.Cost
+	sourceField.Player.Money -= towerLevel.Cost * 100
 	return []*GameEvent{
 		{
 			Type: "towerCreated",
@@ -191,13 +191,13 @@ func (e BuyMobEvent) TryExecute(sourceField *Field, targetFields []*Field, confi
 		fmt.Println("Invalid mob type")
 		return nil, fmt.Errorf("Invalid mob type")
 	}
-	if sourceField.Player.Money < mobType.Cost {
+	if sourceField.Player.Money < mobType.Cost*100 {
 		// Player cannot afford mob
 		fmt.Println("Player cannot afford mob")
 		return nil, fmt.Errorf("Player cannot afford mob")
 	}
 	// Reduce player money
-	sourceField.Player.Money -= mobType.Cost
+	sourceField.Player.Money -= mobType.Cost * 100
 	// Increase player income
 	sourceField.Player.Income += mobType.Income
 	gameEvents := []*GameEvent{}

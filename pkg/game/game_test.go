@@ -9,8 +9,7 @@ func prepareGame() *Game {
 	game := Game{
 		Fields:         []*Field{},
 		Elapsed:        0,
-		MobRespawnTime: 5,
-		IncomeCooldown: 30,
+		IncomeCooldown: 1,
 		State:          WaitingState,
 		config:         &TestGameConfig,
 	}
@@ -85,18 +84,17 @@ func TestPlayerGetsMoneyAfterIncomeLoop(t *testing.T) {
 	game.Start()
 	// iterate over fields and players and check that players have 100 money
 	for _, field := range game.Fields {
-		if field.Player.Money != 100 {
+		if field.Player.Money != 10000 {
 			t.Errorf("Expected player to have 100 money, got %d", field.Player.Money)
 		}
 	}
-	// run update loop
-	for i := 0; i < 31; i++ {
-		game.Update(1)
-	}
+
+	game.Update(1)
+
 	// Check that every player has money + income
 	for _, field := range game.Fields {
-		if field.Player.Money != 100+field.Player.Income {
-			t.Errorf("Expected player to have 100+income money, got %d", field.Player.Money)
+		if field.Player.Money != 10000+field.Player.Income {
+			t.Errorf("Expected player to have %d, got %d", 10000+field.Player.Income, field.Player.Money)
 		}
 	}
 }
