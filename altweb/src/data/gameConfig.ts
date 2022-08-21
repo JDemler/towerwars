@@ -16,7 +16,8 @@ export type MobType = {
     name: string;
     description: string;
     key: string;
-    price: number;
+    cost: number;
+    income: number;
     speed: number;
     health: number;
 }

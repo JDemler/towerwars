@@ -7,6 +7,8 @@ export type Tower = {
     x: number;
     y: number;
     range: number;
-    towerType: string;
+    damage: number;
+    fireRate: number;
+    type: string;
     level: number;
 }

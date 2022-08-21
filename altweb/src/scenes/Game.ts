@@ -3,6 +3,8 @@ import { Game } from '../data/game';
 import { connect, getGame, getMobTypes, getTowerTypes, joinGame, registerEvent } from '../api';
 import { TowerType, MobType } from '../data/gameConfig';
 import { GameField } from '../gameObjects/field';
+import { TowerMenu } from '../gameObjects/towerMenu';
+import { GameTower } from '../gameObjects/tower';
 
 export default class GameScene extends Phaser.Scene {
   // properties
@@ -11,11 +13,13 @@ export default class GameScene extends Phaser.Scene {
   playerId: number = 0;
   towerTypes: TowerType[] = []
   mobTypes: MobType[] = []
+  focussedTowerType: number = 0;
   offsetX: number = 0;
   offsetY: number = 0;
   websocket: WebSocket | undefined = undefined;
   fields: GameField[] = [];
   fpsLabel: Phaser.GameObjects.Text | undefined = undefined;
+  towerMenu: TowerMenu | undefined = undefined;
   constructor() {
     super('GameScene');
     this.gameState = {
@@ -35,6 +39,7 @@ export default class GameScene extends Phaser.Scene {
   }
 
   preload() {
+    this.load.plugin('rexoutlinepipelineplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexoutlinepipelineplugin.min.js', true);
     // Load mob images from assets/mobimgs folder
     this.load.path = 'assets/mobimgs/';
     this.load.image('confusedKid', 'confused_kid.jpg');
@@ -49,7 +54,7 @@ export default class GameScene extends Phaser.Scene {
   }
 
   create() {
-    this.fpsLabel = this.add.text(0, 600, "FPS: " + this.game.loop.actualFps);
+    this.fpsLabel = this.add.text(600, 700, "FPS: " + this.game.loop.actualFps);
     connect().then(ws => {
       this.websocket = ws;
       this.websocket.onmessage = (event) => {
@@ -74,8 +79,22 @@ export default class GameScene extends Phaser.Scene {
   }
 
   setOffsetForField(fieldId: number): void {
-    this.offsetX = fieldId * 400;
+    this.offsetX = fieldId * 500 + 160;
     this.offsetY = 0;
+  }
+
+  setTowerMenu(tower: GameTower) {
+    tower.focus = true;
+    this.setOffsetForField(this.playerId);
+    if (this.towerMenu) {
+      this.towerMenu.setToTowerType(tower.tower, this.getTowerType(tower.tower.type));
+    } else {
+      this.towerMenu = new TowerMenu(this, tower.tower, this.getTowerType(tower.tower.type));
+    }
+  }
+
+  getTowerType(towerType: string): TowerType {
+    return this.towerTypes.find(t => t.name === towerType)!;
   }
 
   handleEvent(event: any): void {

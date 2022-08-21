@@ -15,15 +15,15 @@ export class GamePlayer extends Phaser.GameObjects.GameObject {
         this.id = player.id;
         this.player = player;
         this.scene = scene;
-        this.playerLabel = this.scene.add.text(this.scene.offsetX, 400 + this.scene.offsetY, "Player " + this.id + ": " + this.player.name);
-        this.moneyLabel = this.scene.add.text(this.scene.offsetX, 420 + this.scene.offsetY, "Gold: " + Math.floor(this.player.money / 100));
-        this.livesLabel = this.scene.add.text(this.scene.offsetX, 440 + this.scene.offsetY, "Lives: " + this.player.lives);
-        this.incomeLabel = this.scene.add.text(this.scene.offsetX, 460 + this.scene.offsetY, "Income: " + this.player.income / 100);
+        this.playerLabel = this.scene.add.text(this.scene.offsetX - 145, 10 + this.scene.offsetY, "Player: " + this.player.name);
+        this.moneyLabel = this.scene.add.text(this.scene.offsetX - 145, 30 + this.scene.offsetY, "Gold: " + Math.floor(this.player.money / 100));
+        this.livesLabel = this.scene.add.text(this.scene.offsetX - 145, 50 + this.scene.offsetY, "Lives: " + this.player.lives);
+        this.incomeLabel = this.scene.add.text(this.scene.offsetX - 145, 70 + this.scene.offsetY, "Income: " + this.player.income / 100);
     }
 
     updateFromPlayer(player: Player) {
         this.player = player;
-        this.playerLabel.setText("Player " + this.id + ": " + this.player.name);
+        this.playerLabel.setText("Player: " + this.player.name);
         this.moneyLabel.setText("Gold: " + Math.floor(this.player.money / 100));
         this.livesLabel.setText("Lives: " + this.player.lives);
         this.incomeLabel.setText("Income: " + this.player.income / 100);

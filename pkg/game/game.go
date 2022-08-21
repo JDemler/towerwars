@@ -89,7 +89,7 @@ func (game *Game) HandleEvent(fieldEvent FieldEvent) ([]*GameEvent, error) {
 		// Check that event.key and field.key match
 		if fieldEvent.Key != targetField.Key {
 			// Currently only log a message. In the future return an error to the client
-			fmt.Printf("Invalid key for field %d. Expected %s, got %s", fieldEvent.FieldId, targetField.Key, fieldEvent.Key)
+			fmt.Printf("Invalid key for field %d. Expected %s, got %s\n", fieldEvent.FieldId, targetField.Key, fieldEvent.Key)
 			//return nil, fmt.Errorf("Invalid key! Player unauthorized")
 		}
 		return targetField.HandleEvent(fieldEvent.Payload, game.Fields, game.Config)

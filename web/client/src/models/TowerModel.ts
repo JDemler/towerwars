@@ -20,7 +20,7 @@ namespace TowerModel {
             ),
             damage: json.damage,
             range: json.range / ServerTileSize,
-            fireRate: json.fire_rate,
+            fireRate: json.fireRate,
             cooldown: json.cooldown,
         };
     }

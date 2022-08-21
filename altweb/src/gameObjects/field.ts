@@ -5,6 +5,7 @@ import { Tower } from "../data/tower";
 import { drawTWMap } from "../data/twmap";
 import GameScene from "../scenes/Game";
 import { GameMob } from "./mob";
+import { MobButtonDescription } from "./mobButtonDescription";
 import { GamePlayer } from "./player";
 import { GameTower } from "./tower";
 
@@ -19,16 +20,22 @@ export class GameField extends Phaser.GameObjects.GameObject {
     player: GamePlayer;
     scene: GameScene;
     mobButtons: Phaser.GameObjects.Image[] = [];
+    mobBtnDesc: MobButtonDescription | undefined = undefined;
+    tiles: Phaser.GameObjects.Rectangle[] = [];
+
     constructor(scene: GameScene, field: Field) {
         super(scene, 'GameField');
         this.id = field.id;
         this.scene = scene;
         this.scene.setOffsetForField(this.id);
         this.field = field;
-        drawTWMap(this.field.twmap, (x, y) => { this.buildTower(x, y) }, this.scene);
         this.player = new GamePlayer(scene, field.player);
         if (scene.playerId == field.player.id) {
+            drawTWMap(this.field.twmap, (x, y) => { this.buildTower(x, y) }, this.scene);
             this.drawMobButtons();
+            this.mobBtnDesc = new MobButtonDescription(scene, this.scene.mobTypes[0]);
+        } else {
+            drawTWMap(this.field.twmap, (x, y) => { }, this.scene);
         }
     }
 
@@ -49,6 +56,11 @@ export class GameField extends Phaser.GameObjects.GameObject {
             case "towerCreated":
                 this.createTower(event.payload.tower);
                 break;
+            case "towerUpgraded":
+                this.upgradeTower(event.payload.tower);
+                break;
+            case "towerDestroyed":
+                this.destroyTower(event.payload.towerId);
             case "fieldUpdated":
                 this.updateFromField(event.payload);
                 break;
@@ -63,11 +75,26 @@ export class GameField extends Phaser.GameObjects.GameObject {
             case "playerUpdated":
                 this.updatePlayer(event.payload.player);
                 break;
+
         }
     }
 
     createTower(tower: Tower) {
         this.towers.push(new GameTower(this.scene, tower));
+    }
+
+    upgradeTower(tower: Tower) {
+        this.towers.find(t => t.id == tower.id)?.upgrade(tower);
+    }
+
+    destroyTower(towerId: number) {
+        //Find tower with id and destroy it
+        for (var i = this.towers.length - 1; i >= 0; i--) {
+            if (this.towers[i].id == towerId) {
+                this.towers[i].destroy();
+                this.towers.splice(i, 1);
+            }
+        }
     }
 
     updateFromField(field: Field) {
@@ -99,9 +126,22 @@ export class GameField extends Phaser.GameObjects.GameObject {
     }
 
     drawMobButtons() {
+        var postFxPlugin = this.scene.plugins.get('rexoutlinepipelineplugin');
         this.scene.mobTypes.forEach((mobType, i) => {
             var button = this.scene.add.image(mobBtnSize / 2 + i * mobBtnSize, 550, mobType.key)
                 .setInteractive({ useHandCursor: true })
+                .on('pointerover', () => {
+                    this.mobBtnDesc?.setToMobType(mobType);
+                    postFxPlugin.add(button, {
+                        thickness: 3,
+                        outlineColor: 0xff8a50
+                    });
+                    button.setDepth(1);
+                })
+                .on('pointerout', () => {
+                    postFxPlugin.remove(button);
+                    button.setDepth(0);
+                })
                 .on('pointerdown', () => {
                     this.scene.websocket?.send(
                         JSON.stringify({
