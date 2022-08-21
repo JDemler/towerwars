@@ -253,9 +253,25 @@ func (s *Server) WebSocket(w http.ResponseWriter, r *http.Request) {
 
 // Reset
 func (s *Server) reset() {
+	var configPath string
+	if os.Getenv("CONFIG_PATH") == "" {
+		fmt.Println("No config path set. Using default config")
+		configPath = "gameConfig.json"
+	} else {
+		fmt.Println("Using config from: ", os.Getenv("CONFIG_PATH"))
+		configPath = os.Getenv("CONFIG_PATH")
+	}
+	config, err := game.ReadConfigFromFile(configPath)
+	if err != nil {
+		fmt.Println("Could not read config")
+		fmt.Println(err)
+	}
+	if config == nil {
+		config = s.game.Config
+	}
 	// Wait for five seconds
 	time.Sleep(5 * time.Second)
-	s.game = game.NewGame(&game.StandardGameConfig)
+	s.game = game.NewGame(config)
 	// Close all channels
 	for _, c := range s.writeChannels {
 		c.Close()

@@ -131,11 +131,11 @@
     ],
     "map": {
         "width": 10,
-        "height": 10,
+        "height": 15,
         "startX": 0,
         "startY": 0,
         "endX": 9,
-        "endY": 9
+        "endY": 14
     },
     "startStats": {
         "money": 5000,

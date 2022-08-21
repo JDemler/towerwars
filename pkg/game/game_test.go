@@ -11,7 +11,7 @@ func prepareGame() *Game {
 		Elapsed:        0,
 		IncomeCooldown: 1,
 		State:          WaitingState,
-		config:         &TestGameConfig,
+		Config:         &TestGameConfig,
 	}
 	game.AddPlayer("test1")
 	game.AddPlayer("test2")

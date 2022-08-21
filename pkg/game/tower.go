@@ -10,7 +10,7 @@ type Tower struct {
 	Y           float64 `json:"y"`
 	Damage      int     `json:"damage"`
 	Range       float64 `json:"range"`
-	FireRate    float64 `json:"fire_rate"`
+	FireRate    float64 `json:"fireRate"`
 	Cooldown    float64 `json:"cooldown"`
 	Level       int     `json:"level"`
 	Type        string  `json:"type"`

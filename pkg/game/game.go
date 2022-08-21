@@ -24,7 +24,7 @@ type Game struct {
 	IncomeCooldown float64      `json:"incomeCooldown"`
 	MobRespawnTime float64      `json:"-"`
 	State          string       `json:"state"`
-	config         *GameConfig  `json:"-"`
+	Config         *GameConfig  `json:"-"`
 	events         []*GameEvent `json:"-"`
 }
 
@@ -35,7 +35,7 @@ func NewGame(config *GameConfig) *Game {
 		MobRespawnTime: 5,
 		IncomeCooldown: 1,
 		State:          WaitingState,
-		config:         config,
+		Config:         config,
 	}
 }
 
@@ -44,11 +44,11 @@ func (game *Game) AddPlayer(playerName string) string {
 	player := &Player{
 		Id:     len(game.Fields),
 		Name:   playerName,
-		Money:  game.config.StartStats.Money,
-		Income: game.config.StartStats.Income,
-		Lives:  game.config.StartStats.Lives,
+		Money:  game.Config.StartStats.Money,
+		Income: game.Config.StartStats.Income,
+		Lives:  game.Config.StartStats.Lives,
 	}
-	field := NewField(len(game.Fields), player, game.config.Map.GenerateMap())
+	field := NewField(len(game.Fields), player, game.Config.Map.GenerateMap())
 	game.Fields = append(game.Fields, field)
 	game.events = append(game.events, &GameEvent{
 		Type: "playerJoined",
@@ -92,7 +92,7 @@ func (game *Game) HandleEvent(fieldEvent FieldEvent) ([]*GameEvent, error) {
 			fmt.Printf("Invalid key for field %d. Expected %s, got %s", fieldEvent.FieldId, targetField.Key, fieldEvent.Key)
 			//return nil, fmt.Errorf("Invalid key! Player unauthorized")
 		}
-		return targetField.HandleEvent(fieldEvent.Payload, game.Fields, game.config)
+		return targetField.HandleEvent(fieldEvent.Payload, game.Fields, game.Config)
 	}
 	return []*GameEvent{}, fmt.Errorf("Field not found")
 }
@@ -186,10 +186,10 @@ func (game *Game) Update(delta float64) []*GameEvent {
 
 // Return TowerTypes
 func (game *Game) TowerTypes() []*TowerType {
-	return game.config.TowerTypes
+	return game.Config.TowerTypes
 }
 
 // Return MobTypes
 func (game *Game) MobTypes() []*MobType {
-	return game.config.MobTypes
+	return game.Config.MobTypes
 }
