@@ -8,6 +8,7 @@ on:
 
 jobs:
   golang-ci:
+    name: Run Golang Linters
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -23,6 +24,7 @@ jobs:
           version: latest
 
   golang-test:
+    name: Run Golang Unit Tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3  
@@ -36,12 +38,13 @@ jobs:
         run: go test -v ./...
 
   buildJob:
+    name: Build SocialMediaWars Docker Images and Push it to ACR
     runs-on: ubuntu-latest
     needs: [golang-ci, golang-test]
     steps:
       - uses: actions/checkout@v3
 
-      - uses: azure/docker-login@v2
+      - uses: azure/docker-login@v1
         with:
           login-server: ${{ secrets.ACR_LOGIN_SERVER }}
           username: ${{ secrets.ACR_USERNAME }}
