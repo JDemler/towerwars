@@ -5,6 +5,10 @@ metadata:
   labels:
     {{- include "socialmediawars.labels" . | nindent 4 }}
     app.kubernetes.io/name: socialmediawars-client
+  annotations:
+    keel.sh/policy: force
+    keel.sh/trigger: poll
+    keel.sh/match-tag: true
 spec:
   selector:
     matchLabels:
