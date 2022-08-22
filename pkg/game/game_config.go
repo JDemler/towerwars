@@ -7,10 +7,11 @@ import (
 )
 
 type GameConfig struct {
-	TowerTypes []*TowerType `json:"towerTypes"`
-	MobTypes   []*MobType   `json:"mobTypes"`
-	Map        *MapConfig   `json:"map"`
-	StartStats *Player      `json:"startStats"`
+	TowerTypes     []*TowerType `json:"towerTypes"`
+	MobTypes       []*MobType   `json:"mobTypes"`
+	Map            *MapConfig   `json:"map"`
+	StartStats     *Player      `json:"startStats"`
+	IncomeCooldown int          `json:"incomeCooldown"`
 }
 
 type MapConfig struct {

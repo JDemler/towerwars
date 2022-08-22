@@ -22,7 +22,6 @@ type Game struct {
 	Fields         []*Field     `json:"fields"`
 	Elapsed        float64      `json:"elapsed"`
 	IncomeCooldown float64      `json:"incomeCooldown"`
-	MobRespawnTime float64      `json:"-"`
 	State          string       `json:"state"`
 	Config         *GameConfig  `json:"-"`
 	events         []*GameEvent `json:"-"`
@@ -32,8 +31,7 @@ func NewGame(config *GameConfig) *Game {
 	return &Game{
 		Fields:         []*Field{},
 		Elapsed:        0,
-		MobRespawnTime: 5,
-		IncomeCooldown: 1,
+		IncomeCooldown: float64(config.IncomeCooldown),
 		State:          WaitingState,
 		Config:         config,
 	}
@@ -119,7 +117,7 @@ func (game *Game) Update(delta float64) []*GameEvent {
 				},
 			})
 		}
-		game.IncomeCooldown = 1
+		game.IncomeCooldown = float64(game.Config.IncomeCooldown)
 	}
 
 	game.Elapsed += delta
