@@ -72,7 +72,7 @@ func TestGameStartsWhenTwoPlayersJoin(t *testing.T) {
 		t.Errorf("Expected gameStateChanged event, got %s", gameStateChangedEvent[0].Type)
 	}
 	// Check that events payload can be casted to GameStateChangedEvent
-	gameStateChangedEventPayload := gameStateChangedEvent[0].Payload.(GameStateChangedEvent)
+	gameStateChangedEventPayload := gameStateChangedEvent[0].Payload.(StateChangedEvent)
 	if gameStateChangedEventPayload.GameState != PlayingState {
 		t.Errorf("Expected game state to be playing, got %s", gameStateChangedEventPayload.GameState)
 	}
@@ -114,7 +114,7 @@ func TestGameState(t *testing.T) {
 	// Set live of all players to 1 and add mob
 	game.Fields[0].Player.Lives = 1
 	// Send mob to field 0 by executing an event
-	_, err := game.HandleEvent(FieldEvent{FieldId: 1, Type: "buyMob", Payload: BuyMobEvent{MobType: "FastMob", TargetFieldId: 0}})
+	_, err := game.HandleEvent(FieldEvent{FieldID: 1, Type: "buyMob", Payload: BuyMobEvent{MobType: "FastMob", TargetFieldID: 0}})
 	if err != nil {
 		t.Errorf("Expected no error, got %s", err)
 	}
@@ -137,12 +137,12 @@ func TestBuildTower(t *testing.T) {
 	game := prepareGame()
 	game.Start()
 	// Build tower on field 1
-	_, err := game.HandleEvent(FieldEvent{FieldId: 1, Type: "buildTower", Payload: BuildEvent{X: 1, Y: 1, TowerType: "FastBullet"}})
+	_, err := game.HandleEvent(FieldEvent{FieldID: 1, Type: "buildTower", Payload: BuildEvent{X: 1, Y: 1, TowerType: "FastBullet"}})
 	if err != nil {
 		t.Errorf("Expected no error, got %s", err)
 	}
 	// Check that field 0 is not occupied
-	if game.Fields[0].TWMap.IsOccupied(1, 1) {
+	if game.Fields[0].TWMap.isOccupied(1, 1) {
 		t.Errorf("Expected field to not be occupied, got true")
 	}
 }
@@ -152,7 +152,7 @@ func TestBuyMob(t *testing.T) {
 	game := prepareGame()
 	game.Start()
 	// Buy mob on field 0
-	_, err := game.HandleEvent(FieldEvent{FieldId: 1, Type: "buyMob", Payload: BuyMobEvent{MobType: "FastMob", TargetFieldId: 0}})
+	_, err := game.HandleEvent(FieldEvent{FieldID: 1, Type: "buyMob", Payload: BuyMobEvent{MobType: "FastMob", TargetFieldID: 0}})
 	if err != nil {
 		t.Errorf("Expected no error, got %s", err)
 	}
@@ -179,7 +179,7 @@ func TestGameOverEvent(t *testing.T) {
 		t.Errorf("Expected gameStateChanged event, got %s", gameStateChangedEvent[0].Type)
 	}
 	// Check that events payload can be casted to GameStateChangedEvent
-	gameStateChangedEventPayload := gameStateChangedEvent[0].Payload.(GameStateChangedEvent)
+	gameStateChangedEventPayload := gameStateChangedEvent[0].Payload.(StateChangedEvent)
 	if gameStateChangedEventPayload.GameState != GameOverState {
 		t.Errorf("Expected game state to be game over, got %s", gameStateChangedEventPayload.GameState)
 	}
@@ -192,7 +192,7 @@ func TestMobReachesEndOfMap(t *testing.T) {
 	livesP1Before := game.Fields[0].Player.Lives
 	livesP2Before := game.Fields[1].Player.Lives
 	// Add mob to field 1 by firing event
-	_, err := game.HandleEvent(FieldEvent{FieldId: 1, Type: "buyMob", Payload: BuyMobEvent{MobType: "FastMob", TargetFieldId: 0}})
+	_, err := game.HandleEvent(FieldEvent{FieldID: 1, Type: "buyMob", Payload: BuyMobEvent{MobType: "FastMob", TargetFieldID: 0}})
 	if err != nil {
 		t.Errorf("Expected no error, got %s", err)
 	}

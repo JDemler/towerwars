@@ -5,8 +5,9 @@ import (
 	"math"
 )
 
+// Mob represents a mob in the game
 type Mob struct {
-	Id              int     `json:"id"`
+	ID              int     `json:"id"`
 	X               float64 `json:"x"`
 	Y               float64 `json:"y"`
 	Speed           float64 `json:"speed"`
@@ -15,18 +16,18 @@ type Mob struct {
 	Health          int     `json:"health"`
 	MaxHealth       int     `json:"maxHealth"`
 	Reward          int     `json:"reward"`
-	SentFromFieldId int     `json:"-"`
+	SentFromFieldID int     `json:"-"`
 	Reached         bool    `json:"-"`
 	Type            string  `json:"type"`
 }
 
 func (mob *Mob) calcDirection(twMap *TWMap) {
 	x, y := int(mob.X/TileSize), int(mob.Y/TileSize)
-	if twMap.IsEnd(x, y) {
+	if twMap.isEnd(x, y) {
 		mob.Reached = true
 		return
 	}
-	nX, nY, err := twMap.NextStep(int(mob.X/TileSize), int(mob.Y/TileSize))
+	nX, nY, err := twMap.nextStep(int(mob.X/TileSize), int(mob.Y/TileSize))
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -34,11 +35,13 @@ func (mob *Mob) calcDirection(twMap *TWMap) {
 	mob.TargetY = float64(nY)*TileSize + TileSize/2
 }
 
+// IsDead returns true if mob is dead or reached the end of the map
 func (mob *Mob) IsDead() bool {
 	return mob.Health <= 0 || mob.Reached
 }
 
-func (mob *Mob) Update(delta float64, twMap *TWMap, fieldId int) []*GameEvent {
+// Update Mob potentially returning mobUpdated event
+func (mob *Mob) Update(delta float64, twMap *TWMap, fieldID int) []*OutputEvent {
 	// Calc differences in Target vs Position
 	dx := mob.TargetX - mob.X
 	dy := mob.TargetY - mob.Y
@@ -57,7 +60,7 @@ func (mob *Mob) Update(delta float64, twMap *TWMap, fieldId int) []*GameEvent {
 	}
 	if mob.X == mob.TargetX && mob.Y == mob.TargetY {
 		mob.calcDirection(twMap)
-		return []*GameEvent{{Type: "mobUpdated", Payload: MobUpdateEvent{FieldId: fieldId, Mob: mob}}}
+		return []*OutputEvent{{Type: "mobUpdated", Payload: MobUpdateEvent{FieldID: fieldID, Mob: mob}}}
 	}
-	return []*GameEvent{}
+	return []*OutputEvent{}
 }

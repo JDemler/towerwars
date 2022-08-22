@@ -34,13 +34,13 @@ func simpleLongTWMap() *TWMap {
 func TestTileIsOccupied(t *testing.T) {
 	simpleMap := simpleTWMap()
 	// Check that originally tile is not occupied
-	if simpleMap.IsOccupied(1, 1) {
+	if simpleMap.isOccupied(1, 1) {
 		t.Error("Tile should not be occupied")
 	}
 	// Occupy tile
-	simpleMap.Occupy(1, 1)
+	simpleMap.occupy(1, 1)
 	// Check that tile is now occupied
-	if !simpleMap.IsOccupied(1, 1) {
+	if !simpleMap.isOccupied(1, 1) {
 		t.Error("Tile should be occupied")
 	}
 }
@@ -49,14 +49,14 @@ func TestTileIsOccupied(t *testing.T) {
 func TestTileIsPerceivedAsOccupied(t *testing.T) {
 	simpleMap := simpleTWMap()
 	// Make sure that 1,1 is not occupied
-	if simpleMap.IsOccupied(1, 1) {
+	if simpleMap.isOccupied(1, 1) {
 		t.Error("Tile should not be occupied")
 	}
 	// Occupy tiles 1,0 and 1,2
-	simpleMap.Occupy(1, 0)
-	simpleMap.Occupy(1, 2)
+	simpleMap.occupy(1, 0)
+	simpleMap.occupy(1, 2)
 	// Check that tile is perceived as occupied
-	if !simpleMap.IsOccupied(1, 1) {
+	if !simpleMap.isOccupied(1, 1) {
 		t.Error("Tile should be perceived as occupied because it is the only path from start to end")
 	}
 }
@@ -100,7 +100,7 @@ func TestOccupyingTileInPath(t *testing.T) {
 	mob.Y = TileSize + TileSize/2
 	mob.calcDirection(simpleMap)
 	// Occupy tile 1,1
-	simpleMap.Occupy(0, 2)
+	simpleMap.occupy(0, 2)
 	// Check that mob is not moving towards 1,2
 	mob.calcDirection(simpleMap)
 	if mob.TargetX != (TileSize+TileSize/2) && mob.TargetY != (TileSize*2+TileSize/2) {

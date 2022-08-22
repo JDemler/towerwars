@@ -5,79 +5,94 @@ import (
 	"fmt"
 )
 
-type GameEvent struct {
+// OutputEvent is a generic event that can be sent to the client
+type OutputEvent struct {
 	Type    string `json:"type"`
 	Payload any    `json:"payload"`
 }
 
+// PlayerJoinedEvent is sent to all players when a new player joins the game
 type PlayerJoinedEvent struct {
 	Player *Player `json:"player"`
 }
 
-type GameStateChangedEvent struct {
+// StateChangedEvent is sent to all players when the gamestate changes
+type StateChangedEvent struct {
 	GameState string `json:"gameState"`
 }
 
+// MobCreatedEvent is sent to all players when a new mob is created
 type MobCreatedEvent struct {
-	FieldId int  `json:"fieldId"`
+	FieldID int  `json:"fieldId"`
 	Mob     *Mob `json:"mob"`
 }
 
+// TowerCreatedEvent is sent to all players when a new tower is created
 type TowerCreatedEvent struct {
-	FieldId int    `json:"fieldId"`
+	FieldID int    `json:"fieldId"`
 	Tower   *Tower `json:"tower"`
 }
 
+// BulletCreatedEvent is sent to all players when a new bullet is shot
 type BulletCreatedEvent struct {
-	FieldId int     `json:"fieldId"`
+	FieldID int     `json:"fieldId"`
 	Bullet  *Bullet `json:"bullet"`
 }
 
+// MobDestroyedEvent is sent to all players when a mob is destroyed
 type MobDestroyedEvent struct {
-	FieldId int `json:"fieldId"`
-	MobId   int `json:"mobId"`
+	FieldID int `json:"fieldId"`
+	MobID   int `json:"mobId"`
 }
 
+// MobUpdateEvent is sent to all players when a mob is updated. Mostly this is used to update the position of the mob
 type MobUpdateEvent struct {
-	FieldId int  `json:"fieldId"`
+	FieldID int  `json:"fieldId"`
 	Mob     *Mob `json:"mob"`
 }
 
+// TowerUpgradedEvent is sent to all players when a tower is upgraded to a new level
 type TowerUpgradedEvent struct {
-	FieldId int    `json:"fieldId"`
+	FieldID int    `json:"fieldId"`
 	Tower   *Tower `json:"tower"`
 }
 
+// TowerDestroyedEvent is sent to all players when a tower is sold
 type TowerDestroyedEvent struct {
-	FieldId int `json:"fieldId"`
-	TowerId int `json:"towerId"`
+	FieldID int `json:"fieldId"`
+	TowerID int `json:"towerId"`
 }
 
+// LiveStolenEvent is only used internally to bubble up the liveStolen event to the game loop
 type LiveStolenEvent struct {
-	FieldId         int `json:"fieldId"`
-	SentFromFieldId int `json:"sentFromFieldId"`
+	FieldID         int `json:"fieldId"`
+	SentFromFieldID int `json:"sentFromFieldId"`
 }
 
+// BulletDestroyedEvent is sent to all players when a bullet is destroyed
 type BulletDestroyedEvent struct {
-	FieldId  int `json:"fieldId"`
-	BulletId int `json:"bulletId"`
+	FieldID  int `json:"fieldId"`
+	BulletID int `json:"bulletId"`
 }
 
+// PlayerUpdatedEvent is sent to all players when a player is updated. Mostly this is used to update the money of the player
 type PlayerUpdatedEvent struct {
-	FieldId int     `json:"fieldId"`
+	FieldID int     `json:"fieldId"`
 	Player  *Player `json:"player"`
 }
 
+// FieldEvent is a generic event that will be sent from the client to the server
 type FieldEvent struct {
-	FieldId int    `json:"fieldId"`
+	FieldID int    `json:"fieldId"`
 	Key     string `json:"key"`
 	Type    string `json:"eventType"`
 	Payload Event  `json:"payload"`
 }
 
+// UnmarshalJSON implements the json.Unmarshaler interface
 func (e *FieldEvent) UnmarshalJSON(data []byte) error {
 	var f struct {
-		FieldId int             `json:"fieldId"`
+		FieldID int             `json:"fieldId"`
 		Key     string          `json:"key"`
 		Type    string          `json:"eventType"`
 		Payload json.RawMessage `json:"payload"`
@@ -85,7 +100,7 @@ func (e *FieldEvent) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &f); err != nil {
 		return err
 	}
-	e.FieldId = f.FieldId
+	e.FieldID = f.FieldID
 	e.Key = f.Key
 	e.Type = f.Type
 	switch f.Type {
@@ -117,35 +132,35 @@ func (e *FieldEvent) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+// Event is a generic event that will be sent from the client to the server
 type Event interface {
-	TryExecute(sourceField *Field, targetFields []*Field, gc *GameConfig) ([]*GameEvent, error)
+	TryExecute(sourceField *Field, targetFields []*Field, gc *Config) ([]*OutputEvent, error)
 	TargetFieldIds() []int
 }
 
+// BuildEvent is sent from the client to the server when a player wants to build a tower
 type BuildEvent struct {
 	X         int    `json:"x"`
 	Y         int    `json:"y"`
 	TowerType string `json:"towerType"`
 }
 
-// implement Event for BuildEvent
-func (e BuildEvent) TryExecute(sourceField *Field, targetFields []*Field, gc *GameConfig) ([]*GameEvent, error) {
-	// Debuglog event
-	fmt.Printf("BuildEvent: %+v\n", e)
+// TryExecute a BuildEvent to build a tower
+func (e BuildEvent) TryExecute(sourceField *Field, targetFields []*Field, gc *Config) ([]*OutputEvent, error) {
 	// Check if position is within twmap bounds
 	if e.X < 0 || e.X >= sourceField.TWMap.Width || e.Y < 0 || e.Y >= sourceField.TWMap.Height {
 		return nil, fmt.Errorf("Position out of bounds")
 	}
 	// check if tower is already built
-	if sourceField.TWMap.IsOccupied(e.X, e.Y) {
+	if sourceField.TWMap.isOccupied(e.X, e.Y) {
 		return nil, fmt.Errorf("Position already occupied")
 	}
 	// Get TowerType from gameConfig
-	towerType := gc.TowerType(e.TowerType)
+	towerType := gc.GetTowerType(e.TowerType)
 	if towerType == nil {
 		return nil, fmt.Errorf("Invalid tower type %s", e.TowerType)
 	}
-	towerLevel := towerType.Level(1)
+	towerLevel := towerType.GetLevel(1)
 	if towerLevel == nil {
 		return nil, fmt.Errorf("Invalid tower level %d", 1)
 	}
@@ -153,88 +168,92 @@ func (e BuildEvent) TryExecute(sourceField *Field, targetFields []*Field, gc *Ga
 	if sourceField.Player.Money < towerLevel.Cost*100 {
 		return nil, fmt.Errorf("Player cannot afford tower")
 	}
-	tower := towerType.Tower(float64(e.X)*TileSize+TileSize/2, float64(e.Y)*TileSize+TileSize/2, 1, sourceField.getNextTowerId())
+	tower := towerType.Tower(float64(e.X)*TileSize+TileSize/2, float64(e.Y)*TileSize+TileSize/2, 1, sourceField.getNextTowerID())
 	//Occupy tower position in twmap
-	sourceField.TWMap.Occupy(e.X, e.Y)
+	sourceField.TWMap.occupy(e.X, e.Y)
 	sourceField.Towers = append(sourceField.Towers, tower)
 	sourceField.Player.Money -= towerLevel.Cost * 100
-	return []*GameEvent{
+	return []*OutputEvent{
 		{
 			Type: "towerCreated",
 			Payload: TowerCreatedEvent{
-				FieldId: sourceField.Id,
+				FieldID: sourceField.ID,
 				Tower:   tower,
 			},
 		},
 		{
 			Type: "playerUpdated",
 			Payload: PlayerUpdatedEvent{
-				FieldId: sourceField.Id,
+				FieldID: sourceField.ID,
 				Player:  sourceField.Player,
 			},
 		},
 	}, nil
 }
 
+// TargetFieldIds is empty for BuildEvent
 func (e BuildEvent) TargetFieldIds() []int {
 	return []int{}
 }
 
+// SellEvent is sent from the client to the server when a player wants to sell a tower
 type SellEvent struct {
-	TowerId int `json:"towerId"`
+	TowerID int `json:"towerId"`
 }
 
-// implement Event for SellEvent
-func (e SellEvent) TryExecute(sourceField *Field, targetFields []*Field, gc *GameConfig) ([]*GameEvent, error) {
+// TryExecute a SellEvent to sell a tower
+func (e SellEvent) TryExecute(sourceField *Field, targetFields []*Field, gc *Config) ([]*OutputEvent, error) {
 
 	// Check if tower exists
-	tower := sourceField.GetTowerById(e.TowerId)
+	tower := sourceField.GetTowerByID(e.TowerID)
 	if tower == nil {
-		return nil, fmt.Errorf("Tower %d does not exist", e.TowerId)
+		return nil, fmt.Errorf("Tower %d does not exist", e.TowerID)
 	}
-	towerType := gc.TowerType(tower.Type)
-	sourceField.TWMap.Free(int((tower.X-TileSize/2)/TileSize), int((tower.Y-TileSize/2)/TileSize))
-	sourceField.removeTowerById(e.TowerId)
-	sourceField.Player.Money += towerType.Level(tower.Level).Cost * 80
-	return []*GameEvent{
+	towerType := gc.GetTowerType(tower.Type)
+	sourceField.TWMap.free(int((tower.X-TileSize/2)/TileSize), int((tower.Y-TileSize/2)/TileSize))
+	sourceField.removeTowerByID(e.TowerID)
+	sourceField.Player.Money += towerType.GetLevel(tower.Level).Cost * 80
+	return []*OutputEvent{
 		{
 			Type: "towerDestroyed",
 			Payload: TowerDestroyedEvent{
-				FieldId: sourceField.Id,
-				TowerId: tower.Id,
+				FieldID: sourceField.ID,
+				TowerID: tower.ID,
 			},
 		},
 		{
 			Type: "playerUpdated",
 			Payload: PlayerUpdatedEvent{
-				FieldId: sourceField.Id,
+				FieldID: sourceField.ID,
 				Player:  sourceField.Player,
 			},
 		},
 	}, nil
 }
 
+// TargetFieldIds is empty for SellEvent
 func (e SellEvent) TargetFieldIds() []int {
 	return []int{}
 }
 
+// UpgradeEvent is sent from the client to the server when a player wants to upgrade a tower
 type UpgradeEvent struct {
-	TowerId int `json:"towerId"`
+	TowerID int `json:"towerId"`
 }
 
-// implement Event for UpgradeEvent
-func (e UpgradeEvent) TryExecute(sourceField *Field, targetFields []*Field, gc *GameConfig) ([]*GameEvent, error) {
+// TryExecute UpgradeEvent to upgrade a tower
+func (e UpgradeEvent) TryExecute(sourceField *Field, targetFields []*Field, gc *Config) ([]*OutputEvent, error) {
 	// Check if tower exists
-	tower := sourceField.GetTowerById(e.TowerId)
+	tower := sourceField.GetTowerByID(e.TowerID)
 	if tower == nil {
 		return nil, fmt.Errorf("Tower not found")
 	}
 	// Get TowerType from gameConfig
-	towerType := gc.TowerType(tower.Type)
+	towerType := gc.GetTowerType(tower.Type)
 	if towerType == nil {
 		return nil, fmt.Errorf("Invalid tower type %s", tower.Type)
 	}
-	towerLevel := towerType.Level(tower.Level + 1)
+	towerLevel := towerType.GetLevel(tower.Level + 1)
 	if towerLevel == nil {
 		return nil, fmt.Errorf("Invalid tower level %d", tower.Level+1)
 	}
@@ -245,44 +264,45 @@ func (e UpgradeEvent) TryExecute(sourceField *Field, targetFields []*Field, gc *
 	// Upgrade tower
 	tower.Upgrade(towerLevel)
 	sourceField.Player.Money -= towerLevel.Cost * 100
-	return []*GameEvent{
+	return []*OutputEvent{
 		{
 			Type: "towerUpgraded",
 			Payload: TowerUpgradedEvent{
-				FieldId: sourceField.Id,
+				FieldID: sourceField.ID,
 				Tower:   tower,
 			},
 		},
 		{
 			Type: "playerUpdated",
 			Payload: PlayerUpdatedEvent{
-				FieldId: sourceField.Id,
+				FieldID: sourceField.ID,
 				Player:  sourceField.Player,
 			},
 		},
 	}, nil
 }
 
+// TargetFieldIds is empty for UpgradeEvent
 func (e UpgradeEvent) TargetFieldIds() []int {
 	return []int{}
 }
 
+// BuyMobEvent is sent from the client to the server when a player wants to buy a mob
 type BuyMobEvent struct {
-	fieldId       int
-	TargetFieldId int    `json:"targetFieldId"`
+	fieldID       int
+	TargetFieldID int    `json:"targetFieldId"`
 	MobType       string `json:"mobType"`
 }
 
-func NewBuyMobEvent(fieldId int) BuyMobEvent {
-	return BuyMobEvent{fieldId: fieldId}
+// NewBuyMobEvent creates a new BuyMobEvent
+func NewBuyMobEvent(fieldID int) BuyMobEvent {
+	return BuyMobEvent{fieldID: fieldID}
 }
 
-// implement Event for BuyMobEvent
-func (e BuyMobEvent) TryExecute(sourceField *Field, targetFields []*Field, config *GameConfig) ([]*GameEvent, error) {
-	// Debuglog event
-	fmt.Printf("BuyMobEvent: %+v\n", e)
+// TryExecute BuyMobEvent to buy a mob
+func (e BuyMobEvent) TryExecute(sourceField *Field, targetFields []*Field, config *Config) ([]*OutputEvent, error) {
 	// Check if player can afford mob
-	mobType := config.MobType(e.MobType)
+	mobType := config.GetMobType(e.MobType)
 	if mobType == nil {
 		// Invalid mob type
 		fmt.Println("Invalid mob type")
@@ -297,34 +317,35 @@ func (e BuyMobEvent) TryExecute(sourceField *Field, targetFields []*Field, confi
 	sourceField.Player.Money -= mobType.Cost * 100
 	// Increase player income
 	sourceField.Player.Income += mobType.Income
-	gameEvents := []*GameEvent{}
+	gameEvents := []*OutputEvent{}
 	// range over targetFields and add mob to all of them
 	for _, targetField := range targetFields {
 		//Get startposition
-		startX, startY := targetField.TWMap.StartPosition()
-		mobId := targetField.getNextMobId()
-		mob := mobType.Mob(float64(startX)*TileSize+TileSize/2, float64(startY)*TileSize+TileSize/2, mobId)
-		mob.SentFromFieldId = sourceField.Id
+		startX, startY := targetField.TWMap.startPosition()
+		mobID := targetField.getNextMobID()
+		mob := mobType.MakeMob(float64(startX)*TileSize+TileSize/2, float64(startY)*TileSize+TileSize/2, mobID)
+		mob.SentFromFieldID = sourceField.ID
 		targetField.Mobs = append(targetField.Mobs, mob)
-		gameEvents = append(gameEvents, &GameEvent{
+		gameEvents = append(gameEvents, &OutputEvent{
 			Type: "mobCreated",
 			Payload: MobCreatedEvent{
-				FieldId: targetField.Id,
+				FieldID: targetField.ID,
 				Mob:     mob,
 			},
 		})
 	}
 	// Send playerUpdated event
-	gameEvents = append(gameEvents, &GameEvent{
+	gameEvents = append(gameEvents, &OutputEvent{
 		Type: "playerUpdated",
 		Payload: PlayerUpdatedEvent{
-			FieldId: sourceField.Id,
+			FieldID: sourceField.ID,
 			Player:  sourceField.Player,
 		},
 	})
 	return gameEvents, nil
 }
 
+// TargetFieldIds returns the targetFieldIds for the mob to be sent
 func (e BuyMobEvent) TargetFieldIds() []int {
-	return []int{e.TargetFieldId}
+	return []int{e.TargetFieldID}
 }

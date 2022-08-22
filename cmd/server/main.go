@@ -22,7 +22,7 @@ type Server struct {
 type WsChannel struct {
 	id        int
 	open      bool
-	Channel   chan game.GameEvent
+	Channel   chan game.OutputEvent
 	Websocket *websocket.Conn
 }
 
@@ -53,13 +53,16 @@ func NewServer() *Server {
 }
 
 // Update the game
-func (s *Server) Update(delta float64) []*game.GameEvent {
+func (s *Server) Update(delta float64) []*game.OutputEvent {
 	return s.game.Update(delta)
 }
 
 // Http Handler returning the game state
 func (s *Server) GetGameState(w http.ResponseWriter, r *http.Request) {
-	json.NewEncoder(w).Encode(s.game)
+	err := json.NewEncoder(w).Encode(s.game)
+	if err != nil {
+		fmt.Println(err)
+	}
 }
 
 // added player struct
@@ -91,7 +94,10 @@ func (s *Server) AddPlayer(w http.ResponseWriter, r *http.Request) {
 	// return success
 	w.WriteHeader(http.StatusOK)
 	// return player id
-	json.NewEncoder(w).Encode(AddedPlayer{Key: key, FieldId: fieldId})
+	err = json.NewEncoder(w).Encode(AddedPlayer{Key: key, FieldId: fieldId})
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	//log player joined
 	fmt.Println("Player joined")
@@ -130,17 +136,26 @@ func (s *Server) RegisterEvent(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) GetTowerTypes(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(s.game.TowerTypes())
+	err := json.NewEncoder(w).Encode(s.game.GetTowerTypes())
+	if err != nil {
+		fmt.Println(err)
+	}
 }
 
 func (s *Server) GetMobTypes(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(s.game.MobTypes())
+	err := json.NewEncoder(w).Encode(s.game.GetMobTypes())
+	if err != nil {
+		fmt.Println(err)
+	}
 }
 
 func (s *Server) GetStatus(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(s.game.State)
+	err := json.NewEncoder(w).Encode(s.game.State)
+	if err != nil {
+		fmt.Println(err)
+	}
 }
 
 func (s *Server) readFromWS(ws *WsChannel) {
@@ -235,7 +250,7 @@ func (s *Server) WebSocket(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// create channels
-	gameEventChan := make(chan game.GameEvent)
+	gameEventChan := make(chan game.OutputEvent)
 	wsChannel := &WsChannel{
 		id:        s.channelCount,
 		open:      true,
@@ -285,7 +300,7 @@ func (s *Server) reset() {
 func (s *Server) gameLoop() {
 	last := time.Now()
 	for {
-		delta := float64(time.Now().Sub(last).Milliseconds()) / 1000.0
+		delta := float64(time.Since(last).Milliseconds()) / 1000.0
 		last = time.Now()
 		if s.game.State == game.WaitingState && len(s.game.Fields) > 1 {
 			s.game.Start()
@@ -321,7 +336,10 @@ func logAndAddCorsHeadersToRequest(handler http.Handler) http.Handler {
 		}
 		if r.URL.Path == "/" {
 			w.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(w).Encode("Ok")
+			err := json.NewEncoder(w).Encode("Ok")
+			if err != nil {
+				fmt.Println(err)
+			}
 			return
 		} else {
 			handler.ServeHTTP(w, r)

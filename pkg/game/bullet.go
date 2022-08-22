@@ -2,18 +2,19 @@ package game
 
 import "math"
 
+// Bullet represents a bullet
 type Bullet struct {
-	Id         int     `json:"id"`
+	ID         int     `json:"id"`
 	X          float64 `json:"x"`
 	Y          float64 `json:"y"`
 	Speed      float64 `json:"speed"`
 	Damage     int     `json:"damage"`
 	Irrelevant bool    `json:"-"`
 	Target     *Mob    `json:"-"`
-	TargetId   int     `json:"targetId"`
+	TargetID   int     `json:"targetId"`
 }
 
-// update bullet returning if it is still relevant to the game
+// Update bullet returning if it is still relevant to the game
 func (bullet *Bullet) Update(delta float64) bool {
 	if bullet.Target == nil || bullet.Target.Health <= 0 {
 		// remove bullet from game

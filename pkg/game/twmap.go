@@ -11,6 +11,7 @@ type position struct {
 	y int
 }
 
+// TWMap is a map for the tower defense game
 type TWMap struct {
 	Width       int        `json:"width"`
 	Height      int        `json:"height"`
@@ -27,7 +28,7 @@ func (twMap *TWMap) IsInBounds(x, y int) bool {
 	return x >= 0 && x < twMap.Width && y >= 0 && y < twMap.Height
 }
 
-func (twMap *TWMap) GetNeighbors(tile *Tile) []*Tile {
+func (twMap *TWMap) getNeighbors(tile *Tile) []*Tile {
 	var neighbors []*Tile
 	// go over left, right, up and down and add the neighbors
 	if twMap.IsInBounds(tile.X-1, tile.Y) {
@@ -45,29 +46,29 @@ func (twMap *TWMap) GetNeighbors(tile *Tile) []*Tile {
 	return neighbors
 }
 
-func (twMap *TWMap) IsEndNode(tile *Tile) bool {
-	return twMap.IsEnd(tile.X, tile.Y)
+func (twMap *TWMap) isEndNode(tile *Tile) bool {
+	return twMap.isEnd(tile.X, tile.Y)
 }
 
-func (twMap *TWMap) IsEnd(x, y int) bool {
+func (twMap *TWMap) isEnd(x, y int) bool {
 	return x == twMap.XEnd && y == twMap.YEnd
 }
 
-func (twMap *TWMap) IsStart(x, y int) bool {
+func (twMap *TWMap) isStart(x, y int) bool {
 	return x == twMap.XStart && y == twMap.YStart
 }
 
-func (twMap *TWMap) DistanceToEnd(tile *Tile) float64 {
+func (twMap *TWMap) distanceToEnd(tile *Tile) float64 {
 	return float64(math.Abs(float64(tile.X-twMap.XEnd)) + math.Abs(float64(tile.Y-twMap.YEnd)))
 }
 
-func (twMap *TWMap) IsOccupied(x, y int) bool {
+func (twMap *TWMap) isOccupied(x, y int) bool {
 	// Check if x,y is EndTile
-	if twMap.IsEnd(x, y) {
+	if twMap.isEnd(x, y) {
 		return true
 	}
 	// check if x,y is StartTile
-	if twMap.IsStart(x, y) {
+	if twMap.isStart(x, y) {
 		return true
 	}
 	if twMap.Tiles[x][y].IsOccupied() {
@@ -77,29 +78,29 @@ func (twMap *TWMap) IsOccupied(x, y int) bool {
 	for i := 0; i < len(twMap.currentPath); i++ {
 		if twMap.currentPath[i].x == x && twMap.currentPath[i].y == y {
 			// occupy the tile
-			twMap.Occupy(x, y)
+			twMap.occupy(x, y)
 			pathExists := len(twMap.currentPath) > 0
-			twMap.Free(x, y)
+			twMap.free(x, y)
 			return !pathExists
 		}
 	}
 	return false
 }
 
-func (twMap *TWMap) Occupy(x, y int) bool {
+func (twMap *TWMap) occupy(x, y int) bool {
 	twMap.Tiles[x][y].occupied = true
 	//recalculate current path
 	twMap.calculatePath()
 	return true
 }
 
-func (twMap *TWMap) Free(x, y int) bool {
+func (twMap *TWMap) free(x, y int) bool {
 	twMap.Tiles[x][y].occupied = false
 	twMap.calculatePath()
 	return true
 }
 
-func (twMap *TWMap) StartPosition() (int, int) {
+func (twMap *TWMap) startPosition() (int, int) {
 	return twMap.XStart, twMap.YStart
 }
 
@@ -108,7 +109,7 @@ func (twMap *TWMap) getAt(x int, y int) *Tile {
 	return twMap.Tiles[x][y]
 }
 
-func (twMap *TWMap) NextStep(x int, y int) (int, int, error) {
+func (twMap *TWMap) nextStep(x int, y int) (int, int, error) {
 	if len(twMap.currentPath) == 0 {
 		twMap.calculatePath()
 	}
@@ -152,11 +153,11 @@ func (twMap *TWMap) findPath(x int, y int) (*Tile, error) {
 		sort.Sort(openTiles)
 		currentTile := openTiles[0]
 		openTiles = openTiles[1:]
-		if twMap.IsEndNode(currentTile) {
+		if twMap.isEndNode(currentTile) {
 			return currentTile, nil
 		}
 		closedTiles = append(closedTiles, currentTile)
-		for _, neighbor := range twMap.GetNeighbors(currentTile) {
+		for _, neighbor := range twMap.getNeighbors(currentTile) {
 			if closedTiles.Contains(neighbor) || neighbor.IsOccupied() {
 				continue
 			}
@@ -164,24 +165,13 @@ func (twMap *TWMap) findPath(x int, y int) (*Tile, error) {
 			if openTiles.fValueOf(neighbor) >= g {
 				continue
 			}
-			neighbor.f = g + twMap.DistanceToEnd(neighbor)
+			neighbor.f = g + twMap.distanceToEnd(neighbor)
 			neighbor.predecessor = currentTile
 
 			openTiles = openTiles.add(neighbor)
 		}
 	}
 	return &Tile{}, errors.New("No path found")
-}
-
-func standardTWMap() *MapConfig {
-	return &MapConfig{
-		Width:  10,
-		Height: 10,
-		StartX: 0,
-		StartY: 0,
-		EndX:   9,
-		EndY:   9,
-	}
 }
 
 // make a 2d range of tiles

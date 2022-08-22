@@ -1,32 +1,35 @@
 package game
 
+// Tile represents a tile on the map. Can be occupied. f and predecessor are used for pathfinding
 type Tile struct {
-	X        int     `json:"x"`
-	Y        int     `json:"y"`
-	occupied bool    `json:"-"`
-	f        float64 `json:"-"`
-	// Only necessary for the a* algorithm
-	predecessor *Tile `json:"-"`
+	X           int     `json:"x"`
+	Y           int     `json:"y"`
+	occupied    bool    `json:"-"`
+	f           float64 `json:"-"`
+	predecessor *Tile   `json:"-"`
 }
 
 type tileList []*Tile
 
 // implement sort interface for Tile
-func (t tileList) Len() int {
+func (tl tileList) Len() int {
 	//return length of t
-	return len(t)
+	return len(tl)
 }
 
-func (t tileList) Less(i, j int) bool {
-	return t[i].f < t[j].f
+// Less returns true if the f value of the tile is smaller than the f value of the other tile
+func (tl tileList) Less(i, j int) bool {
+	return tl[i].f < tl[j].f
 }
 
-func (t tileList) Swap(i, j int) {
-	t[i], t[j] = t[j], t[i]
+// Swap two tiles with each other
+func (tl tileList) Swap(i, j int) {
+	tl[i], tl[j] = tl[j], tl[i]
 }
 
-func (t tileList) Contains(tile *Tile) bool {
-	for _, t := range t {
+// Contains returns true if the tile is in the list
+func (tl tileList) Contains(tile *Tile) bool {
+	for _, t := range tl {
 		if t.X == tile.X && t.Y == tile.Y {
 			return true
 		}
@@ -45,8 +48,8 @@ func (tl tileList) add(tile *Tile) tileList {
 	return append(tl, tile)
 }
 
-func (t tileList) fValueOf(tile *Tile) float64 {
-	for _, t := range t {
+func (tl tileList) fValueOf(tile *Tile) float64 {
+	for _, t := range tl {
 		if t.X == tile.X && t.Y == tile.Y {
 			return t.f
 		}
@@ -54,6 +57,7 @@ func (t tileList) fValueOf(tile *Tile) float64 {
 	return 0
 }
 
+// IsOccupied returns true if the tile is occupied
 func (tile *Tile) IsOccupied() bool {
 	return tile.occupied
 }
