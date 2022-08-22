@@ -148,6 +148,41 @@ func (game *Game) Update(delta float64) []*GameEvent {
 		}
 
 		fieldEvents := game.Fields[i].Update(delta)
+		// Check all fieldEvents for liveStolen and execute them and take them out of the events
+		for j := len(fieldEvents) - 1; j >= 0; j-- {
+			if fieldEvents[j].Type == "liveStolen" {
+				// Get the field where the live was stolen from
+				originField := game.getFieldAt(fieldEvents[j].Payload.(LiveStolenEvent).FieldId)
+				// Get the field where the live was stolen to
+				targetField := game.getFieldAt(fieldEvents[j].Payload.(LiveStolenEvent).SentFromFieldId)
+				// Check if both fields exist
+				if originField != nil && targetField != nil {
+					// Check if the player has enough lives to steal
+					if originField.Player.Lives >= 1 {
+						// Steal lives
+						originField.Player.Lives -= 1
+						targetField.Player.Lives += 1
+						// Add events to the event list
+						events = append(events, &GameEvent{
+							Type: "playerUpdated",
+							Payload: PlayerUpdatedEvent{
+								FieldId: originField.Id,
+								Player:  originField.Player,
+							},
+						})
+						events = append(events, &GameEvent{
+							Type: "playerUpdated",
+							Payload: PlayerUpdatedEvent{
+								FieldId: targetField.Id,
+								Player:  targetField.Player,
+							},
+						})
+					}
+				}
+				// Remove the event from the list
+				fieldEvents = append(fieldEvents[:j], fieldEvents[j+1:]...)
+			}
+		}
 		events = append(events, fieldEvents...)
 	}
 	// Set game over if there is only one player left

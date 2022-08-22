@@ -138,15 +138,20 @@ func (field *Field) Update(delta float64) []*GameEvent {
 			})
 			field.Mobs = append(field.Mobs[:i], field.Mobs[i+1:]...)
 		} else if field.Mobs[i].Reached {
-			// Check if mob has reached the end of the map, remove mob from game and reduce liver of player
-			field.Player.Lives -= 1
-			playerUpdated = true
 			// Create MobDestroyedEvent
 			events = append(events, &GameEvent{
 				Type: "mobDestroyed",
 				Payload: MobDestroyedEvent{
 					FieldId: field.Id,
 					MobId:   field.Mobs[i].Id,
+				},
+			})
+			// Communicate that live was stolen to the game
+			events = append(events, &GameEvent{
+				Type: "liveStolen",
+				Payload: LiveStolenEvent{
+					FieldId:         field.Id,
+					SentFromFieldId: field.Mobs[i].SentFromFieldId,
 				},
 			})
 			field.Mobs = append(field.Mobs[:i], field.Mobs[i+1:]...)

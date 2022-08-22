@@ -113,7 +113,11 @@ func TestGameState(t *testing.T) {
 	}
 	// Set live of all players to 1 and add mob
 	game.Fields[0].Player.Lives = 1
-	game.Fields[0].Mobs = append(game.Fields[0].Mobs, &Mob{X: 5, Y: 5, TargetX: 5, TargetY: 5, Health: 100, Speed: 100})
+	// Send mob to field 0 by executing an event
+	_, err := game.HandleEvent(FieldEvent{FieldId: 1, Type: "buyMob", Payload: BuyMobEvent{MobType: "FastMob", TargetFieldId: 0}})
+	if err != nil {
+		t.Errorf("Expected no error, got %s", err)
+	}
 	// run the game
 	for i := 0; i < 31; i++ {
 		game.Update(1)
@@ -178,5 +182,30 @@ func TestGameOverEvent(t *testing.T) {
 	gameStateChangedEventPayload := gameStateChangedEvent[0].Payload.(GameStateChangedEvent)
 	if gameStateChangedEventPayload.GameState != GameOverState {
 		t.Errorf("Expected game state to be game over, got %s", gameStateChangedEventPayload.GameState)
+	}
+}
+
+// Test that when a mob reaches the end of the map a live is stolen
+func TestMobReachesEndOfMap(t *testing.T) {
+	game := prepareGame()
+	game.Start()
+	livesP1Before := game.Fields[0].Player.Lives
+	livesP2Before := game.Fields[1].Player.Lives
+	// Add mob to field 1 by firing event
+	_, err := game.HandleEvent(FieldEvent{FieldId: 1, Type: "buyMob", Payload: BuyMobEvent{MobType: "FastMob", TargetFieldId: 0}})
+	if err != nil {
+		t.Errorf("Expected no error, got %s", err)
+	}
+	// Run the game
+	for i := 0; i < 31; i++ {
+		game.Update(1)
+	}
+	// Check that player 1 has one less live
+	if game.Fields[0].Player.Lives != livesP1Before-1 {
+		t.Errorf("Expected player 1 to have %d lives, got %d", livesP1Before-1, game.Fields[0].Player.Lives)
+	}
+	// Check that player 2 has the same amount of lives
+	if game.Fields[1].Player.Lives != livesP2Before+1 {
+		t.Errorf("Expected player 2 to have %d lives, got %d", livesP2Before+1, game.Fields[1].Player.Lives)
 	}
 }

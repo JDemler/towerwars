@@ -31,8 +31,26 @@ func TestMobReachesEndOfTWMap(t *testing.T) {
 	if len(field.Mobs) != 1 {
 		t.Errorf("Expected 1 mob, got %d", len(field.Mobs))
 	}
+	events := field.Update(1)
 	for i := 0; i < 100; i++ {
-		field.Update(1)
+		// update field and add returned events to events
+		events = append(events, field.Update(1)...)
+	}
+	// check that there is at least one liveStolen Event
+	var liveStolenEventFound *LiveStolenEvent
+	for _, event := range events {
+		if lse, ok := event.Payload.(LiveStolenEvent); ok {
+			liveStolenEventFound = &lse
+		}
+	}
+	if liveStolenEventFound == nil {
+		t.Error("Expected LiveStolenEvent")
+	}
+	if liveStolenEventFound.FieldId != 0 {
+		t.Errorf("Expected FieldId 0, got %d", liveStolenEventFound.FieldId)
+	}
+	if liveStolenEventFound.SentFromFieldId != 0 {
+		t.Errorf("Expected SentFromFieldId 1, got %d", liveStolenEventFound.SentFromFieldId)
 	}
 	if len(field.Mobs) != 0 {
 		t.Errorf("Expected 0 mob, got %d", len(field.Mobs))
@@ -40,9 +58,6 @@ func TestMobReachesEndOfTWMap(t *testing.T) {
 		for _, mob := range field.Mobs {
 			t.Errorf("Mob X: %f, Y: %f", mob.X, mob.Y)
 		}
-	}
-	if field.Player.Lives != 2 {
-		t.Errorf("Expected 2 lives, got %d", field.Player.Lives)
 	}
 }
 

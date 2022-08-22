@@ -53,6 +53,11 @@ type TowerDestroyedEvent struct {
 	TowerId int `json:"towerId"`
 }
 
+type LiveStolenEvent struct {
+	FieldId         int `json:"fieldId"`
+	SentFromFieldId int `json:"sentFromFieldId"`
+}
+
 type BulletDestroyedEvent struct {
 	FieldId  int `json:"fieldId"`
 	BulletId int `json:"bulletId"`
@@ -299,6 +304,7 @@ func (e BuyMobEvent) TryExecute(sourceField *Field, targetFields []*Field, confi
 		startX, startY := targetField.TWMap.StartPosition()
 		mobId := targetField.getNextMobId()
 		mob := mobType.Mob(float64(startX)*TileSize+TileSize/2, float64(startY)*TileSize+TileSize/2, mobId)
+		mob.SentFromFieldId = sourceField.Id
 		targetField.Mobs = append(targetField.Mobs, mob)
 		gameEvents = append(gameEvents, &GameEvent{
 			Type: "mobCreated",

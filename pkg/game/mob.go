@@ -6,17 +6,18 @@ import (
 )
 
 type Mob struct {
-	Id        int     `json:"id"`
-	X         float64 `json:"x"`
-	Y         float64 `json:"y"`
-	Speed     float64 `json:"speed"`
-	TargetX   float64 `json:"targetX"`
-	TargetY   float64 `json:"targetY"`
-	Health    int     `json:"health"`
-	MaxHealth int     `json:"maxHealth"`
-	Reward    int     `json:"reward"`
-	Reached   bool    `json:"-"`
-	Type      string  `json:"type"`
+	Id              int     `json:"id"`
+	X               float64 `json:"x"`
+	Y               float64 `json:"y"`
+	Speed           float64 `json:"speed"`
+	TargetX         float64 `json:"targetX"`
+	TargetY         float64 `json:"targetY"`
+	Health          int     `json:"health"`
+	MaxHealth       int     `json:"maxHealth"`
+	Reward          int     `json:"reward"`
+	SentFromFieldId int     `json:"-"`
+	Reached         bool    `json:"-"`
+	Type            string  `json:"type"`
 }
 
 func (mob *Mob) calcDirection(twMap *TWMap) {
