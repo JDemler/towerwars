@@ -48,10 +48,10 @@ func TestGameStartsWhenTwoPlayersJoin(t *testing.T) {
 		t.Errorf("Expected 2 player joined events, got %d", len(playerJoinedEvents))
 	}
 	// check event type
-	if playerJoinedEvents[0].Type != "playerJoined" {
+	if playerJoinedEvents[0].Type != "player" && playerJoinedEvents[1].Kind != "update" {
 		t.Errorf("Expected event type to be playerJoined, got %s", playerJoinedEvents[0].Type)
 	}
-	if playerJoinedEvents[1].Type != "playerJoined" {
+	if playerJoinedEvents[1].Type != "player" && playerJoinedEvents[1].Kind != "update" {
 		t.Errorf("Expected event type to be playerJoined, got %s", playerJoinedEvents[1].Type)
 	}
 	if game.State != WaitingState {

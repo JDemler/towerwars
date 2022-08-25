@@ -21,6 +21,16 @@ type Mob struct {
 	Type            string  `json:"type"`
 }
 
+// Implement Crud interface
+func (m *Mob) GetID() int {
+	return m.ID
+}
+
+// Implement Crud interface
+func (m *Mob) GetType() string {
+	return "mob"
+}
+
 func (mob *Mob) calcDirection(twMap *TWMap) {
 	x, y := int(mob.X/TileSize), int(mob.Y/TileSize)
 	if twMap.isEnd(x, y) {
@@ -41,7 +51,7 @@ func (mob *Mob) IsDead() bool {
 }
 
 // Update Mob potentially returning mobUpdated event
-func (mob *Mob) Update(delta float64, twMap *TWMap, fieldID int) []*OutputEvent {
+func (mob *Mob) Update(delta float64, twMap *TWMap, fieldID int) []*ServerEvent {
 	// Calc differences in Target vs Position
 	dx := mob.TargetX - mob.X
 	dy := mob.TargetY - mob.Y
@@ -60,7 +70,7 @@ func (mob *Mob) Update(delta float64, twMap *TWMap, fieldID int) []*OutputEvent 
 	}
 	if mob.X == mob.TargetX && mob.Y == mob.TargetY {
 		mob.calcDirection(twMap)
-		return []*OutputEvent{{Type: "mobUpdated", Payload: MobUpdateEvent{FieldID: fieldID, Mob: mob}}}
+		return []*ServerEvent{UpdateEvent(mob, fieldID)}
 	}
-	return []*OutputEvent{}
+	return []*ServerEvent{}
 }

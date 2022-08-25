@@ -66,7 +66,7 @@ func (f *Field) removeTowerByID(id int) {
 }
 
 // HandleEvent for field
-func (f *Field) HandleEvent(event Event, otherFields []*Field, gameConfig *Config) ([]*OutputEvent, error) {
+func (f *Field) HandleEvent(event Event, otherFields []*Field, gameConfig *Config) ([]*ServerEvent, error) {
 	// Iterate over event targetfieldids and get targetfields
 	targetFields := []*Field{}
 	for _, targetFieldID := range event.TargetFieldIds() {
@@ -80,14 +80,14 @@ func (f *Field) HandleEvent(event Event, otherFields []*Field, gameConfig *Confi
 	if err != nil {
 		//Log failure to execute event
 		fmt.Printf("Failed to execute event: %+v\n", event)
-		return []*OutputEvent{}, err
+		return []*ServerEvent{}, err
 	}
 	return events, nil
 }
 
 // Update loop for field
-func (f *Field) Update(delta float64) []*OutputEvent {
-	events := []*OutputEvent{}
+func (f *Field) Update(delta float64) []*ServerEvent {
+	events := []*ServerEvent{}
 	playerUpdated := false
 	// Update Towers
 	for i := 0; i < len(f.Towers); i++ {
@@ -96,13 +96,7 @@ func (f *Field) Update(delta float64) []*OutputEvent {
 		f.Bullets = append(f.Bullets, bullets...)
 		// For every bullet create an event
 		for _, bullet := range bullets {
-			events = append(events, &OutputEvent{
-				Type: "bulletCreated",
-				Payload: BulletCreatedEvent{
-					FieldID: f.ID,
-					Bullet:  bullet,
-				},
-			})
+			events = append(events, CreateEvent(bullet, f.ID))
 		}
 	}
 
@@ -110,13 +104,7 @@ func (f *Field) Update(delta float64) []*OutputEvent {
 	for i := len(f.Bullets) - 1; i >= 0; i-- {
 		if !f.Bullets[i].Update(delta) || f.Bullets[i].Target.IsDead() {
 			// Create BulletDestroyedEvent
-			events = append(events, &OutputEvent{
-				Type: "bulletDestroyed",
-				Payload: BulletDestroyedEvent{
-					FieldID:  f.ID,
-					BulletID: f.Bullets[i].ID,
-				},
-			})
+			events = append(events, DeleteEvent(f.Bullets[i], f.ID))
 			// Remove bullet from field
 			f.Bullets = append(f.Bullets[:i], f.Bullets[i+1:]...)
 
@@ -132,27 +120,15 @@ func (f *Field) Update(delta float64) []*OutputEvent {
 			f.Player.Money += f.Mobs[i].Reward
 			playerUpdated = true
 			// Create MobDestroyedEvent
-			events = append(events, &OutputEvent{
-				Type: "mobDestroyed",
-				Payload: MobDestroyedEvent{
-					FieldID: f.ID,
-					MobID:   f.Mobs[i].ID,
-				},
-			})
+			events = append(events, DeleteEvent(f.Mobs[i], f.ID))
 			f.Mobs = append(f.Mobs[:i], f.Mobs[i+1:]...)
 		} else if f.Mobs[i].Reached {
 			// Create MobDestroyedEvent
-			events = append(events, &OutputEvent{
-				Type: "mobDestroyed",
-				Payload: MobDestroyedEvent{
-					FieldID: f.ID,
-					MobID:   f.Mobs[i].ID,
-				},
-			})
+			events = append(events, DeleteEvent(f.Mobs[i], f.ID))
 			// Communicate that live was stolen to the game
-			events = append(events, &OutputEvent{
+			events = append(events, &ServerEvent{
 				Type: "liveStolen",
-				Payload: LiveStolenEvent{
+				Payload: liveStolenEvent{
 					FieldID:         f.ID,
 					SentFromFieldID: f.Mobs[i].SentFromFieldID,
 				},
@@ -162,13 +138,7 @@ func (f *Field) Update(delta float64) []*OutputEvent {
 	}
 	// If player has been updated, create PlayerUpdatedEvent
 	if playerUpdated {
-		events = append(events, &OutputEvent{
-			Type: "playerUpdated",
-			Payload: PlayerUpdatedEvent{
-				FieldID: f.ID,
-				Player:  f.Player,
-			},
-		})
+		events = append(events, UpdateEvent(f.Player, f.ID))
 	}
 	return events
 }

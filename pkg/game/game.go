@@ -27,6 +27,15 @@ type Player struct {
 	Lives  int    `json:"lives"`
 }
 
+// Implement Crud interface for Player
+func (p *Player) GetID() int {
+	return p.ID
+}
+
+func (p *Player) GetType() string {
+	return "player"
+}
+
 // Game contains all information about one game instance
 type Game struct {
 	Fields         []*Field       `json:"fields"`
@@ -34,7 +43,7 @@ type Game struct {
 	IncomeCooldown float64        `json:"incomeCooldown"`
 	State          string         `json:"state"`
 	Config         *Config        `json:"-"`
-	events         []*OutputEvent `json:"-"`
+	events         []*ServerEvent `json:"-"`
 }
 
 // NewGame creates a new game instance from a config
@@ -50,21 +59,17 @@ func NewGame(config *Config) *Game {
 
 // AddPlayer to Game. Return its key
 func (game *Game) AddPlayer(playerName string) string {
+	id := len(game.Fields)
 	player := &Player{
-		ID:     len(game.Fields),
+		ID:     id,
 		Name:   playerName,
 		Money:  game.Config.StartStats.Money,
 		Income: game.Config.StartStats.Income,
 		Lives:  game.Config.StartStats.Lives,
 	}
-	field := NewField(len(game.Fields), player, game.Config.Map.GenerateMap())
+	field := NewField(id, player, game.Config.Map.GenerateMap())
 	game.Fields = append(game.Fields, field)
-	game.events = append(game.events, &OutputEvent{
-		Type: "playerJoined",
-		Payload: PlayerJoinedEvent{
-			Player: player,
-		},
-	})
+	game.events = append(game.events, CreateEvent(player, id))
 	return field.Key
 }
 
@@ -74,7 +79,7 @@ func (game *Game) Start() {
 		return
 	}
 	game.State = PlayingState
-	game.events = append(game.events, &OutputEvent{
+	game.events = append(game.events, &ServerEvent{
 		Type: "gameStateChanged",
 		Payload: StateChangedEvent{
 			GameState: game.State,
@@ -93,7 +98,7 @@ func (game *Game) getFieldAt(id int) *Field {
 }
 
 // HandleEvent handles an event from a player, returns a list of events to send to all players or nil if the event was invalid
-func (game *Game) HandleEvent(fieldEvent FieldEvent) ([]*OutputEvent, error) {
+func (game *Game) HandleEvent(fieldEvent FieldEvent) ([]*ServerEvent, error) {
 	targetField := game.getFieldAt(fieldEvent.FieldID)
 	if targetField != nil {
 		// Check that event.key and field.key match
@@ -104,13 +109,13 @@ func (game *Game) HandleEvent(fieldEvent FieldEvent) ([]*OutputEvent, error) {
 		}
 		return targetField.HandleEvent(fieldEvent.Payload, game.Fields, game.Config)
 	}
-	return []*OutputEvent{}, fmt.Errorf("Field not found")
+	return []*ServerEvent{}, fmt.Errorf("Field not found")
 }
 
 // Update loop for the game
-func (game *Game) Update(delta float64) []*OutputEvent {
+func (game *Game) Update(delta float64) []*ServerEvent {
 	events := game.events
-	game.events = []*OutputEvent{}
+	game.events = []*ServerEvent{}
 	// Only do something when the game is playing
 	if game.State != PlayingState {
 		return events
@@ -122,13 +127,7 @@ func (game *Game) Update(delta float64) []*OutputEvent {
 		for _, field := range game.Fields {
 			field.Payout()
 			// addPlayerUpdateEvent
-			events = append(events, &OutputEvent{
-				Type: "playerUpdated",
-				Payload: PlayerUpdatedEvent{
-					FieldID: field.ID,
-					Player:  field.Player,
-				},
-			})
+			events = append(events, UpdateEvent(field.Player, field.ID))
 		}
 		game.IncomeCooldown = float64(game.Config.IncomeCooldown)
 	}
@@ -139,22 +138,10 @@ func (game *Game) Update(delta float64) []*OutputEvent {
 		if game.Fields[i].Player.Lives <= 0 {
 			// for all mobs and bullets on that field send destroy events
 			for _, mob := range game.Fields[i].Mobs {
-				events = append(events, &OutputEvent{
-					Type: "mobDestroyed",
-					Payload: MobDestroyedEvent{
-						FieldID: game.Fields[i].ID,
-						MobID:   mob.ID,
-					},
-				})
+				events = append(events, DeleteEvent(mob, game.Fields[i].ID))
 			}
 			for _, bullet := range game.Fields[i].Bullets {
-				events = append(events, &OutputEvent{
-					Type: "bulletDestroyed",
-					Payload: BulletDestroyedEvent{
-						FieldID:  game.Fields[i].ID,
-						BulletID: bullet.ID,
-					},
-				})
+				events = append(events, DeleteEvent(bullet, game.Fields[i].ID))
 			}
 			game.Fields = append(game.Fields[:i], game.Fields[i+1:]...)
 			continue
@@ -165,9 +152,9 @@ func (game *Game) Update(delta float64) []*OutputEvent {
 		for j := len(fieldEvents) - 1; j >= 0; j-- {
 			if fieldEvents[j].Type == "liveStolen" {
 				// Get the field where the live was stolen from
-				originField := game.getFieldAt(fieldEvents[j].Payload.(LiveStolenEvent).FieldID)
+				originField := game.getFieldAt(fieldEvents[j].Payload.(liveStolenEvent).FieldID)
 				// Get the field where the live was stolen to
-				targetField := game.getFieldAt(fieldEvents[j].Payload.(LiveStolenEvent).SentFromFieldID)
+				targetField := game.getFieldAt(fieldEvents[j].Payload.(liveStolenEvent).SentFromFieldID)
 				// Check if both fields exist
 				if originField != nil && targetField != nil {
 					// Check if the player has enough lives to steal
@@ -176,20 +163,8 @@ func (game *Game) Update(delta float64) []*OutputEvent {
 						originField.Player.Lives--
 						targetField.Player.Lives++
 						// Add events to the event list
-						events = append(events, &OutputEvent{
-							Type: "playerUpdated",
-							Payload: PlayerUpdatedEvent{
-								FieldID: originField.ID,
-								Player:  originField.Player,
-							},
-						})
-						events = append(events, &OutputEvent{
-							Type: "playerUpdated",
-							Payload: PlayerUpdatedEvent{
-								FieldID: targetField.ID,
-								Player:  targetField.Player,
-							},
-						})
+						events = append(events, UpdateEvent(originField.Player, originField.ID))
+						events = append(events, UpdateEvent(targetField.Player, targetField.ID))
 					}
 				}
 				// Remove the event from the list
@@ -201,7 +176,7 @@ func (game *Game) Update(delta float64) []*OutputEvent {
 	// Set game over if there is only one player left
 	if len(game.Fields) <= 1 {
 		game.State = GameOverState
-		events = append(events, &OutputEvent{
+		events = append(events, &ServerEvent{
 			Type: "gameStateChanged",
 			Payload: StateChangedEvent{
 				GameState: game.State,
@@ -209,22 +184,10 @@ func (game *Game) Update(delta float64) []*OutputEvent {
 		})
 		// for all mobs and bullets on that field send destroy events
 		for _, mob := range game.Fields[0].Mobs {
-			events = append(events, &OutputEvent{
-				Type: "mobDestroyed",
-				Payload: MobDestroyedEvent{
-					FieldID: game.Fields[0].ID,
-					MobID:   mob.ID,
-				},
-			})
+			events = append(events, DeleteEvent(mob, game.Fields[0].ID))
 		}
 		for _, bullet := range game.Fields[0].Bullets {
-			events = append(events, &OutputEvent{
-				Type: "bulletDestroyed",
-				Payload: BulletDestroyedEvent{
-					FieldID:  game.Fields[0].ID,
-					BulletID: bullet.ID,
-				},
-			})
+			events = append(events, DeleteEvent(bullet, game.Fields[0].ID))
 		}
 	}
 	return events

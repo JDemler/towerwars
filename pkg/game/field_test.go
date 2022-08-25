@@ -37,9 +37,9 @@ func TestMobReachesEndOfTWMap(t *testing.T) {
 		events = append(events, field.Update(1)...)
 	}
 	// check that there is at least one liveStolen Event
-	var liveStolenEventFound *LiveStolenEvent
+	var liveStolenEventFound *liveStolenEvent
 	for _, event := range events {
-		if lse, ok := event.Payload.(LiveStolenEvent); ok {
+		if lse, ok := event.Payload.(liveStolenEvent); ok {
 			liveStolenEventFound = &lse
 		}
 	}

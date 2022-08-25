@@ -14,6 +14,16 @@ type Bullet struct {
 	TargetID   int     `json:"targetId"`
 }
 
+// Implement Crud interface
+func (bullet *Bullet) GetID() int {
+	return bullet.ID
+}
+
+// Implement Crud interface
+func (bullet *Bullet) GetType() string {
+	return "bullet"
+}
+
 // Update bullet returning if it is still relevant to the game
 func (bullet *Bullet) Update(delta float64) bool {
 	if bullet.Target == nil || bullet.Target.Health <= 0 {

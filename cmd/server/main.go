@@ -22,7 +22,7 @@ type Server struct {
 type WsChannel struct {
 	id        int
 	open      bool
-	Channel   chan game.OutputEvent
+	Channel   chan game.ServerEvent
 	Websocket *websocket.Conn
 }
 
@@ -53,7 +53,7 @@ func NewServer() *Server {
 }
 
 // Update the game
-func (s *Server) Update(delta float64) []*game.OutputEvent {
+func (s *Server) Update(delta float64) []*game.ServerEvent {
 	return s.game.Update(delta)
 }
 
@@ -101,37 +101,6 @@ func (s *Server) AddPlayer(w http.ResponseWriter, r *http.Request) {
 
 	//log player joined
 	fmt.Println("Player joined")
-}
-
-func (s *Server) RegisterEvent(w http.ResponseWriter, r *http.Request) {
-	// decode event
-	var event game.FieldEvent
-	err := json.NewDecoder(r.Body).Decode(&event)
-	if err != nil {
-		fmt.Println(err)
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
-	// HandleEvent
-	events, error := s.game.HandleEvent(event)
-	if error != nil {
-		fmt.Println("Could not handle event")
-		fmt.Println(error)
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
-	// send events to all clients
-	for _, event := range events {
-		for _, c := range s.writeChannels {
-			if c.open {
-				c.Channel <- *event
-			}
-		}
-	}
-	// return success
-	w.WriteHeader(http.StatusOK)
 }
 
 func (s *Server) GetTowerTypes(w http.ResponseWriter, r *http.Request) {
@@ -250,7 +219,7 @@ func (s *Server) WebSocket(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// create channels
-	gameEventChan := make(chan game.OutputEvent)
+	gameEventChan := make(chan game.ServerEvent)
 	wsChannel := &WsChannel{
 		id:        s.channelCount,
 		open:      true,
@@ -360,7 +329,6 @@ func main() {
 	http.HandleFunc("/status", s.GetStatus)
 	http.HandleFunc("/game", s.GetGameState)
 	http.HandleFunc("/add_player", s.AddPlayer)
-	http.HandleFunc("/register_event", s.RegisterEvent)
 	http.HandleFunc("/tower_types", s.GetTowerTypes)
 	http.HandleFunc("/mob_types", s.GetMobTypes)
 	http.HandleFunc("/ws", s.WebSocket)

@@ -18,6 +18,16 @@ type Tower struct {
 	BulletSpeed float64 `json:"-"`
 }
 
+// Implement Crud interface
+func (t *Tower) GetID() int {
+	return t.ID
+}
+
+// Implement Crud interface
+func (t *Tower) GetType() string {
+	return "tower"
+}
+
 // Upgrade tower from towerlevel
 func (t *Tower) Upgrade(towerLevel *TowerLevel) {
 	t.Damage = towerLevel.Damage
