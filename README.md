@@ -46,4 +46,18 @@ These events are very general and always have following fields
 
 Currently there are four events the client can send to the server:
 
-`buyMob`, `buildTower`, `upgradeTower`, `sellTower`
+`buyMob`:
+
+`{'type': 'buyMob', 'fieldId': 0, 'payload': {'targetFieldId': 1, 'mobType': 'facebookMom'}}`
+
+`buildTower`: x and y are tile indices
+
+`{'type': 'buildTower', 'fieldId': 0, 'payload': {'x': 1, 'y': 1, 'towerType': 'profilePicture'}}`
+
+`upgradeTower`:
+
+`{'type': 'upgradeTower', 'fieldId': 0, 'payload': {'towerId': 1}}`
+
+ `sellTower`:
+
+`{'type': 'sellTower', 'fieldId': 0, 'payload': {'towerId': 1}}`
