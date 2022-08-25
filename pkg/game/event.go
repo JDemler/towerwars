@@ -92,7 +92,7 @@ func (e BuildEvent) TryExecute(sourceField *Field, targetFields []*Field, gc *Co
 	if sourceField.Player.Money < towerLevel.Cost*100 {
 		return nil, fmt.Errorf("Player cannot afford tower")
 	}
-	tower := towerType.Tower(float64(e.X)*TileSize+TileSize/2, float64(e.Y)*TileSize+TileSize/2, 1, sourceField.getNextTowerID())
+	tower := towerType.Tower(float64(e.X)+0.5, float64(e.Y)+0.5, 1, sourceField.getNextTowerID())
 	//Occupy tower position in twmap
 	sourceField.TWMap.occupy(e.X, e.Y)
 	sourceField.Towers = append(sourceField.Towers, tower)
@@ -119,7 +119,7 @@ func (e SellEvent) TryExecute(sourceField *Field, targetFields []*Field, gc *Con
 		return nil, fmt.Errorf("Tower %d does not exist", e.TowerID)
 	}
 	towerType := gc.GetTowerType(tower.Type)
-	sourceField.TWMap.free(int((tower.X-TileSize/2)/TileSize), int((tower.Y-TileSize/2)/TileSize))
+	sourceField.TWMap.free(int((tower.X - 0.5)), int((tower.Y - 0.5)))
 	sourceField.removeTowerByID(e.TowerID)
 	sourceField.Player.Money += towerType.GetLevel(tower.Level).Cost * 80
 	return []*ServerEvent{DeleteEvent(tower, sourceField.ID), UpdateEvent(sourceField.Player, sourceField.ID)}, nil
@@ -202,7 +202,7 @@ func (e BuyMobEvent) TryExecute(sourceField *Field, targetFields []*Field, confi
 		//Get startposition
 		startX, startY := targetField.TWMap.startPosition()
 		mobID := targetField.getNextMobID()
-		mob := mobType.MakeMob(float64(startX)*TileSize+TileSize/2, float64(startY)*TileSize+TileSize/2, mobID)
+		mob := mobType.MakeMob(float64(startX)+0.5, float64(startY)*+0.5, mobID)
 		mob.SentFromFieldID = sourceField.ID
 		targetField.Mobs = append(targetField.Mobs, mob)
 		gameEvents = append(gameEvents, CreateEvent(mob, targetField.ID))

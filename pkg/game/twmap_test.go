@@ -93,17 +93,17 @@ func TestOccupyingTileInPath(t *testing.T) {
 	}
 	mob.calcDirection(simpleMap)
 	// Check that mob is moving to 0,1
-	if mob.TargetX != (TileSize/2) || mob.TargetY != (TileSize+TileSize/2) {
+	if mob.TargetX != 0.5 || mob.TargetY != 1.5 {
 		t.Error("Mob should be moving to 1,1 but is moving to", mob.TargetX, mob.TargetY)
 	}
-	mob.X = TileSize / 2
-	mob.Y = TileSize + TileSize/2
+	mob.X = 0.5
+	mob.Y = 1.5
 	mob.calcDirection(simpleMap)
 	// Occupy tile 1,1
 	simpleMap.occupy(0, 2)
 	// Check that mob is not moving towards 1,2
 	mob.calcDirection(simpleMap)
-	if mob.TargetX != (TileSize+TileSize/2) && mob.TargetY != (TileSize*2+TileSize/2) {
+	if mob.TargetX != 1.5 && mob.TargetY != 2.5 {
 		t.Error("Mob should not be moving to 0,0 but is moving to", mob.TargetX, mob.TargetY)
 	}
 }

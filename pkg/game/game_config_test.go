@@ -22,16 +22,16 @@ func standardTWMap() *MapConfig {
 
 var TestGameConfig = Config{
 	TowerTypes: []*TowerType{
-		{Name: "FastBullet", Levels: []*TowerLevel{{Level: 1, Damage: 1, Range: 300, FireRate: 1, Cost: 5, BulletSpeed: 150}}},
+		{Name: "FastBullet", Levels: []*TowerLevel{{Level: 1, Damage: 1, Range: 300, FireRate: 1, Cost: 5, BulletSpeed: 5}}},
 		{Name: "SlowBullet", Levels: []*TowerLevel{
-			{Level: 1, Damage: 5, Range: 150, FireRate: 1, Cost: 15, BulletSpeed: 25},
-			{Level: 2, Damage: 10, Range: 150, FireRate: 1, Cost: 15, BulletSpeed: 25},
-			{Level: 3, Damage: 15, Range: 150, FireRate: 1, Cost: 15, BulletSpeed: 25}}},
+			{Level: 1, Damage: 5, Range: 150, FireRate: 1, Cost: 15, BulletSpeed: 0.8},
+			{Level: 2, Damage: 10, Range: 150, FireRate: 1, Cost: 15, BulletSpeed: 0.8},
+			{Level: 3, Damage: 15, Range: 150, FireRate: 1, Cost: 15, BulletSpeed: 0.8}}},
 		{Name: "StationaryBullet", Levels: []*TowerLevel{{Level: 1, Damage: 5, Range: 150, FireRate: 1, Cost: 15, BulletSpeed: 0}}},
 	},
 	MobTypes: []*MobType{
-		{Name: "FastMob", Health: 50, Speed: 70, Reward: 1, Income: 1, Cost: 5},
-		{Name: "SlowMob", Health: 100, Speed: 50, Reward: 2, Income: 2, Cost: 10},
+		{Name: "FastMob", Health: 50, Speed: 2, Reward: 1, Income: 1, Cost: 5},
+		{Name: "SlowMob", Health: 100, Speed: 1, Reward: 2, Income: 2, Cost: 10},
 		{Name: "StationaryMob", Health: 100, Speed: 0, Reward: 2, Income: 2, Cost: 10},
 	},
 	Map: standardTWMap(),

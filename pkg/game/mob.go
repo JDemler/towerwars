@@ -32,17 +32,17 @@ func (m *Mob) GetType() string {
 }
 
 func (mob *Mob) calcDirection(twMap *TWMap) {
-	x, y := int(mob.X/TileSize), int(mob.Y/TileSize)
+	x, y := int(mob.X), int(mob.Y)
 	if twMap.isEnd(x, y) {
 		mob.Reached = true
 		return
 	}
-	nX, nY, err := twMap.nextStep(int(mob.X/TileSize), int(mob.Y/TileSize))
+	nX, nY, err := twMap.nextStep(int(mob.X), int(mob.Y))
 	if err != nil {
 		fmt.Println(err)
 	}
-	mob.TargetX = float64(nX)*TileSize + TileSize/2
-	mob.TargetY = float64(nY)*TileSize + TileSize/2
+	mob.TargetX = float64(nX) + 0.5
+	mob.TargetY = float64(nY) + 0.5
 }
 
 // IsDead returns true if mob is dead or reached the end of the map

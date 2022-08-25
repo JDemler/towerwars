@@ -6,9 +6,6 @@ import (
 	"math"
 )
 
-// TileSize returns the size of a tile in pixels
-const TileSize = 32
-
 // WaitingState is the state of the game when players are waiting for the game to start
 const WaitingState = "WaitingForPlayers"
 
