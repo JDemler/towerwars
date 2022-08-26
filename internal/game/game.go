@@ -15,24 +15,6 @@ const PlayingState = "Playing"
 // GameOverState is the state of the game when the game is over
 const GameOverState = "GameOver"
 
-// Player represents a player in the game
-type Player struct {
-	ID     int    `json:"id"`
-	Name   string `json:"name"`
-	Money  int    `json:"money"`
-	Income int    `json:"income"`
-	Lives  int    `json:"lives"`
-}
-
-// Implement Crud interface for Player
-func (p *Player) getID() int {
-	return p.ID
-}
-
-func (p *Player) getType() string {
-	return "player"
-}
-
 // Game contains all information about one game instance
 type Game struct {
 	Fields         []*Field       `json:"fields"`
