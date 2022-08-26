@@ -27,6 +27,9 @@ export default class Transform extends Script {
         for (let i = 0; i < this.children.length; i++) {
             this.children[i].update(deltaTime);
         }
+
+        this.gameObject.displayObject.position.set(this.position.x, this.position.y);
+        this.gameObject.displayObject.scale.set(this.scale.x, this.scale.y);
     }
 
     addChild(child: Transform) {
