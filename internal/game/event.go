@@ -192,7 +192,7 @@ func (e BuyMobEvent) TryExecute(sourceField *Field, targetFields []*Field, confi
 		return nil, fmt.Errorf("Player cannot afford mob")
 	}
 	// Check if barracks have mob to send
-	if sourceField.Barracks.TrySend(mobType) == false {
+	if !sourceField.Barracks.TrySend(mobType) {
 		// Barracks do not have mob to send
 		fmt.Println("Barracks do not have mob to send")
 		return nil, fmt.Errorf("Barracks do not have mob to send")
