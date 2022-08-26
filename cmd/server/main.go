@@ -300,7 +300,7 @@ func logAndAddCorsHeadersToRequest(handler http.Handler) http.Handler {
 		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 		w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
 		// Handle OPTIONS requests
-		if r.Method == "OPTIONS" {
+		if r.Method == http.MethodOptions {
 			return
 		}
 		if r.URL.Path == "/" {

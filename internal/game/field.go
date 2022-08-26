@@ -102,7 +102,7 @@ func (f *Field) Update(delta float64) []*ServerEvent {
 
 	// Update bullets and remove irrelevant bullets from the game
 	for i := len(f.Bullets) - 1; i >= 0; i-- {
-		if !f.Bullets[i].Update(delta) || f.Bullets[i].Target.isDead() {
+		if !f.Bullets[i].update(delta) || f.Bullets[i].Target.isDead() {
 			// Create BulletDestroyedEvent
 			events = append(events, deleteEvent(f.Bullets[i], f.ID))
 			// Remove bullet from field

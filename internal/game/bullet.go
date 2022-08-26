@@ -24,8 +24,8 @@ func (bullet *Bullet) getType() string {
 	return "bullet"
 }
 
-// Update bullet returning if it is still relevant to the game
-func (bullet *Bullet) Update(delta float64) bool {
+// update bullet returning if it is still relevant to the game
+func (bullet *Bullet) update(delta float64) bool {
 	if bullet.Target == nil || bullet.Target.Health <= 0 {
 		// remove bullet from game
 		bullet.Irrelevant = true

@@ -8,7 +8,7 @@ import (
 func TestBulletMovesTowardsTargetInXDirection(t *testing.T) {
 	targetMob := Mob{X: 1, Y: 0, Health: 100, TargetX: 0, TargetY: 0, Speed: 1}
 	bullet := Bullet{X: 0, Y: 0, Speed: 1, Target: &targetMob}
-	bullet.Update(0.1)
+	bullet.update(0.1)
 	if bullet.X != 0.1 {
 		t.Errorf("Expected X to be 0.1, got %f", bullet.X)
 	}
@@ -21,7 +21,7 @@ func TestBulletMovesTowardsTargetInXDirection(t *testing.T) {
 func TestBulletMovesTowardsTargetInYDirection(t *testing.T) {
 	targetMob := Mob{X: 0, Y: 1, Health: 100, TargetX: 0, TargetY: 0, Speed: 1}
 	bullet := Bullet{X: 0, Y: 0, Speed: 1, Target: &targetMob}
-	bullet.Update(0.1)
+	bullet.update(0.1)
 	if bullet.X != 0 {
 		t.Errorf("Expected X to be 0, got %f", bullet.X)
 	}
@@ -34,7 +34,7 @@ func TestBulletMovesTowardsTargetInYDirection(t *testing.T) {
 func TestBulletMovesTowardsTargetInXAndYDirection(t *testing.T) {
 	targetMob := Mob{X: 1, Y: 1, Health: 100, TargetX: 0, TargetY: 0, Speed: 1}
 	bullet := Bullet{X: 0, Y: 0, Speed: 1, Target: &targetMob}
-	bullet.Update(0.1)
+	bullet.update(0.1)
 	if bullet.X < 0.07 {
 		t.Errorf("Expected X to be 0.1, got %f", bullet.X)
 	}
@@ -47,7 +47,7 @@ func TestBulletMovesTowardsTargetInXAndYDirection(t *testing.T) {
 func TestBulletHitsTargetWhenSpeedExceedsDistrance(t *testing.T) {
 	targetMob := Mob{X: 0, Y: 0, Health: 100, TargetX: 1, TargetY: 1, Speed: 1}
 	bullet := Bullet{X: 0, Y: 0, Speed: 2, Target: &targetMob, Damage: 10}
-	alive := bullet.Update(2)
+	alive := bullet.update(2)
 	if alive {
 		t.Errorf("Expected bullet to be dead")
 	}
