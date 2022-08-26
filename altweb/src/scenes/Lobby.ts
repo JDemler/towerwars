@@ -81,8 +81,10 @@ export default class Demo extends Phaser.Scene {
   handleEvent(event: any) {
     console.log(event)
     switch (event.type) {
-      case "playerJoined":
-        console.log("Player joined: " + event.payload.player.id);
+      case "player":
+        if (event.kind == "created") {
+          console.log("Player joined: " + event.payload.player.id);
+        }
         break;
       case "gameStateChanged":
         console.log("Game state changed to: " + event.payload.gameState);
@@ -92,21 +94,28 @@ export default class Demo extends Phaser.Scene {
   }
 
   startGame() {
-    this.username = "hans23";
-    joinGame(this.username).then(addedPlayer => {
+    this.scene.username = "hans23";
+    joinGame(this.scene.username).then(addedPlayer => {
       if (addedPlayer) {
-        this.playerId = addedPlayer.fieldId;
-        this.playerKey = addedPlayer.key;
-
+        this.scene.setPlayerId(addedPlayer.fieldId);
+        this.scene.setPlayerKey(addedPlayer.key);
+        console.log(addedPlayer)
         console.log("Assigned to game");
       }
     });
   }
 
+  setPlayerId(id: number) {
+    this.playerId = id;
+  }
+  setPlayerKey(key: string) {
+    this.playerKey = key;
+  }
+
   update(time: number, delta: number): void {
     //console.log(this.gameState);
     if (this.gameState && this.gameState.state === 'Playing') {
-      this.scene.start('GameScene', { mobTypes: this.mobTypes, towerTypes: this.towerTypes, playerId: this.playerId });
+      this.scene.start('GameScene', { mobTypes: this.mobTypes, towerTypes: this.towerTypes, playerId: this.playerId, playerKey: this.playerKey, username: this.username });
       this.destroy();
     }
   }

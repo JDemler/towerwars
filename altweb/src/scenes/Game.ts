@@ -11,6 +11,7 @@ export default class GameScene extends Phaser.Scene {
   gameState: Game;
   serverAlive: boolean = true;
   playerId: number = 0;
+  playerKey: string = "";
   towerTypes: TowerType[] = []
   mobTypes: MobType[] = []
   focussedTowerType: number = 0;
@@ -34,6 +35,7 @@ export default class GameScene extends Phaser.Scene {
     this.towerTypes = data.towerTypes;
     this.mobTypes = data.mobTypes;
     this.playerId = data.playerId;
+    console.log(data)
     // log player id
     console.log("Player id: " + this.playerId);
   }
@@ -98,9 +100,9 @@ export default class GameScene extends Phaser.Scene {
   }
 
   handleEvent(event: any): void {
-    this.setOffsetForField(event.payload.fieldId);
-    if (event.payload.fieldId !== undefined) {
-      var field = this.fields.find(f => f.id == event.payload.fieldId);
+    this.setOffsetForField(event.fieldId);
+    if (event.fieldId !== undefined) {
+      var field = this.fields.find(f => f.id == event.fieldId);
       if (field) {
         field.handleEvent(event);
       } else {

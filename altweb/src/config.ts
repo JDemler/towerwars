@@ -5,7 +5,7 @@ export const TileSize: number = 32;
 export default {
   type: Phaser.AUTO,
   parent: 'game',
-  backgroundColor: '#33A5E7',
+  backgroundColor: '#000000',
   fps: { target: import.meta.env.VITE_FPS, forceSetTimeOut: true },
   physics: {
     default: 'arcade',
@@ -15,7 +15,7 @@ export default {
     }
   },
   scale: {
-    width: 1280,
+    width: 1020,
     height: 720,
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH

@@ -53,29 +53,37 @@ export class GameField extends Phaser.GameObjects.GameObject {
 
     handleEvent(event: any): void {
         switch (event.type) {
-            case "towerCreated":
-                this.createTower(event.payload.tower);
+            case "tower":
+                switch (event.kind) {
+                    case "create":
+                        this.createTower(event.payload);
+                        break;
+                    case "upgrade":
+                        this.upgradeTower(event);
+                        break;
+                    case "delete":
+                        this.destroyTower(event.payload);
+                }
                 break;
-            case "towerUpgraded":
-                this.upgradeTower(event.payload.tower);
+            case "mob":
+                switch (event.kind) {
+                    case "create":
+                        this.createMob(event.payload);
+                        break;
+                    case "update":
+                        this.updateMob(event.payload);
+                        break;
+                    case "delete":
+                        this.destroyMob(event.payload);
+                }
                 break;
-            case "towerDestroyed":
-                this.destroyTower(event.payload.towerId);
-            case "fieldUpdated":
-                this.updateFromField(event.payload);
+            case "player":
+                switch (event.kind) {
+                    case "update":
+                        this.updatePlayer(event.payload);
+                        break;
+                }
                 break;
-            case "mobCreated":
-                this.createMob(event.payload.mob);
-            case "mobUpdated":
-                this.updateMob(event.payload.mob);
-                break;
-            case "mobDestroyed":
-                this.destroyMob(event.payload.mobId);
-                break;
-            case "playerUpdated":
-                this.updatePlayer(event.payload.player);
-                break;
-
         }
     }
 
