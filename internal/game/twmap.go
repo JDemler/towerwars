@@ -87,17 +87,15 @@ func (twMap *TWMap) isOccupied(x, y int) bool {
 	return false
 }
 
-func (twMap *TWMap) occupy(x, y int) bool {
+func (twMap *TWMap) occupy(x, y int) {
 	twMap.Tiles[x][y].occupied = true
 	//recalculate current path
 	twMap.calculatePath()
-	return true
 }
 
-func (twMap *TWMap) free(x, y int) bool {
+func (twMap *TWMap) free(x, y int) {
 	twMap.Tiles[x][y].occupied = false
 	twMap.calculatePath()
-	return true
 }
 
 func (twMap *TWMap) startPosition() (int, int) {

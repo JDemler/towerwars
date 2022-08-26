@@ -97,7 +97,7 @@ func (e BuildEvent) TryExecute(sourceField *Field, targetFields []*Field, gc *Co
 	sourceField.TWMap.occupy(e.X, e.Y)
 	sourceField.Towers = append(sourceField.Towers, tower)
 	sourceField.Player.Money -= towerLevel.Cost * 100
-	return []*ServerEvent{CreateEvent(tower, sourceField.ID), UpdateEvent(sourceField.Player, sourceField.ID)}, nil
+	return []*ServerEvent{createEvent(tower, sourceField.ID), updateEvent(sourceField.Player, sourceField.ID)}, nil
 }
 
 // TargetFieldIds is empty for BuildEvent
@@ -112,7 +112,6 @@ type SellEvent struct {
 
 // TryExecute a SellEvent to sell a tower
 func (e SellEvent) TryExecute(sourceField *Field, targetFields []*Field, gc *Config) ([]*ServerEvent, error) {
-
 	// Check if tower exists
 	tower := sourceField.GetTowerByID(e.TowerID)
 	if tower == nil {
@@ -122,7 +121,7 @@ func (e SellEvent) TryExecute(sourceField *Field, targetFields []*Field, gc *Con
 	sourceField.TWMap.free(int((tower.X - 0.5)), int((tower.Y - 0.5)))
 	sourceField.removeTowerByID(e.TowerID)
 	sourceField.Player.Money += towerType.GetLevel(tower.Level).Cost * 80
-	return []*ServerEvent{DeleteEvent(tower, sourceField.ID), UpdateEvent(sourceField.Player, sourceField.ID)}, nil
+	return []*ServerEvent{deleteEvent(tower, sourceField.ID), updateEvent(sourceField.Player, sourceField.ID)}, nil
 }
 
 // TargetFieldIds is empty for SellEvent
@@ -158,7 +157,7 @@ func (e UpgradeEvent) TryExecute(sourceField *Field, targetFields []*Field, gc *
 	// Upgrade tower
 	tower.Upgrade(towerLevel)
 	sourceField.Player.Money -= towerLevel.Cost * 100
-	return []*ServerEvent{UpdateEvent(tower, sourceField.ID), UpdateEvent(sourceField.Player, sourceField.ID)}, nil
+	return []*ServerEvent{updateEvent(tower, sourceField.ID), updateEvent(sourceField.Player, sourceField.ID)}, nil
 }
 
 // TargetFieldIds is empty for UpgradeEvent
@@ -205,10 +204,10 @@ func (e BuyMobEvent) TryExecute(sourceField *Field, targetFields []*Field, confi
 		mob := mobType.MakeMob(float64(startX)+0.5, float64(startY)*+0.5, mobID)
 		mob.SentFromFieldID = sourceField.ID
 		targetField.Mobs = append(targetField.Mobs, mob)
-		gameEvents = append(gameEvents, CreateEvent(mob, targetField.ID))
+		gameEvents = append(gameEvents, createEvent(mob, targetField.ID))
 	}
 	// Send playerUpdated event
-	gameEvents = append(gameEvents, UpdateEvent(sourceField.Player, sourceField.ID))
+	gameEvents = append(gameEvents, updateEvent(sourceField.Player, sourceField.ID))
 	return gameEvents, nil
 }
 

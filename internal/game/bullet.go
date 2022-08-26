@@ -15,12 +15,12 @@ type Bullet struct {
 }
 
 // Implement Crud interface
-func (bullet *Bullet) GetID() int {
+func (bullet *Bullet) getID() int {
 	return bullet.ID
 }
 
 // Implement Crud interface
-func (bullet *Bullet) GetType() string {
+func (bullet *Bullet) getType() string {
 	return "bullet"
 }
 

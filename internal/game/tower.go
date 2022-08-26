@@ -19,12 +19,12 @@ type Tower struct {
 }
 
 // Implement Crud interface
-func (t *Tower) GetID() int {
+func (t *Tower) getID() int {
 	return t.ID
 }
 
 // Implement Crud interface
-func (t *Tower) GetType() string {
+func (t *Tower) getType() string {
 	return "tower"
 }
 

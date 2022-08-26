@@ -96,23 +96,22 @@ func (f *Field) Update(delta float64) []*ServerEvent {
 		f.Bullets = append(f.Bullets, bullets...)
 		// For every bullet create an event
 		for _, bullet := range bullets {
-			events = append(events, CreateEvent(bullet, f.ID))
+			events = append(events, createEvent(bullet, f.ID))
 		}
 	}
 
 	// Update bullets and remove irrelevant bullets from the game
 	for i := len(f.Bullets) - 1; i >= 0; i-- {
-		if !f.Bullets[i].Update(delta) || f.Bullets[i].Target.IsDead() {
+		if !f.Bullets[i].Update(delta) || f.Bullets[i].Target.isDead() {
 			// Create BulletDestroyedEvent
-			events = append(events, DeleteEvent(f.Bullets[i], f.ID))
+			events = append(events, deleteEvent(f.Bullets[i], f.ID))
 			// Remove bullet from field
 			f.Bullets = append(f.Bullets[:i], f.Bullets[i+1:]...)
-
 		}
 	}
 	// Update mobs
 	for i := len(f.Mobs) - 1; i >= 0; i-- {
-		mobEvents := f.Mobs[i].Update(delta, f.TWMap, f.ID)
+		mobEvents := f.Mobs[i].update(delta, f.TWMap, f.ID)
 		// Add events to events
 		events = append(events, mobEvents...)
 		// Check if mobs health is 0 or less, remove mob from game and payout player money
@@ -120,11 +119,11 @@ func (f *Field) Update(delta float64) []*ServerEvent {
 			f.Player.Money += f.Mobs[i].Reward
 			playerUpdated = true
 			// Create MobDestroyedEvent
-			events = append(events, DeleteEvent(f.Mobs[i], f.ID))
+			events = append(events, deleteEvent(f.Mobs[i], f.ID))
 			f.Mobs = append(f.Mobs[:i], f.Mobs[i+1:]...)
 		} else if f.Mobs[i].Reached {
 			// Create MobDestroyedEvent
-			events = append(events, DeleteEvent(f.Mobs[i], f.ID))
+			events = append(events, deleteEvent(f.Mobs[i], f.ID))
 			// Communicate that live was stolen to the game
 			events = append(events, &ServerEvent{
 				Type: "liveStolen",
@@ -138,7 +137,7 @@ func (f *Field) Update(delta float64) []*ServerEvent {
 	}
 	// If player has been updated, create PlayerUpdatedEvent
 	if playerUpdated {
-		events = append(events, UpdateEvent(f.Player, f.ID))
+		events = append(events, updateEvent(f.Player, f.ID))
 	}
 	return events
 }

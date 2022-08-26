@@ -1,34 +1,34 @@
 package game
 
-type CrudObject interface {
-	GetID() int
-	GetType() string
+type crudObject interface {
+	getID() int
+	getType() string
 }
 
-func CreateEvent(co CrudObject, fieldID int) *ServerEvent {
+func createEvent(co crudObject, fieldID int) *ServerEvent {
 	return &ServerEvent{
-		Type:    co.GetType(),
+		Type:    co.getType(),
 		Kind:    "create",
 		FieldID: fieldID,
 		Payload: &co,
 	}
 }
 
-func UpdateEvent(co CrudObject, fieldID int) *ServerEvent {
+func updateEvent(co crudObject, fieldID int) *ServerEvent {
 	return &ServerEvent{
-		Type:    co.GetType(),
+		Type:    co.getType(),
 		Kind:    "update",
 		FieldID: fieldID,
 		Payload: &co,
 	}
 }
 
-func DeleteEvent(co CrudObject, fieldID int) *ServerEvent {
+func deleteEvent(co crudObject, fieldID int) *ServerEvent {
 	return &ServerEvent{
-		Type:    co.GetType(),
+		Type:    co.getType(),
 		Kind:    "delete",
 		FieldID: fieldID,
-		Payload: co.GetID(),
+		Payload: co.getID(),
 	}
 }
 

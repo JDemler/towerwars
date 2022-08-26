@@ -22,55 +22,55 @@ type Mob struct {
 }
 
 // Implement Crud interface
-func (m *Mob) GetID() int {
+func (m *Mob) getID() int {
 	return m.ID
 }
 
 // Implement Crud interface
-func (m *Mob) GetType() string {
+func (m *Mob) getType() string {
 	return "mob"
 }
 
-func (mob *Mob) calcDirection(twMap *TWMap) {
-	x, y := int(mob.X), int(mob.Y)
+func (m *Mob) calcDirection(twMap *TWMap) {
+	x, y := int(m.X), int(m.Y)
 	if twMap.isEnd(x, y) {
-		mob.Reached = true
+		m.Reached = true
 		return
 	}
-	nX, nY, err := twMap.nextStep(int(mob.X), int(mob.Y))
+	nX, nY, err := twMap.nextStep(int(m.X), int(m.Y))
 	if err != nil {
 		fmt.Println(err)
 	}
-	mob.TargetX = float64(nX) + 0.5
-	mob.TargetY = float64(nY) + 0.5
+	m.TargetX = float64(nX) + 0.5
+	m.TargetY = float64(nY) + 0.5
 }
 
-// IsDead returns true if mob is dead or reached the end of the map
-func (mob *Mob) IsDead() bool {
-	return mob.Health <= 0 || mob.Reached
+// isDead returns true if mob is dead or reached the end of the map
+func (m *Mob) isDead() bool {
+	return m.Health <= 0 || m.Reached
 }
 
-// Update Mob potentially returning mobUpdated event
-func (mob *Mob) Update(delta float64, twMap *TWMap, fieldID int) []*ServerEvent {
+// update Mob potentially returning mobUpdated event
+func (m *Mob) update(delta float64, twMap *TWMap, fieldID int) []*ServerEvent {
 	// Calc differences in Target vs Position
-	dx := mob.TargetX - mob.X
-	dy := mob.TargetY - mob.Y
+	dx := m.TargetX - m.X
+	dy := m.TargetY - m.Y
 	totalDiff := math.Sqrt(dx*dx + dy*dy)
 	// If mob is close enough to target, move to target
-	if totalDiff <= (mob.Speed * delta) {
-		mob.X = mob.TargetX
-		mob.Y = mob.TargetY
+	if totalDiff <= (m.Speed * delta) {
+		m.X = m.TargetX
+		m.Y = m.TargetY
 	} else {
 		// From differences, calculate direction to move
 		directionX := dx / totalDiff
 		directionY := dy / totalDiff
 		// Move mob in direction
-		mob.X += directionX * mob.Speed * delta
-		mob.Y += directionY * mob.Speed * delta
+		m.X += directionX * m.Speed * delta
+		m.Y += directionY * m.Speed * delta
 	}
-	if mob.X == mob.TargetX && mob.Y == mob.TargetY {
-		mob.calcDirection(twMap)
-		return []*ServerEvent{UpdateEvent(mob, fieldID)}
+	if m.X == m.TargetX && m.Y == m.TargetY {
+		m.calcDirection(twMap)
+		return []*ServerEvent{updateEvent(m, fieldID)}
 	}
 	return []*ServerEvent{}
 }

@@ -8,7 +8,7 @@ import (
 	"os"
 	"time"
 
-	"towerwars/pkg/game"
+	"towerwars/internal/game"
 
 	"github.com/gorilla/websocket"
 )
@@ -68,7 +68,7 @@ func (s *Server) GetGameState(w http.ResponseWriter, r *http.Request) {
 // added player struct
 type AddedPlayer struct {
 	Key     string `json:"key"`
-	FieldId int    `json:"fieldId"`
+	FieldID int    `json:"fieldId"`
 }
 
 func (s *Server) AddPlayer(w http.ResponseWriter, r *http.Request) {
@@ -90,11 +90,11 @@ func (s *Server) AddPlayer(w http.ResponseWriter, r *http.Request) {
 	}
 	// add player to game and get its key
 	key := s.game.AddPlayer(playerName)
-	fieldId := len(s.game.Fields) - 1
+	fieldID := len(s.game.Fields) - 1
 	// return success
 	w.WriteHeader(http.StatusOK)
 	// return player id
-	err = json.NewEncoder(w).Encode(AddedPlayer{Key: key, FieldId: fieldId})
+	err = json.NewEncoder(w).Encode(AddedPlayer{Key: key, FieldID: fieldID})
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -310,9 +310,8 @@ func logAndAddCorsHeadersToRequest(handler http.Handler) http.Handler {
 				fmt.Println(err)
 			}
 			return
-		} else {
-			handler.ServeHTTP(w, r)
 		}
+		handler.ServeHTTP(w, r)
 	})
 }
 

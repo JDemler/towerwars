@@ -1,2 +1,11 @@
 run: 
   tests: false
+
+linters:
+  enable:
+    - dupl
+    - gofmt
+    - revive
+    - unparam
+    - usestdlibvars
+    - whitespace

@@ -25,11 +25,11 @@ type Player struct {
 }
 
 // Implement Crud interface for Player
-func (p *Player) GetID() int {
+func (p *Player) getID() int {
 	return p.ID
 }
 
-func (p *Player) GetType() string {
+func (p *Player) getType() string {
 	return "player"
 }
 
@@ -66,7 +66,7 @@ func (game *Game) AddPlayer(playerName string) string {
 	}
 	field := NewField(id, player, game.Config.Map.GenerateMap())
 	game.Fields = append(game.Fields, field)
-	game.events = append(game.events, CreateEvent(player, id))
+	game.events = append(game.events, createEvent(player, id))
 	return field.Key
 }
 
@@ -124,7 +124,7 @@ func (game *Game) Update(delta float64) []*ServerEvent {
 		for _, field := range game.Fields {
 			field.Payout()
 			// addPlayerUpdateEvent
-			events = append(events, UpdateEvent(field.Player, field.ID))
+			events = append(events, updateEvent(field.Player, field.ID))
 		}
 		game.IncomeCooldown = float64(game.Config.IncomeCooldown)
 	}
@@ -135,10 +135,10 @@ func (game *Game) Update(delta float64) []*ServerEvent {
 		if game.Fields[i].Player.Lives <= 0 {
 			// for all mobs and bullets on that field send destroy events
 			for _, mob := range game.Fields[i].Mobs {
-				events = append(events, DeleteEvent(mob, game.Fields[i].ID))
+				events = append(events, deleteEvent(mob, game.Fields[i].ID))
 			}
 			for _, bullet := range game.Fields[i].Bullets {
-				events = append(events, DeleteEvent(bullet, game.Fields[i].ID))
+				events = append(events, deleteEvent(bullet, game.Fields[i].ID))
 			}
 			game.Fields = append(game.Fields[:i], game.Fields[i+1:]...)
 			continue
@@ -160,8 +160,8 @@ func (game *Game) Update(delta float64) []*ServerEvent {
 						originField.Player.Lives--
 						targetField.Player.Lives++
 						// Add events to the event list
-						events = append(events, UpdateEvent(originField.Player, originField.ID))
-						events = append(events, UpdateEvent(targetField.Player, targetField.ID))
+						events = append(events, updateEvent(originField.Player, originField.ID))
+						events = append(events, updateEvent(targetField.Player, targetField.ID))
 					}
 				}
 				// Remove the event from the list
@@ -181,10 +181,10 @@ func (game *Game) Update(delta float64) []*ServerEvent {
 		})
 		// for all mobs and bullets on that field send destroy events
 		for _, mob := range game.Fields[0].Mobs {
-			events = append(events, DeleteEvent(mob, game.Fields[0].ID))
+			events = append(events, deleteEvent(mob, game.Fields[0].ID))
 		}
 		for _, bullet := range game.Fields[0].Bullets {
-			events = append(events, DeleteEvent(bullet, game.Fields[0].ID))
+			events = append(events, deleteEvent(bullet, game.Fields[0].ID))
 		}
 	}
 	return events
