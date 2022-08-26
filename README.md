@@ -28,7 +28,7 @@ go run server.go
 
 These events are very general and always have following fields
 
-`type` :: Object Type ('player', 'tower', 'mob', 'bullet')
+`type` :: Object Type ('player', 'tower', 'mob', 'bullet', 'barracks')
 
 `kind` :: Kind of Event ('create', 'update', 'delete')
 

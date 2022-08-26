@@ -77,7 +77,9 @@
             "speed": 1.5,
             "reward": 1,
             "income": 90,
-            "cost": 5
+            "cost": 5,
+            "respawn": 1.5,
+            "delay": 15
         },
         {
             "name": "Facebook Troll",
@@ -87,7 +89,9 @@
             "speed": 1.8,
             "reward": 2,
             "income": 180,
-            "cost": 10
+            "cost": 10,
+            "respawn": 2.5,
+            "delay": 35
         },
         {
             "name": "Facebook Mom",
@@ -97,7 +101,9 @@
             "speed": 2,
             "reward": 4,
             "income": 360,
-            "cost": 20
+            "cost": 20,
+            "respawn": 3,
+            "delay": 55
         },
         {
             "name": "Nice Guy",
@@ -107,7 +113,9 @@
             "speed": 2.8,
             "reward": 6,
             "income": 450,
-            "cost": 30
+            "cost": 30,
+            "respawn": 4,
+            "delay": 75
         },
         {
             "name": "Facebook Addict",
@@ -117,7 +125,9 @@
             "speed": 3,
             "reward": 8,
             "income": 600,
-            "cost": 50
+            "cost": 50,
+            "respawn": 4.5,
+            "delay": 95
         },
         {
             "name": "Karen",
@@ -127,7 +137,9 @@
             "speed": 3.2,
             "reward": 10,
             "income": 750,
-            "cost": 100
+            "cost": 100,
+            "respawn": 5,
+            "delay": 115
         }
     ],
     "map": {

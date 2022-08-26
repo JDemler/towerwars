@@ -15,6 +15,7 @@ type Field struct {
 	Mobs          []*Mob    `json:"mobs"`
 	Bullets       []*Bullet `json:"bullets"`
 	Towers        []*Tower  `json:"towers"`
+	Barracks      *Barracks `json:"barracks"`
 	mobCounter    int       `json:"-"` // counter for mob ids
 	bulletCounter int       `json:"-"` // counter for bullet ids
 	towerCounter  int       `json:"-"` // counter for tower ids
@@ -28,7 +29,7 @@ func randomString(length int) string {
 }
 
 // NewField creates a new field from a map, player and id
-func NewField(id int, player *Player, twmap *TWMap) *Field {
+func NewField(id int, player *Player, barracks *Barracks, twmap *TWMap) *Field {
 	// Generate a random key for the field
 	key := randomString(16)
 	return &Field{
@@ -39,6 +40,7 @@ func NewField(id int, player *Player, twmap *TWMap) *Field {
 		Mobs:          []*Mob{},
 		Bullets:       []*Bullet{},
 		Towers:        []*Tower{},
+		Barracks:      barracks,
 		mobCounter:    0,
 		bulletCounter: 0,
 		towerCounter:  0,
@@ -89,6 +91,10 @@ func (f *Field) HandleEvent(event Event, otherFields []*Field, gameConfig *Confi
 func (f *Field) Update(delta float64) []*ServerEvent {
 	events := []*ServerEvent{}
 	playerUpdated := false
+	// Update barracks
+	f.Barracks.update(delta)
+	events = append(events, updateEvent(f.Barracks, f.ID))
+
 	// Update Towers
 	for i := 0; i < len(f.Towers); i++ {
 		bullets := f.Towers[i].Update(delta, f.Mobs, f.getNextBulletID)

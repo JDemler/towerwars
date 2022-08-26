@@ -88,6 +88,8 @@ type MobType struct {
 	Reward      int     `json:"reward"`
 	Income      int     `json:"income"`
 	Cost        int     `json:"cost"`
+	Respawn     float64 `json:"respawn"`
+	Delay       float64 `json:"initial"`
 }
 
 // MakeMob from MobType

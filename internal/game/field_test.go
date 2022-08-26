@@ -4,9 +4,13 @@ import (
 	"testing"
 )
 
+func testBarracks(c Config) *Barracks {
+	return newBarracks(c.MobTypes)
+}
+
 // prepare a field containing a single tower and a single mob using the standardtwmap
-func prepareField(hasTower bool, hasMob bool) *Field {
-	field := NewField(0, TestGameConfig.Player(0), standardTWMap().GenerateMap())
+func prepareField(hasTower bool, hasMob bool, preRunBarracks bool) *Field {
+	field := NewField(0, TestGameConfig.Player(0), testBarracks(TestGameConfig), standardTWMap().GenerateMap())
 	if hasTower {
 		// add tower by handling an event
 		_, err := field.HandleEvent(BuildEvent{X: 5, Y: 5, TowerType: "FastBullet"}, []*Field{}, &TestGameConfig)
@@ -16,9 +20,15 @@ func prepareField(hasTower bool, hasMob bool) *Field {
 	}
 	if hasMob {
 		// add mob by handling an event
+		field.Barracks.update(1)
 		_, err := field.HandleEvent(BuyMobEvent{MobType: "SlowMob", TargetFieldID: 0}, []*Field{field}, &TestGameConfig)
 		if err != nil {
 			panic("Failed to buy mob")
+		}
+	}
+	if preRunBarracks {
+		for i := 0; i < 100; i++ {
+			field.Barracks.update(1)
 		}
 	}
 	return field
@@ -26,7 +36,7 @@ func prepareField(hasTower bool, hasMob bool) *Field {
 
 // Test that when mob reaches end of twmap it is removed from the field and player looses a live
 func TestMobReachesEndOfTWMap(t *testing.T) {
-	field := prepareField(false, true)
+	field := prepareField(false, true, true)
 	field.Player.Lives = 3
 	if len(field.Mobs) != 1 {
 		t.Errorf("Expected 1 mob, got %d", len(field.Mobs))
@@ -63,7 +73,7 @@ func TestMobReachesEndOfTWMap(t *testing.T) {
 
 // Test that a bullet gets removed when its target reaches end of twmap
 func TestBulletReachesEndOfTWMap(t *testing.T) {
-	field := prepareField(false, true)
+	field := prepareField(false, true, true)
 	// Add bullet with 0 speed to field and targeting only mob on field
 	field.Bullets = append(field.Bullets, &Bullet{X: 0, Y: 0, Target: field.Mobs[0], Speed: 0})
 	if len(field.Bullets) != 1 {
@@ -79,7 +89,7 @@ func TestBulletReachesEndOfTWMap(t *testing.T) {
 
 // Test that a bullet gets removed when its target reaches end of twmap and there is another mob
 func TestBulletReachesEndOfTWMapAndAnotherMob(t *testing.T) {
-	field := prepareField(false, true)
+	field := prepareField(false, true, true)
 	// Add bullet with 0 speed to field and targeting only mob on field
 	field.Bullets = append(field.Bullets, &Bullet{X: 0, Y: 0, Target: field.Mobs[0], Speed: 0})
 	field.Mobs = append(field.Mobs, &Mob{X: 1, Y: 50, Health: 123, Speed: 0})
@@ -103,7 +113,7 @@ func TestBulletReachesEndOfTWMapAndAnotherMob(t *testing.T) {
 
 // Test that a BuyMobEvent reduces the money of the player and increases the income of the player
 func TestBuyMobEvent(t *testing.T) {
-	field := prepareField(false, false)
+	field := prepareField(false, false, true)
 	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "FastMob", TargetFieldID: 0}, []*Field{field}, &TestGameConfig)
 	if field.Player.Money != 9500 {
 		t.Errorf("Expected 9500 money, got %d", field.Player.Money)
@@ -115,9 +125,9 @@ func TestBuyMobEvent(t *testing.T) {
 
 // Test that a BuyMobEvent is not executed when Player does not have enough money
 func TestBuyMobEventNotExecuted(t *testing.T) {
-	sourceField := prepareField(false, false)
+	sourceField := prepareField(false, false, true)
 	sourceField.Player.Money = 0
-	targetField := prepareField(false, false)
+	targetField := prepareField(false, false, true)
 	targetField.ID = 1
 	// Check that target field has no mobs
 	if len(targetField.Mobs) != 0 {
@@ -134,7 +144,7 @@ func TestBuyMobEventNotExecuted(t *testing.T) {
 
 // Test that tower is created when a buy tower event is received
 func TestBuyTower(t *testing.T) {
-	field := prepareField(false, false)
+	field := prepareField(false, false, true)
 	// Test that 1,1 is not occupied before BuyTowerEvent is executed
 	if field.TWMap.isOccupied(1, 1) {
 		t.Error("Expected 1,1 to be empty")
@@ -154,7 +164,7 @@ func TestBuyTower(t *testing.T) {
 
 // Test that player gets money when a mob is killed
 func TestMobKilled(t *testing.T) {
-	field := prepareField(true, true)
+	field := prepareField(true, true, true)
 	field.Towers[0].Damage = 200
 	field.Towers[0].BulletSpeed = 200
 	field.Player.Money = 100
@@ -178,7 +188,7 @@ func TestMobKilled(t *testing.T) {
 
 // Test that mobs get a unique ascending id
 func TestMobId(t *testing.T) {
-	field := prepareField(false, true)
+	field := prepareField(false, true, true)
 	// add mob by handling an event
 	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "FastMob", TargetFieldID: 0}, []*Field{field}, &TestGameConfig)
 	// check mob ids
@@ -204,7 +214,7 @@ func TestMobId(t *testing.T) {
 
 // Test that bullets have a unique ascending id
 func TestBulletId(t *testing.T) {
-	field := prepareField(true, true)
+	field := prepareField(true, true, true)
 	// check to see there are no bullets
 	if len(field.Bullets) != 0 {
 		t.Errorf("Expected 0 bullets, got %d", len(field.Bullets))
@@ -254,7 +264,7 @@ func TestBulletId(t *testing.T) {
 
 // Test that towers can be upgraded with the UpgradeTowerEvent
 func TestUpgradeTower(t *testing.T) {
-	field := prepareField(false, false)
+	field := prepareField(false, false, true)
 	// Test that 1,1 is not occupied before BuyTowerEvent is executed
 	if field.TWMap.isOccupied(1, 1) {
 		t.Error("Expected 1,1 to be empty")
@@ -291,7 +301,7 @@ func TestUpgradeTower(t *testing.T) {
 
 // Test that selling a tower frees up the path and gives money back to the player
 func TestSellTower(t *testing.T) {
-	field := prepareField(false, false)
+	field := prepareField(false, false, true)
 	// Test that 1,1 is not occupied before BuyTowerEvent is executed
 	if field.TWMap.isOccupied(2, 0) {
 		t.Error("Expected 1,1 to be empty")

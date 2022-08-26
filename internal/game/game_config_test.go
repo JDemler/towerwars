@@ -30,9 +30,9 @@ var TestGameConfig = Config{
 		{Name: "StationaryBullet", Levels: []*TowerLevel{{Level: 1, Damage: 5, Range: 150, FireRate: 1, Cost: 15, BulletSpeed: 0}}},
 	},
 	MobTypes: []*MobType{
-		{Name: "FastMob", Health: 50, Speed: 2, Reward: 1, Income: 1, Cost: 5},
-		{Name: "SlowMob", Health: 100, Speed: 1, Reward: 2, Income: 2, Cost: 10},
-		{Name: "StationaryMob", Health: 100, Speed: 0, Reward: 2, Income: 2, Cost: 10},
+		{Name: "FastMob", Health: 50, Speed: 2, Reward: 1, Income: 1, Cost: 5, Delay: 0, Respawn: 0.1},
+		{Name: "SlowMob", Health: 100, Speed: 1, Reward: 2, Income: 2, Cost: 10, Delay: 0, Respawn: 0.1},
+		{Name: "StationaryMob", Health: 100, Speed: 0, Reward: 2, Income: 2, Cost: 10, Delay: 0, Respawn: 0.1},
 	},
 	Map: standardTWMap(),
 	StartStats: &Player{
