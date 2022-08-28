@@ -1,11 +1,16 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
-import GameCanvas from './GameCanvas/GameCanvas';
+import GameCanvas from './ui/GameCanvas/GameCanvas';
 
 function App() {
   return (
-    <GameCanvas />
+    <>
+      <GameCanvas />
+      
+      <React.StrictMode>
+        {/* UI will be placed here */}
+      </React.StrictMode>
+    </>
   );
 }
 
