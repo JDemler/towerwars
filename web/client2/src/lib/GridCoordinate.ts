@@ -21,6 +21,25 @@ export default class GridCoordinate {
         this.tileCenterX = this.tileX + GridSettings.tileSize / 2;
         this.tileCenterY = this.tileY + GridSettings.tileSize / 2;
     }
+
+    moveTo(targetCoordinate: GridCoordinate, speed: number, deltaMs: number) {
+        const distanceX = targetCoordinate.x - this.x;
+        const distanceY = targetCoordinate.y - this.y;
+        const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+    
+        const distancePerMillisecond = speed / 1000;
+    
+        const moveDistance = distancePerMillisecond * deltaMs;
+        
+        if (moveDistance > distance) {
+            return new GridCoordinate(targetCoordinate.x, targetCoordinate.y);
+        }
+    
+        return new GridCoordinate(
+            this.x + distanceX / distance * moveDistance,
+            this.y + distanceY / distance * moveDistance,
+        );
+    }
 }
 
 function getDistanceBetweenTwoPoints (x1: number, y1: number, x2: number, y2: number) {

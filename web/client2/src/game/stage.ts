@@ -44,10 +44,10 @@ const beginGameLoop = (app: Application) => {
     }
 
     const gameClient = new GameClient(handleGameChangeAction);
-    
+
     app.ticker.add((delta) => {
         for (const field of fields) {
-            field.update(delta);
+            field.update(delta, app.ticker.deltaMS);
         }
     });
 

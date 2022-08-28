@@ -2,6 +2,7 @@ import { Application, Graphics } from "pixi.js";
 import { BulletModel, FieldModel, MapModel, MobModel, PlayerModel, TowerModel } from "../../models";
 import { GameChangeAction } from '../GameClient';
 import { GridSettings } from '../../lib/GridSettings';
+import GridCoordinate from '../../lib/GridCoordinate';
 
 export abstract class GameObject {
     app: Application;
@@ -12,9 +13,9 @@ export abstract class GameObject {
         this.app = app;
     }
 
-    update(delta: number) {
-        this.onUpdate(delta);
-        this.children.forEach(child => child.update(delta));
+    update(delta: number, deltaMs: number) {
+        this.onUpdate(delta, deltaMs);
+        this.children.forEach(child => child.update(delta, deltaMs));
     }
 
     public createChild(child: GameObject) {
@@ -31,7 +32,7 @@ export abstract class GameObject {
         this.children.forEach(child => child.destroy());
     }
 
-    abstract onUpdate(delta: number): void;
+    abstract onUpdate(delta: number, deltaMs: number): void;
 
     abstract onDestroy(): void;
 }
@@ -75,7 +76,7 @@ export default class Field extends GameObject {
         console.log('Creating field', fieldModel);
     }
 
-    onUpdate(delta: number): void {
+    onUpdate(delta: number, deltaMs: number): void {
 
     }
     
@@ -202,9 +203,8 @@ export class Tower extends GameObject {
         this.app.stage.addChild(this.towerCircle);
     }
 
-    onUpdate(delta: number): void {
+    onUpdate(delta: number, deltaMs: number): void {
         this.towerCircle.position.set(this.towerModel.coordinate.tileCenterX, this.towerModel.coordinate.tileCenterY);
-        
     }
 
     onDestroy(): void {
@@ -216,11 +216,14 @@ export class Tower extends GameObject {
     }
 }
 
+
+
 export class Mob extends GameObject {
     id: number;
     mobModel: MobModel;
 
     mobCircle: Graphics;
+    currentCoordinate: GridCoordinate;
 
     constructor(app: Application, mobModel: MobModel) {
         super(app);
@@ -232,11 +235,17 @@ export class Mob extends GameObject {
             .beginFill(0x0000ff)
             .drawCircle(mobModel.coordinate.tileCenterX, mobModel.coordinate.tileCenterY, GridSettings.tileSize / 2);
 
+        this.currentCoordinate = mobModel.coordinate;
+
         this.app.stage.addChild(this.mobCircle);
     }
 
-    onUpdate(delta: number): void {
-        this.mobCircle.position.set(this.mobModel.coordinate.tileCenterX, this.mobModel.coordinate.tileCenterY);
+    onUpdate(_: number, deltaMs: number): void {
+        const newPosition = this.currentCoordinate.moveTo(this.mobModel.targetCoordinate, this.mobModel.speed, deltaMs);
+        
+        this.currentCoordinate = newPosition;
+
+        this.mobCircle.position.set(newPosition.tileCenterX, newPosition.tileCenterY);
     }
 
     onDestroy(): void {
@@ -245,6 +254,7 @@ export class Mob extends GameObject {
 
     updateFromModel(mobModel: MobModel) {
         this.mobModel = mobModel;
+        this.currentCoordinate = this.mobModel.coordinate;
     }
 }
 
@@ -253,6 +263,7 @@ export class Bullet extends GameObject {
     bulletModel: BulletModel;
 
     bulletCircle: Graphics;
+    currentCoordinate: GridCoordinate;
 
     constructor(app: Application, bulletModel: BulletModel) {
         super(app);
@@ -264,11 +275,17 @@ export class Bullet extends GameObject {
             .beginFill(0xffff00)
             .drawCircle(bulletModel.coordinate.tileCenterX, bulletModel.coordinate.tileCenterY, GridSettings.tileSize / 4);
 
+        this.currentCoordinate = bulletModel.coordinate;
+
         this.app.stage.addChild(this.bulletCircle);
     }
 
-    onUpdate(delta: number): void {
-        this.bulletCircle.position.set(this.bulletModel.coordinate.tileCenterX, this.bulletModel.coordinate.tileCenterY);
+    onUpdate(delta: number, deltaMs: number): void {
+        // const newPosition = this.currentCoordinate.moveTo(this.bulletModel.targetCoordinate, this.bulletModel.speed, deltaMs);
+        
+        // this.currentCoordinate = newPosition;
+
+        // this.bulletCircle.position.set(newPosition.tileCenterX, newPosition.tileCenterY);
     }
 
     onDestroy(): void {
