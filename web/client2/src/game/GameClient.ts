@@ -149,25 +149,25 @@ export default class GameClient {
                 if (eventKind === "create" || eventKind === "update")
                     this.updateDispatch({ type: 'player', kind: eventKind, fieldId, player: PlayerModel.fromJSON(eventPayload) });
                 else if (eventKind === "delete")
-                    this.updateDispatch({ type: 'player', kind: eventKind, fieldId, playerId: eventPayload.playerId });
+                    this.updateDispatch({ type: 'player', kind: eventKind, fieldId, playerId: eventPayload });
                 break;
             case "tower":
                 if (eventKind === "create" || eventKind === "update")
                     this.updateDispatch({ type: 'tower', kind: eventKind, fieldId, tower: TowerModel.fromJSON(eventPayload) });
                 else if (eventKind === 'delete')
-                    this.updateDispatch({ type: 'tower', kind: eventKind, fieldId, towerId: eventPayload.towerId });
+                    this.updateDispatch({ type: 'tower', kind: eventKind, fieldId, towerId: eventPayload });
                 break;
             case "mob":
                 if (eventKind === "create" || eventKind === "update")
                     this.updateDispatch({ type: 'mob', kind: eventKind, fieldId, mob: MobModel.fromJSON(eventPayload) });
                 else if (eventKind === 'delete')
-                    this.updateDispatch({ type: 'mob', kind: eventKind, fieldId, mobId: eventPayload.mobId });
+                    this.updateDispatch({ type: 'mob', kind: eventKind, fieldId, mobId: eventPayload });
                 break;
             case "bullet":
                 if (eventKind === "create" || eventKind === "update")
                     this.updateDispatch({ type: 'bullet', kind: eventKind, fieldId, bullet: BulletModel.fromJSON(eventPayload) });
                 else if (eventKind === 'delete')
-                    this.updateDispatch({ type: 'bullet', kind: eventKind, fieldId, bulletId: eventPayload.bulletId });
+                    this.updateDispatch({ type: 'bullet', kind: eventKind, fieldId, bulletId: eventPayload });
                 break;
             case "barracks":
                 break;            

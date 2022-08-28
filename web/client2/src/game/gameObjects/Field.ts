@@ -1,5 +1,5 @@
 import { Application, Graphics } from "pixi.js";
-import { FieldModel, MapModel, PlayerModel, TowerModel } from "../../models";
+import { BulletModel, FieldModel, MapModel, MobModel, PlayerModel, TowerModel } from "../../models";
 import { GameChangeAction } from '../GameClient';
 
 export abstract class GameObject {
@@ -43,6 +43,14 @@ export default class Field extends GameObject {
     get towers(): Tower[] {
         return this.children.filter(child => child instanceof Tower) as Tower[];
     }
+
+    get mobs(): Mob[] {
+        return this.children.filter(child => child instanceof Mob) as Mob[];
+    }
+
+    get bullets(): Bullet[] {
+        return this.children.filter(child => child instanceof Bullet) as Bullet[];
+    }
     // mobs: MobModel[];
 
     constructor(app: Application, fieldModel: FieldModel) {
@@ -53,6 +61,14 @@ export default class Field extends GameObject {
 
         for (const towerModel of fieldModel.towers) {
             this.createChild(new Tower(app, towerModel));
+        }
+        
+        for (const mobModel of fieldModel.mobs) {
+            this.createChild(new Mob(app, mobModel));
+        }
+
+        for (const bulletModel of fieldModel.bullets) {
+            this.createChild(new Bullet(app, bulletModel));
         }
 
         console.log('Creating field', fieldModel);
@@ -70,8 +86,14 @@ export default class Field extends GameObject {
     handleGameChangeAction(action: GameChangeAction) {
         switch(action.type) {
             case 'field':
+                console.error('Field actions not implemented');
                 break;
             case 'player':
+                if (action.kind === 'update') {
+                    this.player = action.player;
+                    break;
+                }
+                console.error(`Player actions with kind "${action.kind}" not implemented`);
                 break;
             case 'tower':
                 switch (action.kind) {
@@ -101,8 +123,58 @@ export default class Field extends GameObject {
                 }
                 break;
             case 'mob':
+                switch (action.kind) {
+                    case 'create': {
+                        this.createChild(new Mob(this.app, action.mob));
+                        break;
+                    }
+                    case 'update': {
+                        const mob = this.mobs.find(mob => mob.id === action.mob.id);
+                        if (mob === undefined) {
+                            console.error('Unknown mob: ' + action.mob.id);
+                            return;
+                        }
+
+                        mob.updateFromModel(action.mob);
+                        break;
+                    }
+                    case 'delete': {
+                        const mob = this.mobs.find(mob => mob.id === action.mobId);
+                        if (mob === undefined) {
+                            console.error('Unknown mob: ' + action.mobId);
+                            return;
+                        }
+                        this.destroyChild(mob);
+                        break;
+                    }
+                }
                 break;
             case 'bullet':
+                switch (action.kind) {
+                    case 'create': {
+                        this.createChild(new Bullet(this.app, action.bullet));
+                        break;
+                    }
+                    case 'update': {
+                        const bullet = this.bullets.find(bullet => bullet.id === action.bullet.id);
+                        if (bullet === undefined) {
+                            console.error('Unknown bullet: ' + action.bullet.id);
+                            return;
+                        }
+                        
+                        bullet.updateFromModel(action.bullet);
+                        break;
+                    }
+                    case 'delete': {
+                        const bullet = this.children.find(child => child instanceof Bullet && child.id === action.bulletId);
+                        if (bullet === undefined) {
+                            console.error('Unknown bullet: ' + action.bulletId);
+                            return;
+                        }
+                        this.destroyChild(bullet);
+                        break;
+                    }
+                }
                 break;
             default:
                 console.log('Not a field change action: ' + action.type);
@@ -139,5 +211,64 @@ export class Tower extends GameObject {
     updateFromModel(towerModel: TowerModel) {
 
     }
+}
 
+export class Mob extends GameObject {
+    id: number;
+
+    mobCircle: Graphics;
+
+    constructor(app: Application, mobModel: MobModel) {
+        super(app);
+
+        this.id = mobModel.id;
+        
+        this.mobCircle = new Graphics()
+            .beginFill(0x0000ff)
+            .drawCircle(250, 250, 25);
+
+        this.app.stage.addChild(this.mobCircle);
+    }
+
+    onUpdate(delta: number): void {
+        
+    }
+
+    onDestroy(): void {
+        this.mobCircle.destroy();
+    }
+
+    updateFromModel(mobModel: MobModel) {
+
+    }
+}
+
+export class Bullet extends GameObject {
+    id: number;
+
+    bulletCircle: Graphics;
+
+    constructor(app: Application, bulletModel: BulletModel) {
+        super(app);
+
+        this.id = bulletModel.id;
+        
+        this.bulletCircle = new Graphics()
+            .beginFill(0xffff00)
+            .drawCircle(350, 250, 5);
+
+        this.app.stage.addChild(this.bulletCircle);
+    }
+
+    onUpdate(delta: number): void {
+        
+    }
+
+    onDestroy(): void {
+        this.bulletCircle.destroy();
+    }
+
+    updateFromModel(bulletModel: BulletModel) {
+
+    }
 }
