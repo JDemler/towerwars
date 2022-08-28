@@ -4,27 +4,33 @@ import { BuildTurretEvent, BuyMobEvent } from '../lib/FieldEvent';
 import GridCoordinate from '../lib/GridCoordinate';
 import { AddedPlayerModel, BulletModel, FieldModel, GameState, MobModel, PlayerModel, TowerModel } from '../models';
 
+export type GameChangeActionGameType = 'gameState' | 'state';
+export type GameChangeActionFieldType = 'player' | 'field' | 'tower' | 'mob' | 'bullet';
+
+export type GameChangeActionChangeKind = 'create' | 'update';
+export type GameChangeActionDeleteKind = 'delete';
+
 export type GameChangeAction =
     // GameState actions
-    | { type: "clear-gameState"; }
-    | { type: "set-gameState"; gameState: GameState }
-    | { type: "update-gameStatus"; gameStatus: "WaitingForPlayers" | "Playing" | "GameOver" }
+    | { type: "gameState"; kind: GameChangeActionChangeKind; gameState: GameState }
+    | { type: "gameState"; kind: GameChangeActionDeleteKind; }
+    // State
+    | { type: "state"; gameStatus: "WaitingForPlayers" | "Playing" | "GameOver" }
     // Player actions
-    | { type: "update-player"; fieldId: number, player: PlayerModel }
+    | { type: "player"; kind: GameChangeActionChangeKind; fieldId: number; player: PlayerModel }
+    | { type: "player"; kind: GameChangeActionDeleteKind; fieldId: number; playerId: number }
     // Field actions
-    | { type: "update-field"; fieldId: number, field: FieldModel }
+    | { type: "field"; kind: GameChangeActionChangeKind; fieldId: number; field: FieldModel }
+    | { type: "field"; kind: GameChangeActionDeleteKind; fieldId: number }
     // Tower actions
-    | { type: "add-tower"; fieldId: number, tower: TowerModel }
-    | { type: "update-tower"; fieldId: number, tower: TowerModel }
-    | { type: "delete-tower"; fieldId: number, towerId: number }
+    | { type: "tower"; kind: GameChangeActionChangeKind; fieldId: number; tower: TowerModel }
+    | { type: "tower"; kind: GameChangeActionDeleteKind; fieldId: number; towerId: number }
     // Mob actions
-    | { type: "add-mob"; fieldId: number, mob: MobModel }
-    | { type: "update-mob"; fieldId: number, mob: MobModel }
-    | { type: "delete-mob"; fieldId: number, mobId: number }
+    | { type: "mob"; kind: GameChangeActionChangeKind; fieldId: number; mob: MobModel }
+    | { type: "mob"; kind: GameChangeActionDeleteKind; fieldId: number; mobId: number }
     // Bullet actions
-    | { type: "add-bullet"; fieldId: number, bullet: BulletModel }
-    | { type: "update-bullet"; fieldId: number, bullet: BulletModel }
-    | { type: "delete-bullet"; fieldId: number, bulletId: number }
+    | { type: "bullet"; kind: GameChangeActionChangeKind; fieldId: number; bullet: BulletModel }
+    | { type: "bullet"; kind: GameChangeActionDeleteKind; fieldId: number; bulletId: number }
 
 export type GameUpdateDispatch = (action: GameChangeAction) => void;
 
@@ -64,7 +70,7 @@ export default class GameClient {
     initializeApi() {
         ApiClient.getGameState()
             .then(gameState => {
-                this.updateDispatch({ type: "set-gameState", gameState });
+                this.updateDispatch({ type: "gameState", kind: 'create', gameState });
 
                 // Try loading the added player from the session storage
                 if (gameState.state !== "WaitingForPlayers") {
@@ -115,49 +121,58 @@ export default class GameClient {
     }
 
     handleWebSocketEvent(event: any) {
-        const fieldId = event.payload.fieldId;
+        const eventType: 'gameStateChanged' | 'player' | 'tower' | 'mob' | 'bullet' | 'barracks' = event.type;
+        const eventKind: 'create' | 'update' | 'delete' | undefined = event.kind;
+        const eventPayload = event.payload;
+        const fieldId = event.fieldId;
+        
     
-        switch (event.type) {
-            case "playerJoined":
-                console.log('Player joined', event.payload)
-                break;
+        switch (eventType) {
+            // case "player":
+            //     console.log('Player', eventKind, eventPayload)
+            //     break;
             case "gameStateChanged":
-                this.updateDispatch({ type: "update-gameStatus", gameStatus: event.payload.gameState });
+                this.updateDispatch({ type: "state", gameStatus: eventPayload.gameState });
     
                 ApiClient.getGameState().then(gameState => {
-                    this.updateDispatch({ type: "set-gameState", gameState });
+                    this.updateDispatch({ type: "gameState", kind: 'update', gameState });
                 }).catch(error => {
                     console.error(error);
                 })
     
                 // On Gameover, cleanup the player info in the session storage
-                if (event.payload.gameState === "GameOver") {
+                if (eventPayload.gameState === "GameOver") {
                     sessionStorage.removeItem('addedPlayer');
                 }
                 break;
-            case "playerUpdated":
-                this.updateDispatch({ type: 'update-player', fieldId, player: PlayerModel.fromJSON(event.payload.player) });
+            case "player":
+                if (eventKind === "create" || eventKind === "update")
+                    this.updateDispatch({ type: 'player', kind: eventKind, fieldId, player: PlayerModel.fromJSON(eventPayload) });
+                else if (eventKind === "delete")
+                    this.updateDispatch({ type: 'player', kind: eventKind, fieldId, playerId: eventPayload.playerId });
                 break;
-            case "towerCreated":
-                this.updateDispatch({ type: 'add-tower', fieldId, tower: TowerModel.fromJSON(event.payload.tower) });
+            case "tower":
+                if (eventKind === "create" || eventKind === "update")
+                    this.updateDispatch({ type: 'tower', kind: eventKind, fieldId, tower: TowerModel.fromJSON(eventPayload) });
+                else if (eventKind === 'delete')
+                    this.updateDispatch({ type: 'tower', kind: eventKind, fieldId, towerId: eventPayload.towerId });
                 break;
-            case "mobCreated":
-                this.updateDispatch({ type: 'add-mob', fieldId, mob: MobModel.fromJSON(event.payload.mob) });
+            case "mob":
+                if (eventKind === "create" || eventKind === "update")
+                    this.updateDispatch({ type: 'mob', kind: eventKind, fieldId, mob: MobModel.fromJSON(eventPayload) });
+                else if (eventKind === 'delete')
+                    this.updateDispatch({ type: 'mob', kind: eventKind, fieldId, mobId: eventPayload.mobId });
                 break;
-            case "mobUpdated":
-                this.updateDispatch({ type: 'update-mob', fieldId, mob: MobModel.fromJSON(event.payload.mob) });
+            case "bullet":
+                if (eventKind === "create" || eventKind === "update")
+                    this.updateDispatch({ type: 'bullet', kind: eventKind, fieldId, bullet: BulletModel.fromJSON(eventPayload) });
+                else if (eventKind === 'delete')
+                    this.updateDispatch({ type: 'bullet', kind: eventKind, fieldId, bulletId: eventPayload.bulletId });
                 break;
-            case "mobDestroyed":
-                this.updateDispatch({ type: 'delete-mob', fieldId, mobId: event.payload.mobId });
-                break;
-            case "bulletCreated":
-                this.updateDispatch({ type: 'add-bullet', fieldId, bullet: BulletModel.fromJSON(event.payload.bullet) });
-                break;
-            case "bulletDestroyed":
-                this.updateDispatch({ type: 'delete-bullet', fieldId, bulletId: event.payload.bulletId });
-                break;
+            case "barracks":
+                break;            
             default:
-                console.log("Unknown event type:", event.type, event);
+                console.log("Unknown event type:", eventType, event);
         }
     }
 }
