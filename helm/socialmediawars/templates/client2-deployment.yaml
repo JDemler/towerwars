@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: socialmediawars-client2
+  labels:
+    {{- include "socialmediawars.labels" . | nindent 4 }}
+    app.kubernetes.io/name: socialmediawars-client2
+  annotations:
+    keel.sh/policy: force
+    keel.sh/trigger: poll
+spec:
+  selector:
+    matchLabels:
+      {{- include "socialmediawars.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/name: socialmediawars-client2
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "socialmediawars.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/name: socialmediawars-client2
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}          
+          image: "{{ .Values.client2.image.repository }}:{{ .Values.client2.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.client2.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP          
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}      
