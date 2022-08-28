@@ -1,7 +1,5 @@
 import FieldModel from './FieldModel';
 
-export const ServerTileSize = 32;
-
 interface GameState {
     fields: FieldModel[];
     elapsed: number;

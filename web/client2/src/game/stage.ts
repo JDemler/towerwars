@@ -1,5 +1,5 @@
 import { Application } from "pixi.js";
-import Field, { Tower } from "./gameObjects/Field";
+import Field from "./gameObjects/Field";
 import GameClient, { GameChangeAction } from './GameClient';
 
 const beginGameLoop = (app: Application) => {

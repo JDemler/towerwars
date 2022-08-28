@@ -1,6 +1,7 @@
 import { Application, Graphics } from "pixi.js";
 import { BulletModel, FieldModel, MapModel, MobModel, PlayerModel, TowerModel } from "../../models";
 import { GameChangeAction } from '../GameClient';
+import { GridSettings } from '../../lib/GridSettings';
 
 export abstract class GameObject {
     app: Application;
@@ -72,7 +73,6 @@ export default class Field extends GameObject {
         }
 
         console.log('Creating field', fieldModel);
-        // this.mobs = fieldModel.mobs.map(mobModel => new Mob(app, mobModel));
     }
 
     onUpdate(delta: number): void {
@@ -185,6 +185,7 @@ export default class Field extends GameObject {
 
 export class Tower extends GameObject {
     id: number;
+    towerModel: TowerModel;
 
     towerCircle: Graphics;
 
@@ -192,15 +193,17 @@ export class Tower extends GameObject {
         super(app);
 
         this.id = towerModel.id;
-        
+        this.towerModel = towerModel;
+
         this.towerCircle = new Graphics()
             .beginFill(0x00ff00)
-            .drawCircle(150, 150, 50);
+            .drawCircle(towerModel.coordinate.tileCenterX, towerModel.coordinate.tileCenterY, GridSettings.tileSize / 2);
 
         this.app.stage.addChild(this.towerCircle);
     }
 
     onUpdate(delta: number): void {
+        this.towerCircle.position.set(this.towerModel.coordinate.tileCenterX, this.towerModel.coordinate.tileCenterY);
         
     }
 
@@ -209,12 +212,13 @@ export class Tower extends GameObject {
     }
 
     updateFromModel(towerModel: TowerModel) {
-
+        this.towerModel = towerModel;
     }
 }
 
 export class Mob extends GameObject {
     id: number;
+    mobModel: MobModel;
 
     mobCircle: Graphics;
 
@@ -222,16 +226,17 @@ export class Mob extends GameObject {
         super(app);
 
         this.id = mobModel.id;
+        this.mobModel = mobModel;
         
         this.mobCircle = new Graphics()
             .beginFill(0x0000ff)
-            .drawCircle(250, 250, 25);
+            .drawCircle(mobModel.coordinate.tileCenterX, mobModel.coordinate.tileCenterY, GridSettings.tileSize / 2);
 
         this.app.stage.addChild(this.mobCircle);
     }
 
     onUpdate(delta: number): void {
-        
+        this.mobCircle.position.set(this.mobModel.coordinate.tileCenterX, this.mobModel.coordinate.tileCenterY);
     }
 
     onDestroy(): void {
@@ -239,12 +244,13 @@ export class Mob extends GameObject {
     }
 
     updateFromModel(mobModel: MobModel) {
-
+        this.mobModel = mobModel;
     }
 }
 
 export class Bullet extends GameObject {
     id: number;
+    bulletModel: BulletModel;
 
     bulletCircle: Graphics;
 
@@ -252,16 +258,17 @@ export class Bullet extends GameObject {
         super(app);
 
         this.id = bulletModel.id;
+        this.bulletModel = bulletModel;
         
         this.bulletCircle = new Graphics()
             .beginFill(0xffff00)
-            .drawCircle(350, 250, 5);
+            .drawCircle(bulletModel.coordinate.tileCenterX, bulletModel.coordinate.tileCenterY, GridSettings.tileSize / 4);
 
         this.app.stage.addChild(this.bulletCircle);
     }
 
     onUpdate(delta: number): void {
-        
+        this.bulletCircle.position.set(this.bulletModel.coordinate.tileCenterX, this.bulletModel.coordinate.tileCenterY);
     }
 
     onDestroy(): void {
@@ -269,6 +276,6 @@ export class Bullet extends GameObject {
     }
 
     updateFromModel(bulletModel: BulletModel) {
-
+        this.bulletModel = bulletModel;
     }
 }

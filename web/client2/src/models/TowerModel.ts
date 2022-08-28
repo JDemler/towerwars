@@ -1,5 +1,4 @@
 import GridCoordinate from '../lib/GridCoordinate';
-import { ServerTileSize } from './GameState';
 
 interface TowerModel {
     id: number;
@@ -14,12 +13,9 @@ namespace TowerModel {
     export function fromJSON(json: any): TowerModel {
         return {
             id: json.id,
-            coordinate: new GridCoordinate(
-                (json.x - ServerTileSize * 0.5) / ServerTileSize,
-                (json.y - ServerTileSize * 0.5) / ServerTileSize
-            ),
+            coordinate: new GridCoordinate(json.x, json.y),
             damage: json.damage,
-            range: json.range / ServerTileSize,
+            range: json.range,
             fireRate: json.fireRate,
             cooldown: json.cooldown,
         };

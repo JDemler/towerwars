@@ -1,5 +1,4 @@
 import { GridSettings } from "./GridSettings";
-import { ServerTileSize } from '../models/GameState';
 
 // Defines a potion on the grid
 export default class GridCoordinate {
@@ -35,11 +34,11 @@ function getDistanceBetweenTwoPoints (x1: number, y1: number, x2: number, y2: nu
   
 export const getDurationFromServerSpeed = (startCoordinate: GridCoordinate, targetCoordinate: GridCoordinate, speed: number) => {
     const serverDistance = getDistanceBetweenTwoPoints(
-        startCoordinate.x * ServerTileSize,
-        startCoordinate.y * ServerTileSize,
+        startCoordinate.x,
+        startCoordinate.y,
 
-        targetCoordinate.y * ServerTileSize,
-        targetCoordinate.x * ServerTileSize,
+        targetCoordinate.y,
+        targetCoordinate.x,
     );
   
     const durationInSeconds = serverDistance / speed;

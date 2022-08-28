@@ -18,12 +18,6 @@ const GameCanvas: React.FC = () => {
             backgroundColor: 0x5BBA6F,
         });
 
-        const rect = new Graphics()
-            .beginFill(0xff0000)
-            .drawRect(100, 100, 100, 100);
-
-        app.stage.addChild(rect);
-
         // Add the canvas to the DOM
         ref.current?.appendChild(app.view);
 
