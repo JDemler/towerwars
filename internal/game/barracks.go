@@ -36,6 +36,9 @@ func newBarracks(mobTypes []*MobType) *Barracks {
 // Update function for MobSlot
 func (m *MobSlot) update(delta float64) bool {
 	changed := false
+	if m.Count > 29 {
+		return false
+	}
 	m.Respawn -= delta
 	if m.Respawn <= 0 {
 		m.Count++
@@ -46,10 +49,14 @@ func (m *MobSlot) update(delta float64) bool {
 }
 
 // Update function for Barracks
-func (b *Barracks) update(delta float64) {
+func (b *Barracks) update(delta float64) bool {
+	changed := false
 	for _, m := range b.Mobs {
-		m.update(delta)
+		if m.update(delta) {
+			changed = true
+		}
 	}
+	return changed
 }
 
 // TrySend from MobType

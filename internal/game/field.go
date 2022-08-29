@@ -92,8 +92,9 @@ func (f *Field) Update(delta float64) []*ServerEvent {
 	events := []*ServerEvent{}
 	playerUpdated := false
 	// Update barracks
-	f.Barracks.update(delta)
-	events = append(events, updateEvent(f.Barracks, f.ID))
+	if f.Barracks.update(delta) {
+		events = append(events, updateEvent(f.Barracks, f.ID))
+	}
 
 	// Update Towers
 	for i := 0; i < len(f.Towers); i++ {

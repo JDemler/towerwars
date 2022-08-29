@@ -207,7 +207,7 @@ func (e BuyMobEvent) TryExecute(sourceField *Field, targetFields []*Field, confi
 		//Get startposition
 		startX, startY := targetField.TWMap.startPosition()
 		mobID := targetField.getNextMobID()
-		mob := mobType.MakeMob(float64(startX)+0.5, float64(startY)*+0.5, mobID)
+		mob := mobType.MakeMob(float64(startX)+0.5, float64(startY)+0.5, mobID)
 		mob.SentFromFieldID = sourceField.ID
 		targetField.Mobs = append(targetField.Mobs, mob)
 		gameEvents = append(gameEvents, createEvent(mob, targetField.ID))
