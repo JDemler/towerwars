@@ -40,16 +40,16 @@ export default class GameClient {
     private updateDispatch: GameUpdateDispatch;
 
     public player?: AddedPlayerModel;
-    
+
     public get enemyPlayerFieldId() {
         return this.player !== undefined
             ? 1 - this.player.fieldId
             : undefined
     }
-    
+
     constructor(updateDispatch: GameUpdateDispatch) {
         this.updateDispatch = updateDispatch;
-        
+
         this.webSocketClient = this.initializeWebSocket();
 
         this.initializeApi();
@@ -114,10 +114,10 @@ export default class GameClient {
 
     buildTurret(coordinate: GridCoordinate) {
         if (this.player === undefined) {
-          return console.error('Not a player');
+            return console.error('Not a player');
         }
-        
-        this.webSocketClient?.dispatchFieldEvent(new BuildTurretEvent(this.player, coordinate.x, coordinate.y, 'Like Button'));
+
+        this.webSocketClient?.dispatchFieldEvent(new BuildTurretEvent(this.player, coordinate.x, coordinate.y, 'likeButton'));
     }
 
     handleWebSocketEvent(event: any) {
@@ -125,21 +125,21 @@ export default class GameClient {
         const eventKind: 'create' | 'update' | 'delete' | undefined = event.kind;
         const eventPayload = event.payload;
         const fieldId = event.fieldId;
-        
-    
+
+
         switch (eventType) {
             // case "player":
             //     console.log('Player', eventKind, eventPayload)
             //     break;
             case "gameStateChanged":
                 this.updateDispatch({ type: "state", gameStatus: eventPayload.gameState });
-    
+
                 ApiClient.getGameState().then(gameState => {
                     this.updateDispatch({ type: "gameState", kind: 'update', gameState });
                 }).catch(error => {
                     console.error(error);
                 })
-    
+
                 // On Gameover, cleanup the player info in the session storage
                 if (eventPayload.gameState === "GameOver") {
                     sessionStorage.removeItem('addedPlayer');
@@ -170,7 +170,7 @@ export default class GameClient {
                     this.updateDispatch({ type: 'bullet', kind: eventKind, fieldId, bulletId: eventPayload });
                 break;
             case "barracks":
-                break;            
+                break;
             default:
                 console.log("Unknown event type:", eventType, event);
         }
