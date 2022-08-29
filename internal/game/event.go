@@ -64,9 +64,9 @@ type Event interface {
 
 // BuildEvent is sent from the client to the server when a player wants to build a tower
 type BuildEvent struct {
-	X        int    `json:"x"`
-	Y        int    `json:"y"`
-	TowerKey string `json:"towerKey"`
+	X         int    `json:"x"`
+	Y         int    `json:"y"`
+	TowerType string `json:"towerType"`
 }
 
 // TryExecute a BuildEvent to build a tower
@@ -80,9 +80,9 @@ func (e BuildEvent) TryExecute(sourceField *Field, targetFields []*Field, gc *Co
 		return nil, fmt.Errorf("Position already occupied")
 	}
 	// Get TowerType from gameConfig
-	towerType := gc.GetTowerTypeByKey(e.TowerKey)
+	towerType := gc.GetTowerTypeByKey(e.TowerType)
 	if towerType == nil {
-		return nil, fmt.Errorf("Invalid tower type %s", e.TowerKey)
+		return nil, fmt.Errorf("Invalid tower type %s", e.TowerType)
 	}
 	towerLevel := towerType.GetLevel(1)
 	if towerLevel == nil {

@@ -13,7 +13,7 @@ func prepareField(hasTower bool, hasMob bool, preRunBarracks bool) *Field {
 	field := NewField(0, TestGameConfig.Player(0), testBarracks(TestGameConfig), standardTWMap().GenerateMap())
 	if hasTower {
 		// add tower by handling an event
-		_, err := field.HandleEvent(BuildEvent{X: 5, Y: 5, TowerKey: "FastBullet"}, []*Field{}, &TestGameConfig)
+		_, err := field.HandleEvent(BuildEvent{X: 5, Y: 5, TowerType: "FastBullet"}, []*Field{}, &TestGameConfig)
 		if err != nil {
 			panic("Failed to build tower")
 		}
@@ -150,7 +150,7 @@ func TestBuyTower(t *testing.T) {
 		t.Error("Expected 1,1 to be empty")
 	}
 
-	_, err := field.HandleEvent(BuildEvent{X: 1, Y: 1, TowerKey: "FastBullet"}, []*Field{}, &TestGameConfig)
+	_, err := field.HandleEvent(BuildEvent{X: 1, Y: 1, TowerType: "FastBullet"}, []*Field{}, &TestGameConfig)
 	if err != nil {
 		t.Error("Expected tower to be built")
 	}
@@ -271,7 +271,7 @@ func TestUpgradeTower(t *testing.T) {
 	}
 
 	// Buy tower
-	_, err := field.HandleEvent(BuildEvent{X: 1, Y: 1, TowerKey: "SlowBullet"}, []*Field{}, &TestGameConfig)
+	_, err := field.HandleEvent(BuildEvent{X: 1, Y: 1, TowerType: "SlowBullet"}, []*Field{}, &TestGameConfig)
 	if err != nil {
 		t.Error("Expected tower to be built")
 	}
@@ -307,7 +307,7 @@ func TestSellTower(t *testing.T) {
 		t.Error("Expected 1,1 to be empty")
 	}
 	// Buy tower
-	_, err := field.HandleEvent(BuildEvent{X: 1, Y: 1, TowerKey: "SlowBullet"}, []*Field{}, &TestGameConfig)
+	_, err := field.HandleEvent(BuildEvent{X: 1, Y: 1, TowerType: "SlowBullet"}, []*Field{}, &TestGameConfig)
 	if err != nil {
 		t.Error("Expected tower to be built")
 	}

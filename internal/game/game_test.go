@@ -144,7 +144,7 @@ func TestBuildTower(t *testing.T) {
 	game := prepareGame()
 	game.Start()
 	// Build tower on field 1
-	_, err := game.HandleEvent(FieldEvent{FieldID: 1, Type: "buildTower", Payload: BuildEvent{X: 1, Y: 1, TowerKey: "FastBullet"}})
+	_, err := game.HandleEvent(FieldEvent{FieldID: 1, Type: "buildTower", Payload: BuildEvent{X: 1, Y: 1, TowerType: "FastBullet"}})
 	if err != nil {
 		t.Errorf("Expected no error, got %s", err)
 	}

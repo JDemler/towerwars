@@ -45,7 +45,7 @@ export class GameField extends Phaser.GameObjects.GameObject {
             fieldId: this.id,
             eventType: "buildTower",
             payload: {
-                towerKey: this.scene.getSelectedTowerKey(),
+                towerType: this.scene.getSelectedTowerKey(),
                 x: x,
                 y: y
             }
