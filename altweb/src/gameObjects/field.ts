@@ -1,3 +1,4 @@
+import { TileSize } from "../config";
 import { Field } from "../data/field";
 import { Mob } from "../data/mob";
 import { Player } from "../data/player";
@@ -9,7 +10,7 @@ import { MobButtonDescription } from "./mobButtonDescription";
 import { GamePlayer } from "./player";
 import { GameTower } from "./tower";
 
-const mobBtnSize = 96;
+const mobBtnSize = 4 * TileSize;
 
 export class GameField extends Phaser.GameObjects.GameObject {
     //properties
@@ -31,11 +32,11 @@ export class GameField extends Phaser.GameObjects.GameObject {
         this.field = field;
         this.player = new GamePlayer(scene, field.player);
         if (scene.playerId == field.player.id) {
-            drawTWMap(this.field.twmap, (x, y) => { this.buildTower(x, y) }, this.scene);
+            drawTWMap(this.field.twmap, (x, y) => { this.buildTower(x, y) }, this.scene, true);
             this.drawMobButtons();
             this.mobBtnDesc = new MobButtonDescription(scene, this.scene.mobTypes[0]);
         } else {
-            drawTWMap(this.field.twmap, (x, y) => { }, this.scene);
+            drawTWMap(this.field.twmap, (x, y) => { }, this.scene, false);
         }
     }
 
@@ -44,7 +45,7 @@ export class GameField extends Phaser.GameObjects.GameObject {
             fieldId: this.id,
             eventType: "buildTower",
             payload: {
-                towerType: this.scene.towerTypes[0].name,
+                towerKey: this.scene.getSelectedTowerKey(),
                 x: x,
                 y: y
             }
@@ -88,7 +89,7 @@ export class GameField extends Phaser.GameObjects.GameObject {
     }
 
     createTower(tower: Tower) {
-        this.towers.push(new GameTower(this.scene, tower));
+        this.towers.push(new GameTower(this.scene, tower, this.scene.getTowerType(tower.type)));
     }
 
     upgradeTower(tower: Tower) {
@@ -110,6 +111,7 @@ export class GameField extends Phaser.GameObjects.GameObject {
     }
 
     updatePlayer(player: Player) {
+        console.log("update player");
         this.player.updateFromPlayer(player);
     }
 
@@ -136,7 +138,8 @@ export class GameField extends Phaser.GameObjects.GameObject {
     drawMobButtons() {
         var postFxPlugin = this.scene.plugins.get('rexoutlinepipelineplugin');
         this.scene.mobTypes.forEach((mobType, i) => {
-            var button = this.scene.add.image(mobBtnSize / 2 + i * mobBtnSize, 550, mobType.key)
+            var button = this.scene.add.image(window.innerWidth / 2 - ((this.scene.mobTypes.length / 2 - i) * mobBtnSize), window.innerHeight - (mobBtnSize / 2), mobType.key)
+                .setScale(mobBtnSize)
                 .setInteractive({ useHandCursor: true })
                 .on('pointerover', () => {
                     this.mobBtnDesc?.setToMobType(mobType);

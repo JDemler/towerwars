@@ -1,75 +1,60 @@
+import { TileSize } from "../config";
 import { TowerType } from "../data/gameConfig";
 import { Tower } from "../data/tower";
 import GameScene from "../scenes/Game";
 
+const towerBtnSize = 4 * TileSize;
+const disabledTint = 0x666666;
+
 export class TowerMenu extends Phaser.GameObjects.GameObject {
     //properties
     scene: GameScene;
-    // Text field of mobName
-    towerName: Phaser.GameObjects.Text;
-    towerDescription: Phaser.GameObjects.Text;
 
-    towerDamage: Phaser.GameObjects.Text;
-    towerRange: Phaser.GameObjects.Text;
-    towerFireRate: Phaser.GameObjects.Text;
-
-    upgradeButton: Phaser.GameObjects.Text;
-    sellButton: Phaser.GameObjects.Text;
-
+    selection: number = 0;
     towerTypeImages: Phaser.GameObjects.Image[] = [];
-    constructor(scene: GameScene, tower: Tower, towerType: TowerType) {
+    constructor(scene: GameScene) {
         super(scene, 'TowerMenu');
         this.scene = scene;
-        var leftOffset = 145;
-        this.towerName = scene.add.text(scene.offsetX - leftOffset, 300, towerType.name, { fontFamily: 'Arial', fontSize: '24px', color: '#FFF' });
-        this.towerDescription = scene.add.text(scene.offsetX - leftOffset, 325, towerType.description);
-
-        this.towerDamage = scene.add.text(scene.offsetX - leftOffset, 355, "Damage: " + tower.damage);
-        this.towerRange = scene.add.text(scene.offsetX - leftOffset, 370, "Range: " + tower.range);
-        this.towerFireRate = scene.add.text(scene.offsetX - leftOffset, 385, "Fire Rate: " + tower.fireRate);
-
-        this.upgradeButton = scene.add.text(scene.offsetX - leftOffset, 400, "Upgrade")
-            .setInteractive()
-            .on('pointerdown', () => {
-                this.scene.websocket?.send(JSON.stringify({
-                    fieldId: this.scene.playerId,
-                    eventType: "upgradeTower",
-                    payload: {
-                        towerId: tower.id
-                    }
-                }));
-            });
-
-        this.sellButton = scene.add.text(scene.offsetX - leftOffset + 100, 400, "Sell")
-            .setInteractive()
-            .on('pointerdown', () => {
-                this.scene.websocket?.send(JSON.stringify({
-                    fieldId: this.scene.playerId,
-                    eventType: "sellTower",
-                    payload: {
-                        towerId: tower.id
-                    }
-                }));
-            });
+        this.drawTowerTypeImages();
     }
 
-    setToTowerType(tower: Tower, towerType: TowerType): void {
-        this.towerName.setText(towerType.name);
-        this.towerDescription.setText(towerType.description);
-
-        this.towerDamage.setText("Damage: " + tower.damage);
-        this.towerRange.setText("Range: " + tower.range);
-        this.towerFireRate.setText("Fire Rate: " + tower.fireRate);
+    setSelectedTower(index: number): void {
+        this.selection = index;
+        //Draw orange border around selected tower type
+        this.towerTypeImages.forEach((towerTypeImage, i) => {
+            if (i == index) {
+                towerTypeImage.clearTint();
+            } else {
+                towerTypeImage.setTint(disabledTint);
+            }
+        });
     }
 
     drawTowerTypeImages(): void {
-        var postFxPlugin = this.scene.plugins.get('rexoutlinepipelineplugin');
+        //var postFxPlugin = this.scene.plugins.get('rexoutlinepipelineplugin');
         this.scene.towerTypes.forEach((towerType, index) => {
-            var image = this.scene.add.image(this.scene.offsetX + 100, 300 + index * 50, towerType.name);
-            image.setInteractive().on('pointerdown', () => {
-                this.scene.setTowerType(towerType);
-            });
-            this.towerTypeImages.push(image);
+            console.log(towerType);
+            var button = this.scene.add.image(window.innerWidth / 2, index * towerBtnSize + towerBtnSize / 2 + this.scene.offsetY, towerType.key).setScale(towerBtnSize);
+            button.setDisplaySize(towerBtnSize, towerBtnSize);
+            let tt = towerType;
+            button.setInteractive()
+                .on('pointerdown', () => {
+                    this.scene.setSelectedTower(index);
+                    this.scene.towerDescription?.setTowerDescription(tt);
+                })
+                .on('pointerover', () => {
+                    button.clearTint();
+                }).on('pointerout', () => {
+                    if (index != this.selection) {
+                        button.setTint(disabledTint);
+                    } else {
+                        button.clearTint();
+                    }
+                });
+            if (index != this.selection) {
+                button.setTint(disabledTint);
+            }
+            this.towerTypeImages.push(button);
         });
     }
 }

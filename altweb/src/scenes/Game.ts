@@ -5,6 +5,8 @@ import { TowerType, MobType } from '../data/gameConfig';
 import { GameField } from '../gameObjects/field';
 import { TowerMenu } from '../gameObjects/towerMenu';
 import { GameTower } from '../gameObjects/tower';
+import { FieldHeight, FieldWidth, TileSize } from '../config';
+import { TowerDescription } from '../gameObjects/towerDescription';
 
 export default class GameScene extends Phaser.Scene {
   // properties
@@ -20,7 +22,9 @@ export default class GameScene extends Phaser.Scene {
   websocket: WebSocket | undefined = undefined;
   fields: GameField[] = [];
   fpsLabel: Phaser.GameObjects.Text | undefined = undefined;
+  debugLabel: Phaser.GameObjects.Text | undefined = undefined;
   towerMenu: TowerMenu | undefined = undefined;
+  towerDescription: TowerDescription | undefined = undefined;
   constructor() {
     super('GameScene');
     this.gameState = {
@@ -35,7 +39,6 @@ export default class GameScene extends Phaser.Scene {
     this.towerTypes = data.towerTypes;
     this.mobTypes = data.mobTypes;
     this.playerId = data.playerId;
-    console.log(data)
     // log player id
     console.log("Player id: " + this.playerId);
   }
@@ -53,14 +56,20 @@ export default class GameScene extends Phaser.Scene {
     // Load mob sprites from assets/mobSprites folder
     this.load.path = 'assets/mobSprites/';
     this.load.spritesheet('blueball', 'blueball.png', { frameWidth: 128, frameHeight: 128 });
+    // Load tower images from assets/towerimgs folder
+    this.load.path = 'assets/towerimgs/';
+    this.load.image('comment', 'comment.jpg');
+    this.load.image('likeButton', 'like_button.jpg');
+    this.load.image('profilePicture', 'profile_picture.jpg');
   }
 
   create() {
-    this.fpsLabel = this.add.text(600, 700, "FPS: " + this.game.loop.actualFps);
+    this.fpsLabel = this.add.text(window.innerWidth - 75, window.innerHeight - 20, "FPS: " + Math.round(this.game.loop.actualFps));
+    this.debugLabel = this.add.text(600, 800, "Width + Height: " + window.innerWidth + " + " + window.innerHeight + ' + ' + TileSize + ' + ' + this.fields.length);
     connect().then(ws => {
       this.websocket = ws;
       this.websocket.onmessage = (event) => {
-        console.log(event.data);
+        //  console.log(event.data);
         this.handleEvent(JSON.parse(event.data));
       }
     });
@@ -74,6 +83,7 @@ export default class GameScene extends Phaser.Scene {
           var gameField = new GameField(this, field);
           this.fields.push(gameField);
         });
+        this.towerMenu = new TowerMenu(this);
       }
     }).catch(error => {
       console.log(error);
@@ -81,22 +91,44 @@ export default class GameScene extends Phaser.Scene {
   }
 
   setOffsetForField(fieldId: number): void {
-    this.offsetX = fieldId * 500 + 160;
-    this.offsetY = 0;
+    //offset for field is dependent on the playerID. The field for the player should be centered
+    this.offsetY = FieldHeight / 8;
+    if (this.fields.length > 2) {
+      if (fieldId === this.playerId) {
+        this.offsetX = (window.innerWidth / 2) - (FieldWidth / 2);
+      } else {
+        let offset = fieldId - this.playerId;
+        this.offsetX = (window.innerWidth / 2) - FieldWidth / 2 + offset * (FieldWidth + FieldWidth / 3);
+      }
+    } else {
+      this.offsetX = (fieldId * window.innerWidth / 2) + (window.innerWidth / 4) - (FieldWidth / 2);
+
+    }
   }
 
-  setTowerMenu(tower: GameTower) {
+  setTowerDescription(tower: GameTower) {
     tower.focus = true;
     this.setOffsetForField(this.playerId);
-    if (this.towerMenu) {
-      this.towerMenu.setToTowerType(tower.tower, this.getTowerType(tower.tower.type));
+    if (this.towerDescription) {
+      this.towerDescription.setTowerDescription(this.getTowerType(tower.tower.type), tower.tower);
     } else {
-      this.towerMenu = new TowerMenu(this, tower.tower, this.getTowerType(tower.tower.type));
+      this.towerDescription = new TowerDescription(this, tower.tower, this.getTowerType(tower.tower.type));
+    }
+  }
+
+  getSelectedTowerKey(): string {
+    return this.towerTypes[this.focussedTowerType].key;
+  }
+
+  setSelectedTower(index: number) {
+    this.focussedTowerType = index;
+    if (this.towerMenu) {
+      this.towerMenu.setSelectedTower(index);
     }
   }
 
   getTowerType(towerType: string): TowerType {
-    return this.towerTypes.find(t => t.name === towerType)!;
+    return this.towerTypes.find(t => t.key === towerType)!;
   }
 
   handleEvent(event: any): void {
@@ -120,7 +152,8 @@ export default class GameScene extends Phaser.Scene {
 
 
   update(time: number, delta: number): void {
-    this.fpsLabel?.setText("FPS: " + this.game.loop.actualFps);
+    this.fpsLabel?.setText("FPS: " + Math.round(this.game.loop.actualFps));
+    this.debugLabel?.setText("Width + Height: " + window.innerWidth + " + " + window.innerHeight + ' + ' + TileSize + ' + ' + this.fields.length);
     if (!this.serverAlive) {
       return;
     }

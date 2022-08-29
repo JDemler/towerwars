@@ -4,6 +4,7 @@
         {
             "name": "Like Button",
             "description": "Liking your enemies will confuse them and hurt their feelings.",
+            "key": "likeButton",
             "levels": [
                 {
                     "level": 1,
@@ -26,6 +27,7 @@
         {
             "name": "Profile Picture",
             "description": "A picture so ugly your enemies will be blinded by it.",
+            "key": "profilePicture",
             "levels": [
                 {
                     "level": 1,
@@ -48,6 +50,7 @@
         {
             "name": "Comment",
             "description": "A comment so stupid your enemies will start to question humanity.",
+            "key": "comment",
             "levels": [
                 {
                     "level": 1,
@@ -79,7 +82,7 @@
             "income": 90,
             "cost": 5,
             "respawn": 1.5,
-            "delay": 15
+            "delay": 25
         },
         {
             "name": "Facebook Troll",
@@ -144,7 +147,7 @@
     ],
     "map": {
         "width": 10,
-        "height": 15,
+        "height": 18,
         "startX": 0,
         "startY": 0,
         "endX": 9,

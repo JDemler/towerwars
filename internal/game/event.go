@@ -64,9 +64,9 @@ type Event interface {
 
 // BuildEvent is sent from the client to the server when a player wants to build a tower
 type BuildEvent struct {
-	X         int    `json:"x"`
-	Y         int    `json:"y"`
-	TowerType string `json:"towerType"`
+	X        int    `json:"x"`
+	Y        int    `json:"y"`
+	TowerKey string `json:"towerKey"`
 }
 
 // TryExecute a BuildEvent to build a tower
@@ -80,9 +80,9 @@ func (e BuildEvent) TryExecute(sourceField *Field, targetFields []*Field, gc *Co
 		return nil, fmt.Errorf("Position already occupied")
 	}
 	// Get TowerType from gameConfig
-	towerType := gc.GetTowerType(e.TowerType)
+	towerType := gc.GetTowerTypeByKey(e.TowerKey)
 	if towerType == nil {
-		return nil, fmt.Errorf("Invalid tower type %s", e.TowerType)
+		return nil, fmt.Errorf("Invalid tower type %s", e.TowerKey)
 	}
 	towerLevel := towerType.GetLevel(1)
 	if towerLevel == nil {
@@ -117,7 +117,7 @@ func (e SellEvent) TryExecute(sourceField *Field, targetFields []*Field, gc *Con
 	if tower == nil {
 		return nil, fmt.Errorf("Tower %d does not exist", e.TowerID)
 	}
-	towerType := gc.GetTowerType(tower.Type)
+	towerType := gc.GetTowerTypeByName(tower.Type)
 	sourceField.TWMap.free(int((tower.X - 0.5)), int((tower.Y - 0.5)))
 	sourceField.removeTowerByID(e.TowerID)
 	sourceField.Player.Money += towerType.GetLevel(tower.Level).Cost * 80
@@ -142,7 +142,7 @@ func (e UpgradeEvent) TryExecute(sourceField *Field, targetFields []*Field, gc *
 		return nil, fmt.Errorf("Tower not found")
 	}
 	// Get TowerType from gameConfig
-	towerType := gc.GetTowerType(tower.Type)
+	towerType := gc.GetTowerTypeByName(tower.Type)
 	if towerType == nil {
 		return nil, fmt.Errorf("Invalid tower type %s", tower.Type)
 	}

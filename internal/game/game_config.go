@@ -43,6 +43,7 @@ func (mc *MapConfig) GenerateMap() *TWMap {
 type TowerType struct {
 	Name        string        `json:"name"`
 	Descritpion string        `json:"description"`
+	Key         string        `json:"key"`
 	Levels      []*TowerLevel `json:"levels"`
 }
 
@@ -68,14 +69,14 @@ type TowerLevel struct {
 func (t *TowerType) Tower(x float64, y float64, level int, id int) *Tower {
 	towerLevel := t.GetLevel(level)
 	if towerLevel == nil {
-		fmt.Printf("Invalid tower level %d for tower type %s\n", level, t.Name)
+		fmt.Printf("Invalid tower level %d for tower type %s\n", level, t.Key)
 		return nil
 	}
 	return &Tower{ID: id, X: x,
 		Y: y, Level: level, Damage: towerLevel.Damage,
 		Range: towerLevel.Range, FireRate: towerLevel.FireRate,
 		BulletSpeed: towerLevel.BulletSpeed, Cooldown: 0,
-		Type: t.Name}
+		Type: t.Key}
 }
 
 // MobType represents a mob type with necessaray information
@@ -112,10 +113,20 @@ func ReadConfigFromFile(filename string) (*Config, error) {
 	return &config, nil
 }
 
-// GetTowerType looks up GetTowerType by name
-func (g *Config) GetTowerType(name string) *TowerType {
+// GetTowerTypeByName looks up GetTowerTypeByName by name
+func (g *Config) GetTowerTypeByName(name string) *TowerType {
 	for _, t := range g.TowerTypes {
 		if t.Name == name {
+			return t
+		}
+	}
+	return nil
+}
+
+// GetTowerTypeByKey looks up GetTowerTypeByKey by key
+func (g *Config) GetTowerTypeByKey(key string) *TowerType {
+	for _, t := range g.TowerTypes {
+		if t.Key == key {
 			return t
 		}
 	}
