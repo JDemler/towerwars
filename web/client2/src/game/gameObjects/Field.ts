@@ -70,7 +70,13 @@ export default class Field extends GameObject {
         }
 
         for (const bulletModel of fieldModel.bullets) {
-            this.createChild(new Bullet(app, bulletModel));
+            const mob = this.mobs.find(mob => mob.id === bulletModel.targetId);
+            if (mob === undefined) {
+                console.error('Unknown target mob: ' + bulletModel.targetId);
+                continue;
+            }
+
+            this.createChild(new Bullet(app, bulletModel, mob));
         }
 
         console.log('Creating field', fieldModel);
@@ -153,7 +159,13 @@ export default class Field extends GameObject {
             case 'bullet':
                 switch (action.kind) {
                     case 'create': {
-                        this.createChild(new Bullet(this.app, action.bullet));
+                        const mob = this.mobs.find(mob => mob.id === action.bullet.targetId);
+                        if (mob === undefined) {
+                            console.error('Unknown target mob: ' + action.bullet.targetId);
+                            return;
+                        }
+
+                        this.createChild(new Bullet(this.app, action.bullet, mob));
                         break;
                     }
                     case 'update': {
@@ -216,8 +228,6 @@ export class Tower extends GameObject {
     }
 }
 
-
-
 export class Mob extends GameObject {
     id: number;
     mobModel: MobModel;
@@ -265,7 +275,9 @@ export class Bullet extends GameObject {
     bulletCircle: Graphics;
     currentCoordinate: GridCoordinate;
 
-    constructor(app: Application, bulletModel: BulletModel) {
+    targetMob: Mob;
+
+    constructor(app: Application, bulletModel: BulletModel, targetMob: Mob) {
         super(app);
 
         this.id = bulletModel.id;
@@ -275,17 +287,21 @@ export class Bullet extends GameObject {
             .beginFill(0xffff00)
             .drawCircle(bulletModel.coordinate.tileCenterX, bulletModel.coordinate.tileCenterY, GridSettings.tileSize / 4);
 
+        this.targetMob = targetMob;
+
         this.currentCoordinate = bulletModel.coordinate;
 
         this.app.stage.addChild(this.bulletCircle);
     }
 
     onUpdate(delta: number, deltaMs: number): void {
-        // const newPosition = this.currentCoordinate.moveTo(this.bulletModel.targetCoordinate, this.bulletModel.speed, deltaMs);
+        const targetCoordinate = this.targetMob.currentCoordinate;
         
-        // this.currentCoordinate = newPosition;
+        const newPosition = this.currentCoordinate.moveTo(targetCoordinate, this.bulletModel.speed, deltaMs);
+        
+        this.currentCoordinate = newPosition;
 
-        // this.bulletCircle.position.set(newPosition.tileCenterX, newPosition.tileCenterY);
+        this.bulletCircle.position.set(newPosition.tileCenterX, newPosition.tileCenterY);
     }
 
     onDestroy(): void {
