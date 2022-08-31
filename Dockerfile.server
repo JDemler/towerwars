@@ -9,7 +9,7 @@ COPY internal ./internal
 
 RUN go mod download
 
-RUN go build -o /towerwars-server ./cmd/server/main.go
+RUN go build -o /towerwars-server ./cmd/server/*.go
 
 FROM alpine:latest
 
