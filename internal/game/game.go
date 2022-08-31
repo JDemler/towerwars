@@ -54,8 +54,8 @@ func (game *Game) AddPlayer(playerName string) string {
 	return field.Key
 }
 
-// PlayerIdFromKey returns the player id from a key
-func (game *Game) PlayerIdFromKey(key string) int {
+// PlayerIDFromKey returns the player id from a key
+func (game *Game) PlayerIDFromKey(key string) int {
 	for _, field := range game.Fields {
 		if field.Key == key {
 			return field.Player.ID

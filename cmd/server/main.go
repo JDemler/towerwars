@@ -26,9 +26,9 @@ func NewServer() *Server {
 // Http Handler returning the game state
 func (s *Server) GetGameState(w http.ResponseWriter, r *http.Request) {
 	// Get game id from url
-	gameId := r.URL.Query().Get("gameId")
+	gameID := r.URL.Query().Get("gameId")
 	// Get game instance
-	gameInstance := s.runningGames[gameId]
+	gameInstance := s.runningGames[gameID]
 	if gameInstance == nil {
 		w.WriteHeader(http.StatusNotFound)
 		return

@@ -22,7 +22,7 @@ type WsChannel struct {
 	id            int
 	ping          int64
 	open          bool
-	playerId      int
+	playerID      int
 	authenticated bool
 	Channel       chan game.ServerEvent
 	Websocket     *websocket.Conn
@@ -188,7 +188,7 @@ func (ws *WsChannel) handlePong(message string) error {
 	latency := t.UnixMicro() - timestamp
 	fmt.Println("Latency: ", latency)
 	ws.ping = latency
-	ws.game.Ping(ws.playerId, latency)
+	ws.game.Ping(ws.playerID, latency)
 	return nil
 }
 
@@ -198,7 +198,8 @@ func (gi *GameInstance) WebSocket(w http.ResponseWriter, r *http.Request) {
 	playerKey := r.URL.Query().Get("playerKey")
 	// Log Player Key
 	fmt.Println("Player Key: ", playerKey)
-	playerID := gi.game.PlayerIdFromKey(playerKey)
+	playerID := gi.game.PlayerIDFromKey(playerKey)
+
 	upgrader := websocket.Upgrader{
 		ReadBufferSize:  1024,
 		WriteBufferSize: 1024,
@@ -214,11 +215,12 @@ func (gi *GameInstance) WebSocket(w http.ResponseWriter, r *http.Request) {
 	// create channels
 	gameEventChan := make(chan game.ServerEvent)
 	wsChannel := &WsChannel{
-		id:        gi.channelCount,
-		open:      true,
-		Channel:   gameEventChan,
-		playerId:  playerID,
-		Websocket: conn,
+		id:            gi.channelCount,
+		open:          true,
+		Channel:       gameEventChan,
+		playerID:      playerID,
+		authenticated: playerID >= 0,
+		Websocket:     conn,
 	}
 	gi.channelCount++
 	wsChannel.Websocket.SetPongHandler(wsChannel.handlePong)
