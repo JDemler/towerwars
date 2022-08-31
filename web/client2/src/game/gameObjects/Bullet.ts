@@ -1,4 +1,4 @@
-import { Application, Graphics } from "pixi.js";
+import { Application, Graphics, Sprite } from "pixi.js";
 import { BulletModel } from "../../models";
 import { GridSettings } from '../../lib/GridSettings';
 import GridCoordinate from '../../lib/GridCoordinate';
@@ -10,7 +10,7 @@ export class Bullet extends GameObject {
     id: number;
     bulletModel: BulletModel;
 
-    bulletCircle: Graphics;
+    bulletCircle: Sprite;
     currentCoordinate: GridCoordinate;
 
     targetMob: Mob;
@@ -21,16 +21,20 @@ export class Bullet extends GameObject {
         this.id = bulletModel.id;
         this.bulletModel = bulletModel;
 
-        this.bulletCircle = new Graphics()
-            .beginFill(0xffff00)
-            .drawCircle(bulletModel.coordinate.tileCenterX, bulletModel.coordinate.tileCenterY, GridSettings.tileSize / 4)
-            .endFill();
-
         this.targetMob = targetMob;
+
+        this.bulletCircle  = Sprite.from('assets/facebook_troll.jpg');
+
+        this.bulletCircle.width = GridSettings.tileSize * 0.3;
+        this.bulletCircle.height = GridSettings.tileSize * 0.3;
+
+        this.bulletCircle.anchor.set(0.5, 0.5);
+        this.bulletCircle.position.set(bulletModel.coordinate.tileCenterX, bulletModel.coordinate.tileCenterY);
+        this.bulletCircle.zIndex = 1000;
 
         this.currentCoordinate = bulletModel.coordinate;
 
-        this.app.stage.addChild(this.bulletCircle);
+        field.container.addChild(this.bulletCircle);
     }
 
     onUpdate(delta: number, deltaMs: number): void {

@@ -16,11 +16,10 @@ export default class Map extends GameObject {
 
         const tileSize = GridSettings.tileSize;
 
-        
         const grid = new PIXI.Graphics()
         
         grid.alpha = 0.5;
-        grid.zIndex = -1;
+        grid.zIndex = 0;
 
         for (let i = 0; i < mapModel.size.width; i++) {
             for (let j = 0; j < mapModel.size.height; j++) {

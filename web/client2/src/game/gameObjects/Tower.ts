@@ -1,4 +1,4 @@
-import { Application, Graphics } from "pixi.js";
+import { Application, Graphics, Sprite } from "pixi.js";
 import { TowerModel } from "../../models";
 import { GridSettings } from '../../lib/GridSettings';
 import { GameObject } from "./GameObject";
@@ -8,7 +8,7 @@ export class Tower extends GameObject {
     id: number;
     towerModel: TowerModel;
 
-    towerCircle: Graphics;
+    towerCircle: Sprite;
 
     constructor(app: Application, field: Field, towerModel: TowerModel) {
         super(app);
@@ -16,12 +16,14 @@ export class Tower extends GameObject {
         this.id = towerModel.id;
         this.towerModel = towerModel;
 
-        console.log({towerModel, x: towerModel.coordinate.tileCenterX, y: towerModel.coordinate.tileCenterY, rad: GridSettings.tileSize / 2 });
-        
-        this.towerCircle = new Graphics()
-            .beginFill(0x00ff00)
-            .drawCircle(towerModel.coordinate.tileCenterX, towerModel.coordinate.tileCenterY, GridSettings.tileSize / 2)
-            .endFill()
+        this.towerCircle = Sprite.from('assets/facebook_troll.jpg');
+
+        this.towerCircle.width = GridSettings.tileSize;
+        this.towerCircle.height = GridSettings.tileSize;
+
+        this.towerCircle.anchor.set(0.5, 0.5);
+        this.towerCircle.position.set(towerModel.coordinate.tileCenterX, towerModel.coordinate.tileCenterY);
+        this.towerCircle.zIndex = 1000;
 
         field.container.addChild(this.towerCircle);
     }

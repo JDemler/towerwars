@@ -6,7 +6,6 @@ import { GameObject } from "./GameObject";
 import { Tower } from "./Tower";
 import { Mob } from "./Mob";
 import { Bullet } from "./Bullet";
-import { Group, Layer } from "@pixi/layers";
 
 export default class Field extends GameObject {
     id: number;
