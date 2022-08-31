@@ -13,7 +13,7 @@ namespace TowerModel {
     export function fromJSON(json: any): TowerModel {
         return {
             id: json.id,
-            coordinate: new GridCoordinate(json.x, json.y),
+            coordinate: new GridCoordinate(json.x - 0.5, json.y - 0.5),
             damage: json.damage,
             range: json.range,
             fireRate: json.fireRate,

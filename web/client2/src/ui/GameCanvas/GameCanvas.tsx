@@ -1,4 +1,4 @@
-import { Application, Graphics } from "pixi.js";
+import { Application } from "pixi.js";
 import { useEffect, useRef, useState } from "react";
 import GameClient from "../../game/GameClient";
 import beginGameLoop from "../../game/stage";
@@ -15,7 +15,7 @@ const GameCanvas: React.FC = () => {
             width: window.innerWidth,
             height: window.innerHeight,
 
-            backgroundColor: 0x5BBA6F,
+            backgroundColor: 0x50a161, //0x5BBA6F
         });
 
         // Add the canvas to the DOM

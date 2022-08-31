@@ -12,7 +12,7 @@ namespace BulletModel {
     export function fromJSON(json: any): BulletModel {
         return {
             id: json.id,
-            coordinate: new GridCoordinate(json.x, json.y),
+            coordinate: new GridCoordinate(json.x - 0.5, json.y - 0.5),
             speed: json.speed,
             damage: json.damage,
             targetId: json.targetId,
