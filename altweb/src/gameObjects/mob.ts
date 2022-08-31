@@ -35,9 +35,13 @@ export class GameMob extends Phaser.GameObjects.GameObject {
                 , this.mob.targetY * TileSize + this.scene.offsetY
                 , this.mob.speed * TileSize);
         // FillColor from health/maxhealth (green to red)        
-        let healthyColor = Phaser.Display.Color.HexStringToColor('#40c9c1');
-        let unhealthyColor = Phaser.Display.Color.HexStringToColor('0x3DBF53');
-        // this.arc.setFillStyle(Phaser.Display.Color.Interpolate.ColorWithColor(healthyColor, unhealthyColor, this.mob.maxHealth, this.mob.health).color);
+        let healthyColor = Phaser.Display.Color.HexStringToColor('#88B330');
+        let unhealthyColor = Phaser.Display.Color.HexStringToColor('#B36354');
+        let color = Phaser.Display.Color.Interpolate.ColorWithColor(unhealthyColor, healthyColor, this.mob.maxHealth, this.mob.health);
+        // turn colorobject into number
+        let colorNumber = Phaser.Display.Color.GetColor(color.r, color.g, color.b);
+        this.arc.setFillStyle(colorNumber);
+
     }
 
     destroy() {

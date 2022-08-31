@@ -1,65 +1,41 @@
-// HTTP Server for the towerwars game
 package main
 
 import (
 	"encoding/json"
 	"fmt"
+	"math/rand"
 	"net/http"
-	"os"
 	"time"
 
 	"towerwars/internal/game"
-
-	"github.com/gorilla/websocket"
 )
 
 type Server struct {
-	game          *game.Game
-	writeChannels []*WsChannel
-	channelCount  int
+	runningGames map[string]*GameInstance
+	openGames    map[string]*GameInstance
 }
 
-type WsChannel struct {
-	id        int
-	open      bool
-	Channel   chan game.ServerEvent
-	Websocket *websocket.Conn
-}
-
-func (ws *WsChannel) Close() {
-	ws.open = false
-	ws.Websocket.Close()
-}
-
+// new server
 func NewServer() *Server {
-	//Try to read config. Get config path from env variable
-	var configPath string
-	if os.Getenv("CONFIG_PATH") == "" {
-		fmt.Println("No config path set. Using default config")
-		configPath = "gameConfig.json"
-	} else {
-		fmt.Println("Using config from: ", os.Getenv("CONFIG_PATH"))
-		configPath = os.Getenv("CONFIG_PATH")
-	}
-	config, err := game.ReadConfigFromFile(configPath)
-	if err != nil {
-		fmt.Println("Could not read config")
-		fmt.Println(err)
-		return nil
-	}
 	return &Server{
-		game: game.NewGame(config),
+		runningGames: make(map[string]*GameInstance),
+		openGames:    make(map[string]*GameInstance),
 	}
-}
-
-// Update the game
-func (s *Server) Update(delta float64) []*game.ServerEvent {
-	return s.game.Update(delta)
 }
 
 // Http Handler returning the game state
 func (s *Server) GetGameState(w http.ResponseWriter, r *http.Request) {
-	err := json.NewEncoder(w).Encode(s.game)
+	// Get game id from url
+	gameId := r.URL.Query().Get("gameId")
+	// Get game instance
+	gameInstance := s.runningGames[gameId]
+	if gameInstance == nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	// Return game state
+	w.WriteHeader(http.StatusOK)
+	err := json.NewEncoder(w).Encode(gameInstance.game)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -69,11 +45,49 @@ func (s *Server) GetGameState(w http.ResponseWriter, r *http.Request) {
 type AddedPlayer struct {
 	Key     string `json:"key"`
 	FieldID int    `json:"fieldId"`
+	GameID  string `json:"gameId"`
+}
+
+func randomString(length int) string {
+	rand.Seed(time.Now().UnixNano())
+	b := make([]byte, length)
+	rand.Read(b)
+	return fmt.Sprintf("%x", b)[:length]
+}
+
+func (s *Server) getGameInstanceFromRequest(r *http.Request) (*GameInstance, error) {
+	// Get game id from url
+	gameID := r.URL.Query().Get("gameId")
+	// Get game instance
+	gameInstance := s.runningGames[gameID]
+	if gameInstance == nil {
+		gameInstance = s.openGames[gameID]
+		if gameInstance == nil {
+			return nil, fmt.Errorf("game not found")
+		}
+	}
+	return gameInstance, nil
 }
 
 func (s *Server) AddPlayer(w http.ResponseWriter, r *http.Request) {
+	// Check if there is an open game
+	if len(s.openGames) == 0 {
+		// create a game id
+		gameID := randomString(16)
+		// Add new game to open games
+		s.openGames[gameID] = NewGameInstance()
+	}
+	// Get first open game
+	var gameInstance *GameInstance
+	var gameID string
+	for gID, game := range s.openGames {
+		gameInstance = game
+		gameID = gID
+		break
+	}
+
 	// Check if game is still in waiting state
-	if s.game.State != game.WaitingState {
+	if gameInstance.game.State != game.WaitingState {
 		// return bad request
 		w.WriteHeader(http.StatusBadRequest)
 		return
@@ -88,207 +102,75 @@ func (s *Server) AddPlayer(w http.ResponseWriter, r *http.Request) {
 		// return
 		playerName = "hans"
 	}
-	// add player to game and get its key
-	key := s.game.AddPlayer(playerName)
-	fieldID := len(s.game.Fields) - 1
+	// add player to game and get its playerKey
+	playerKey := gameInstance.game.AddPlayer(playerName)
+	fieldID := len(gameInstance.game.Fields) - 1
+	//log player joined
+	fmt.Println("Player joined")
+	// Check if game is full and start if so
+	if gameInstance.game.CanStart() {
+		// Remove game from open games
+		delete(s.openGames, gameID)
+		// Add game to running games
+		s.runningGames[gameID] = gameInstance
+		// Start game
+		fmt.Println("Game ", gameID, " started")
+		go gameInstance.Start()
+	}
 	// return success
 	w.WriteHeader(http.StatusOK)
 	// return player id
-	err = json.NewEncoder(w).Encode(AddedPlayer{Key: key, FieldID: fieldID})
+	err = json.NewEncoder(w).Encode(AddedPlayer{Key: playerKey, FieldID: fieldID, GameID: gameID})
 	if err != nil {
 		fmt.Println(err)
 	}
+}
 
-	//log player joined
-	fmt.Println("Player joined")
+func (s *Server) WebSocket(w http.ResponseWriter, r *http.Request) {
+	gi, err := s.getGameInstanceFromRequest(r)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	gi.WebSocket(w, r)
 }
 
 func (s *Server) GetTowerTypes(w http.ResponseWriter, r *http.Request) {
+	gi, err := s.getGameInstanceFromRequest(r)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
 	w.Header().Set("Content-Type", "application/json")
-	err := json.NewEncoder(w).Encode(s.game.GetTowerTypes())
+	err = json.NewEncoder(w).Encode(gi.game.GetTowerTypes())
 	if err != nil {
 		fmt.Println(err)
 	}
 }
 
 func (s *Server) GetMobTypes(w http.ResponseWriter, r *http.Request) {
+	gi, err := s.getGameInstanceFromRequest(r)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
 	w.Header().Set("Content-Type", "application/json")
-	err := json.NewEncoder(w).Encode(s.game.GetMobTypes())
+	err = json.NewEncoder(w).Encode(gi.game.GetMobTypes())
 	if err != nil {
 		fmt.Println(err)
 	}
 }
 
 func (s *Server) GetStatus(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	err := json.NewEncoder(w).Encode(s.game.State)
+	gi, err := s.getGameInstanceFromRequest(r)
 	if err != nil {
-		fmt.Println(err)
-	}
-}
-
-func (s *Server) readFromWS(ws *WsChannel) {
-	defer func() {
-		fmt.Println("Stopped readToWS loop!")
-		for i, ch := range s.writeChannels {
-			if ch.id == ws.id {
-				fmt.Println("Removing channel from writeChannels")
-				fmt.Println("writeChannels len before: ", len(s.writeChannels))
-				s.writeChannels = append(s.writeChannels[:i], s.writeChannels[i+1:]...)
-				fmt.Println("writeChannels len: ", len(s.writeChannels))
-			}
-		}
-		ws.Close()
-	}()
-	for {
-		if !ws.open {
-			return
-		}
-		var event game.FieldEvent
-		err := ws.Websocket.ReadJSON(&event)
-		if err != nil {
-			fmt.Println(err)
-			fmt.Println("Closing readFromWS loop!")
-			return
-		}
-
-		// debug message
-		fmt.Println("Received event through ws")
-		fmt.Println(event)
-		// HandleEvent
-		events, error := s.game.HandleEvent(event)
-		if error != nil {
-			fmt.Println("Could not handle event")
-			fmt.Println(error)
-		}
-
-		// send events to all clients
-		for _, event := range events {
-			for _, c := range s.writeChannels {
-				if c.open {
-					c.Channel <- *event
-				}
-			}
-		}
-	}
-}
-
-func (s *Server) writeToWS(ws *WsChannel) {
-	defer func() {
-		fmt.Println("Stopped writeToWS loop!")
-		for i, ch := range s.writeChannels {
-			if ch.id == ws.id {
-				fmt.Println("Removing channel from writeChannels")
-				fmt.Println("writeChannels len before: ", len(s.writeChannels))
-				s.writeChannels = append(s.writeChannels[:i], s.writeChannels[i+1:]...)
-				fmt.Println("writeChannels len: ", len(s.writeChannels))
-			}
-		}
-		ws.Close()
-	}()
-	for {
-		if !ws.open {
-			return
-		}
-		event := <-ws.Channel
-		if ws == nil {
-			fmt.Println("Websocket was nil!")
-			return
-		}
-		err := ws.Websocket.WriteJSON(event)
-		if err != nil {
-			fmt.Println("Error in writeToWS loop!")
-			fmt.Println(err)
-			return
-		}
-	}
-}
-
-// Serve Websocket
-func (s *Server) WebSocket(w http.ResponseWriter, r *http.Request) {
-	upgrader := websocket.Upgrader{
-		ReadBufferSize:  1024,
-		WriteBufferSize: 1024,
-		CheckOrigin: func(r *http.Request) bool {
-			return true
-		},
-	}
-	conn, err := upgrader.Upgrade(w, r, nil)
-	if err != nil {
-		fmt.Println(err)
+		w.WriteHeader(http.StatusNotFound)
 		return
 	}
-	// create channels
-	gameEventChan := make(chan game.ServerEvent)
-	wsChannel := &WsChannel{
-		id:        s.channelCount,
-		open:      true,
-		Channel:   gameEventChan,
-		Websocket: conn,
-	}
-	s.channelCount++
-	// register channels
-	s.writeChannels = append(s.writeChannels, wsChannel)
-	// start reading from websocket
-	go s.readFromWS(wsChannel)
-	// start writing to websocket
-	go s.writeToWS(wsChannel)
-}
-
-// Reset
-func (s *Server) reset() {
-	var configPath string
-	if os.Getenv("CONFIG_PATH") == "" {
-		fmt.Println("No config path set. Using default config")
-		configPath = "gameConfig.json"
-	} else {
-		fmt.Println("Using config from: ", os.Getenv("CONFIG_PATH"))
-		configPath = os.Getenv("CONFIG_PATH")
-	}
-	config, err := game.ReadConfigFromFile(configPath)
+	w.Header().Set("Content-Type", "application/json")
+	err = json.NewEncoder(w).Encode(gi.game.State)
 	if err != nil {
-		fmt.Println("Could not read config")
 		fmt.Println(err)
-	}
-	if config == nil {
-		config = s.game.Config
-	}
-	// Wait for five seconds
-	time.Sleep(5 * time.Second)
-	s.game = game.NewGame(config)
-	// Close all channels
-	for _, c := range s.writeChannels {
-		c.Close()
-	}
-
-	// Start new game
-	s.gameLoop()
-}
-
-// gameLoop
-func (s *Server) gameLoop() {
-	last := time.Now()
-	for {
-		delta := float64(time.Since(last).Milliseconds()) / 1000.0
-		last = time.Now()
-		if s.game.State == game.WaitingState && len(s.game.Fields) > 1 {
-			s.game.Start()
-			// log that game started
-			fmt.Println("Game started")
-		}
-		events := s.Update(delta)
-		for _, event := range events {
-			for _, c := range s.writeChannels {
-				if c.open {
-					c.Channel <- *event
-				}
-			}
-		}
-		time.Sleep(time.Second / 60)
-		if s.game.State == game.GameOverState {
-			go s.reset()
-			return
-		}
 	}
 }
 
@@ -303,28 +185,13 @@ func logAndAddCorsHeadersToRequest(handler http.Handler) http.Handler {
 		if r.Method == http.MethodOptions {
 			return
 		}
-		if r.URL.Path == "/" {
-			w.Header().Set("Content-Type", "application/json")
-			err := json.NewEncoder(w).Encode("Ok")
-			if err != nil {
-				fmt.Println(err)
-			}
-			return
-		}
 		handler.ServeHTTP(w, r)
 	})
 }
 
 func main() {
 	s := NewServer()
-	go s.gameLoop()
-	// Accept CORS
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		// log request
-		fmt.Println(r.Method, r.URL.Path)
 
-		http.DefaultServeMux.ServeHTTP(w, r)
-	})
 	http.HandleFunc("/status", s.GetStatus)
 	http.HandleFunc("/game", s.GetGameState)
 	http.HandleFunc("/add_player", s.AddPlayer)

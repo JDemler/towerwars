@@ -11,6 +11,7 @@ import { TowerDescription } from '../gameObjects/towerDescription';
 export default class GameScene extends Phaser.Scene {
   // properties
   gameState: Game;
+  gameId: string = "";
   serverAlive: boolean = true;
   playerId: number = 0;
   playerKey: string = "";
@@ -35,10 +36,12 @@ export default class GameScene extends Phaser.Scene {
 
   }
 
-  init(data: { towerTypes: TowerType[], mobTypes: MobType[], playerId: number }): void {
+  init(data: { gameId: string, towerTypes: TowerType[], mobTypes: MobType[], playerId: number, playerKey: string }): void {
     this.towerTypes = data.towerTypes;
     this.mobTypes = data.mobTypes;
     this.playerId = data.playerId;
+    this.gameId = data.gameId;
+    this.playerKey = data.playerKey;
     // log player id
     console.log("Player id: " + this.playerId);
   }
@@ -66,17 +69,35 @@ export default class GameScene extends Phaser.Scene {
   create() {
     this.fpsLabel = this.add.text(window.innerWidth - 75, window.innerHeight - 20, "FPS: " + Math.round(this.game.loop.actualFps));
     this.debugLabel = this.add.text(600, 800, "Width + Height: " + window.innerWidth + " + " + window.innerHeight + ' + ' + TileSize + ' + ' + this.fields.length);
-    connect().then(ws => {
+    console.log("connecting to websocket with game id: " + this.gameId);
+    connect(this.gameId, this.playerKey).then(ws => {
       this.websocket = ws;
       this.websocket.onmessage = (event) => {
-        //  console.log(event.data);
+        console.log(event);
+        //console.log(event.data);
         this.handleEvent(JSON.parse(event.data));
       }
     });
+    //get mob and tower types
+    getMobTypes(this.gameId).then(mobTypes => {
+      if (mobTypes) {
+        this.mobTypes = mobTypes;
+      }
+    }).catch(error => {
+      console.log(error);
+    }
+    );
+    getTowerTypes(this.gameId).then(towerTypes => {
+      if (towerTypes) {
+        this.towerTypes = towerTypes;
+      }
+    }).catch(error => {
+      console.log(error);
+    });
 
-    getGame().then(game => {
+    getGame(this.gameId).then(game => {
       //if game is not undefined assign it
-      if (game) {
+      if (game && this.mobTypes && this.towerTypes) {
         this.gameState = game;
         // draw fields    
         this.gameState.fields.forEach((field, i) => {
@@ -88,6 +109,7 @@ export default class GameScene extends Phaser.Scene {
     }).catch(error => {
       console.log(error);
     })
+
   }
 
   setOffsetForField(fieldId: number): void {

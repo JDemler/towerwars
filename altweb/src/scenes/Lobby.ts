@@ -14,6 +14,7 @@ export default class Demo extends Phaser.Scene {
   mobTypes: MobType[] = []
   playerId: number = 0;
   playerKey: string = "";
+  gameId: string = "";
   username: string;
   websocket: WebSocket | undefined;
   constructor() {
@@ -31,44 +32,9 @@ export default class Demo extends Phaser.Scene {
 
   preload() {
     this.load.image('logo', 'assets/phaser3-logo.png');
-    getGame().then(game => {
-      //if game is not undefined assign it
-      if (game) {
-        this.gameState = game;
-        console.log("Assigned game");
-      }
-    }).catch(error => {
-      console.log(error);
-    })
-    //get mob and tower types
-    getMobTypes().then(mobTypes => {
-      if (mobTypes) {
-        this.mobTypes = mobTypes;
-      }
-    }).catch(error => {
-      console.log(error);
-    }
-    );
-    getTowerTypes().then(towerTypes => {
-      if (towerTypes) {
-        this.towerTypes = towerTypes;
-      }
-    }).catch(error => {
-      console.log(error);
-    });
   }
 
   create() {
-
-
-    connect().then(ws => {
-      this.websocket = ws;
-      this.websocket.onmessage = (event) => {
-        console.log(event.data);
-        this.handleEvent(JSON.parse(event.data));
-      }
-    });
-
     // Join game button
     const joinGameButton = this.add.text(400, 300, 'Join Game', {
       font: '48px Arial',
@@ -99,6 +65,21 @@ export default class Demo extends Phaser.Scene {
       if (addedPlayer) {
         this.scene.setPlayerId(addedPlayer.fieldId);
         this.scene.setPlayerKey(addedPlayer.key);
+        this.scene.gameId = addedPlayer.gameId;
+
+        connect(addedPlayer.gameId, addedPlayer.key).then(ws => {
+
+          this.scene.websocket = ws;
+          this.scene.websocket.onmessage = (event) => {
+            if (this.scene == undefined) {
+              ws.close();
+              return
+            }
+            console.log(event.data);
+            this.scene.handleEvent(JSON.parse(event.data));
+          }
+        });
+
         console.log(addedPlayer)
         console.log("Assigned to game");
       }
@@ -115,7 +96,7 @@ export default class Demo extends Phaser.Scene {
   update(time: number, delta: number): void {
     //console.log(this.gameState);
     if (this.gameState && this.gameState.state === 'Playing') {
-      this.scene.start('GameScene', { mobTypes: this.mobTypes, towerTypes: this.towerTypes, playerId: this.playerId, playerKey: this.playerKey, username: this.username });
+      this.scene.start('GameScene', { gameId: this.gameId, mobTypes: this.mobTypes, towerTypes: this.towerTypes, playerId: this.playerId, playerKey: this.playerKey, username: this.username });
       this.destroy();
     }
   }

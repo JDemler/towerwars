@@ -29,9 +29,9 @@ function isAbsoluteUrl(url: string): boolean {
     return /^(?:[a-z]+:)?\/\//i.test(url);
 }
 
-export async function getGame(): Promise<Game | undefined> {
+export async function getGame(gameId: string): Promise<Game | undefined> {
     try {
-        const response = await fetch(api('game'));
+        const response = await fetch(api('game?gameId=' + gameId));
 
         if (!response.ok) {
             throw new Error('Network response was not ok.');
@@ -44,31 +44,10 @@ export async function getGame(): Promise<Game | undefined> {
     }
 }
 
-export async function registerEvent(event: FieldEvent) {
-    try {
-        const response = await fetch(api('register_event'), {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(event)
-        });
-
-        if (!response.ok) {
-            throw new Error('Network response was not ok.');
-        }
-
-        const result = await response.json();
-        return result;
-    } catch (error) {
-        console.error(error);
-        console.error(event);
-    }
-}
 
 // connects to websocket
-export async function connect(): Promise<WebSocket> {
-    const ws = new WebSocket(ws_api('ws'));
+export async function connect(gameId: string, playerKey: string): Promise<WebSocket> {
+    const ws = new WebSocket(ws_api('ws?gameId=' + gameId + '&playerKey=' + playerKey));
     return ws;
 }
 
@@ -95,9 +74,9 @@ export async function joinGame(name: string): Promise<AddedPlayer | undefined> {
     }
 }
 
-export async function getTowerTypes() {
+export async function getTowerTypes(gameId: string) {
     try {
-        const response = await fetch(api('tower_types'));
+        const response = await fetch(api('tower_types?gameId=' + gameId));
 
         if (!response.ok) {
             throw new Error('Network response was not ok.');
@@ -110,9 +89,9 @@ export async function getTowerTypes() {
     }
 }
 
-export async function getMobTypes() {
+export async function getMobTypes(gameId: string) {
     try {
-        const response = await fetch(api('mob_types'));
+        const response = await fetch(api('mob_types?gameId=' + gameId));
 
         if (!response.ok) {
             throw new Error('Network response was not ok.');

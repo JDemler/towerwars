@@ -11,17 +11,19 @@ go run server.go
 
 ### Endpoints
 
-`/game` :: Gets Game State
+`/add_player` :: Adds a player. Returns player id and playerKey and gameId if successfull
 
-`/add_player` :: Adds a player. Returns player id and key if successfull
+For example `{"key":"b326447090e3a58d","fieldId":0,"gameId":"0ac475f17632fcc1"}` 
 
-`/register_event` :: Register an Event (BuyMob, BuildTower) to the server. 200 OK if successfull
+`/game?gameId=<gameid>` :: Gets Game State
 
-`/tower_types` :: Gets all Tower Types from gameconfig
+~~`/register_event` :: Register an Event (BuyMob, BuildTower) to the server. 200 OK if successfull~~ (DEPRECATED)
 
-`/mob_types` :: Gets all Mob Types from gameconfig
+`/tower_types?gameId=<gameid>` :: Gets all Tower Types from gameconfig
 
-`/ws` :: Websocket endpoint
+`/mob_types?gameId=<gameid>` :: Gets all Mob Types from gameconfig
+
+`/ws?gameId=<gameid>&playerKey=<playerkey>` :: Websocket endpoint. Connect to the websocket of a game instance for a player
 
 
 ### Server to Client Events

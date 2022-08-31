@@ -1,5 +1,5 @@
 {
-    "incomeCooldown": 30,
+    "incomeCooldown": 20,
     "towerTypes": [
         {
             "name": "Like Button",
@@ -151,7 +151,7 @@
         "startX": 0,
         "startY": 0,
         "endX": 9,
-        "endY": 14
+        "endY": 17
     },
     "startStats": {
         "money": 5000,

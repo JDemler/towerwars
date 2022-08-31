@@ -4,6 +4,7 @@ package game
 import (
 	"fmt"
 	"math"
+	"time"
 )
 
 // WaitingState is the state of the game when players are waiting for the game to start
@@ -53,6 +54,21 @@ func (game *Game) AddPlayer(playerName string) string {
 	return field.Key
 }
 
+// PlayerIdFromKey returns the player id from a key
+func (game *Game) PlayerIdFromKey(key string) int {
+	for _, field := range game.Fields {
+		if field.Key == key {
+			return field.Player.ID
+		}
+	}
+	return -1
+}
+
+// CanStart
+func (game *Game) CanStart() bool {
+	return len(game.Fields) >= 2
+}
+
 // Start game if there are more than two players
 func (game *Game) Start() {
 	if len(game.Fields) < 2 {
@@ -90,6 +106,19 @@ func (game *Game) HandleEvent(fieldEvent FieldEvent) ([]*ServerEvent, error) {
 		return targetField.HandleEvent(fieldEvent.Payload, game.Fields, game.Config)
 	}
 	return []*ServerEvent{}, fmt.Errorf("Field not found")
+}
+
+// Set Player Ping
+func (game *Game) Ping(fieldID int, latency int64) {
+	field := game.getFieldAt(fieldID)
+	if field != nil {
+		//Log latency
+		fmt.Println("Latency for player", field.Player.Name, "is", latency, "ms")
+		field.Player.Latency = latency
+		field.Player.LastPing = time.Now().UnixMicro()
+		// Update Player Event
+		game.events = append(game.events, updateEvent(field.Player, fieldID))
+	}
 }
 
 // Update loop for the game
