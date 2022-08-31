@@ -48,7 +48,6 @@ const GameCanvas: React.FC = () => {
             {/* Game Action Bar */}
             <div style={{ position: 'fixed', bottom: '16px', width: '100%', display: 'flex', justifyContent: 'center' }}>
                 <input type="button" value="Buy Mob" onClick={() => gameClient?.buyMob()} />
-                <input type="button" value="Buy Tower" onClick={() => gameClient?.buildTurret(new GridCoordinate(3, 3))} />
             </div>
         </div>
     </>

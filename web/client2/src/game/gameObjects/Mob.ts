@@ -20,8 +20,8 @@ export class Mob extends GameObject {
 
         this.mobCircle = Sprite.from('assets/facebook_troll.jpg');
 
-        this.mobCircle.width = GridSettings.tileSize;
-        this.mobCircle.height = GridSettings.tileSize;
+        this.mobCircle.width = GridSettings.tileSize * 0.7;
+        this.mobCircle.height = GridSettings.tileSize * 0.7;
 
         this.mobCircle.anchor.set(0.5, 0.5);
         this.mobCircle.position.set(mobModel.coordinate.tileCenterX, mobModel.coordinate.tileCenterY);

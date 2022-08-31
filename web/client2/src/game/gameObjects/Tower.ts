@@ -18,12 +18,18 @@ export class Tower extends GameObject {
 
         this.towerCircle = Sprite.from('assets/facebook_troll.jpg');
 
-        this.towerCircle.width = GridSettings.tileSize;
-        this.towerCircle.height = GridSettings.tileSize;
+        this.towerCircle.width = GridSettings.tileSize * 0.7;
+        this.towerCircle.height = GridSettings.tileSize * 0.7;
 
         this.towerCircle.anchor.set(0.5, 0.5);
         this.towerCircle.position.set(towerModel.coordinate.tileCenterX, towerModel.coordinate.tileCenterY);
         this.towerCircle.zIndex = 1000;
+
+        
+        // this.towerCircle.interactive = true;
+        // this.towerCircle.on('pointerdown', e => {
+        //     console.log(`Tile clicked`);
+        // })
 
         field.container.addChild(this.towerCircle);
     }

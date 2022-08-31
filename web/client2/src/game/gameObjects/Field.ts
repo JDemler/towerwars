@@ -6,9 +6,13 @@ import { GameObject } from "./GameObject";
 import { Tower } from "./Tower";
 import { Mob } from "./Mob";
 import { Bullet } from "./Bullet";
+import GameClient from '../GameClient';
+import GridCoordinate from "../../lib/GridCoordinate";
 
 export default class Field extends GameObject {
     id: number;
+    gameClient: GameClient;
+
     mapModel: MapModel;
     player: PlayerModel;
 
@@ -30,9 +34,11 @@ export default class Field extends GameObject {
         return this.children.find(child => child instanceof Map) as Map;
     }
 
-    constructor(app: Application, fieldModel: FieldModel) {
+    constructor(app: Application, gameClient: GameClient, fieldModel: FieldModel) {
         super(app);
         this.id = fieldModel.id;
+        this.gameClient = gameClient;
+
         this.mapModel = fieldModel.map;
         this.player = fieldModel.player;
 
@@ -70,6 +76,10 @@ export default class Field extends GameObject {
     
     onDestroy(): void {
 
+    }
+
+    onTileClick(coordinate: GridCoordinate) {
+        this.gameClient.buildTurret(coordinate);
     }
 
     handleGameChangeAction(action: GameChangeAction) {

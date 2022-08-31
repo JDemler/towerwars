@@ -4,12 +4,6 @@ import GameClient, { GameChangeAction } from './GameClient';
 import { GridSettings } from "../lib/GridSettings";
 
 const beginGameLoop = (app: Application) => {
-    // const tower = new Tower(app);
-
-    // app.ticker.add((delta) => {
-    //     tower.update(delta);
-    // });
-
     const fields: Field[] = [];
 
     const clearFields = () => {
@@ -17,14 +11,14 @@ const beginGameLoop = (app: Application) => {
         fields.length = 0;
     }
 
-    const handleGameChangeAction = (action: GameChangeAction) => {
+    const handleGameChangeAction = (action: GameChangeAction, gameClient: GameClient) => {
         if (action.type === 'gameState') {
             clearFields();
             if (action.kind === 'create' || action.kind === 'update') {
                 for (let i = 0; i < action.gameState.fields.length; i++) {
                     const fieldModel = action.gameState.fields[i];
 
-                    const field = new Field(app, fieldModel);
+                    const field = new Field(app, gameClient, fieldModel);
                     field.container.position.x = i * (fieldModel.map.size.width * GridSettings.tileSize + GridSettings.tileSize * 2);
                     fields.push(field);
                 }

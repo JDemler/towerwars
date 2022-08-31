@@ -3,6 +3,7 @@ import { MapModel } from '../../models';
 import { GridSettings } from '../../lib/GridSettings';
 import Field from './Field';
 import * as PIXI from 'pixi.js';
+import GridCoordinate from "../../lib/GridCoordinate";
 
 export default class Map extends GameObject {
     mapModel: MapModel;
@@ -15,27 +16,29 @@ export default class Map extends GameObject {
         this.mapModel = mapModel;
 
         const tileSize = GridSettings.tileSize;
-
-        const grid = new PIXI.Graphics()
         
-        grid.alpha = 0.5;
-        grid.zIndex = 0;
-
-        for (let i = 0; i < mapModel.size.width; i++) {
-            for (let j = 0; j < mapModel.size.height; j++) {
+        for (let x = 0; x < mapModel.size.width; x++) {
+            for (let y = 0; y < mapModel.size.height; y++) {
                 // Determine the color based on the x and y position in a checkerboard pattern
-                const color = (i + j) % 2 === 0 ? 0x5BBA6F : 0x42754d;
+                const color = (x + y) % 2 === 0 ? 0x5BBA6F : 0x42754d;
 
-                grid
+                const tile = new PIXI.Graphics()
                     .beginFill(color)
-                    .drawRect(i * tileSize, j * tileSize, tileSize, tileSize)
+                    .drawRect(x * tileSize, y * tileSize, tileSize, tileSize)
                     .endFill()
+                    
+                tile.zIndex = 0;
+
+                tile.interactive = true;
+                tile.on('pointerdown', e => {
+                    field.onTileClick(new GridCoordinate(x, y));
+                })
+
+                field.container.addChild(tile);
+        
+                this.tileGraphics.push(tile);
             }
         }
-
-        field.container.addChild(grid);
-
-        this.tileGraphics.push(grid);
     }
 
     onUpdate(delta: number, deltaMs: number): void {

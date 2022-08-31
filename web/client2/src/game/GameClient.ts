@@ -32,7 +32,7 @@ export type GameChangeAction =
     | { type: "bullet"; kind: GameChangeActionChangeKind; fieldId: number; bullet: BulletModel }
     | { type: "bullet"; kind: GameChangeActionDeleteKind; fieldId: number; bulletId: number }
 
-export type GameUpdateDispatch = (action: GameChangeAction) => void;
+export type GameUpdateDispatch = (action: GameChangeAction, gameClient: GameClient) => void;
 
 export default class GameClient {
     private webSocketClient: WebSocketClient;
@@ -70,7 +70,7 @@ export default class GameClient {
     initializeApi() {
         ApiClient.getGameState()
             .then(gameState => {
-                this.updateDispatch({ type: "gameState", kind: 'create', gameState });
+                this.updateDispatch({ type: "gameState", kind: 'create', gameState }, this);
 
                 // Try loading the added player from the session storage
                 if (gameState.state !== "WaitingForPlayers") {
@@ -132,10 +132,10 @@ export default class GameClient {
             //     console.log('Player', eventKind, eventPayload)
             //     break;
             case "gameStateChanged":
-                this.updateDispatch({ type: "state", gameStatus: eventPayload.gameState });
+                this.updateDispatch({ type: "state", gameStatus: eventPayload.gameState }, this);
 
                 ApiClient.getGameState().then(gameState => {
-                    this.updateDispatch({ type: "gameState", kind: 'update', gameState });
+                    this.updateDispatch({ type: "gameState", kind: 'update', gameState }, this);
                 }).catch(error => {
                     console.error(error);
                 })
@@ -147,27 +147,27 @@ export default class GameClient {
                 break;
             case "player":
                 if (eventKind === "create" || eventKind === "update")
-                    this.updateDispatch({ type: 'player', kind: eventKind, fieldId, player: PlayerModel.fromJSON(eventPayload) });
+                    this.updateDispatch({ type: 'player', kind: eventKind, fieldId, player: PlayerModel.fromJSON(eventPayload) }, this);
                 else if (eventKind === "delete")
-                    this.updateDispatch({ type: 'player', kind: eventKind, fieldId, playerId: eventPayload });
+                    this.updateDispatch({ type: 'player', kind: eventKind, fieldId, playerId: eventPayload }, this);
                 break;
             case "tower":
                 if (eventKind === "create" || eventKind === "update")
-                    this.updateDispatch({ type: 'tower', kind: eventKind, fieldId, tower: TowerModel.fromJSON(eventPayload) });
+                    this.updateDispatch({ type: 'tower', kind: eventKind, fieldId, tower: TowerModel.fromJSON(eventPayload) }, this);
                 else if (eventKind === 'delete')
-                    this.updateDispatch({ type: 'tower', kind: eventKind, fieldId, towerId: eventPayload });
+                    this.updateDispatch({ type: 'tower', kind: eventKind, fieldId, towerId: eventPayload }, this);
                 break;
             case "mob":
                 if (eventKind === "create" || eventKind === "update")
-                    this.updateDispatch({ type: 'mob', kind: eventKind, fieldId, mob: MobModel.fromJSON(eventPayload) });
+                    this.updateDispatch({ type: 'mob', kind: eventKind, fieldId, mob: MobModel.fromJSON(eventPayload) }, this);
                 else if (eventKind === 'delete')
-                    this.updateDispatch({ type: 'mob', kind: eventKind, fieldId, mobId: eventPayload });
+                    this.updateDispatch({ type: 'mob', kind: eventKind, fieldId, mobId: eventPayload }, this);
                 break;
             case "bullet":
                 if (eventKind === "create" || eventKind === "update")
-                    this.updateDispatch({ type: 'bullet', kind: eventKind, fieldId, bullet: BulletModel.fromJSON(eventPayload) });
+                    this.updateDispatch({ type: 'bullet', kind: eventKind, fieldId, bullet: BulletModel.fromJSON(eventPayload) }, this);
                 else if (eventKind === 'delete')
-                    this.updateDispatch({ type: 'bullet', kind: eventKind, fieldId, bulletId: eventPayload });
+                    this.updateDispatch({ type: 'bullet', kind: eventKind, fieldId, bulletId: eventPayload }, this);
                 break;
             case "barracks":
                 break;
