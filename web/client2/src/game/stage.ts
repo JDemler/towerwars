@@ -1,6 +1,7 @@
 import { Application } from "pixi.js";
 import Field from "./gameObjects/Field";
 import GameClient, { GameChangeAction } from './GameClient';
+import { GridSettings } from "../lib/GridSettings";
 
 const beginGameLoop = (app: Application) => {
     // const tower = new Tower(app);
@@ -20,8 +21,11 @@ const beginGameLoop = (app: Application) => {
         if (action.type === 'gameState') {
             clearFields();
             if (action.kind === 'create' || action.kind === 'update') {
-                for (const fieldModel of action.gameState.fields) {
+                for (let i = 0; i < action.gameState.fields.length; i++) {
+                    const fieldModel = action.gameState.fields[i];
+
                     const field = new Field(app, fieldModel);
+                    field.container.position.x = i * (fieldModel.map.size.width * GridSettings.tileSize + GridSettings.tileSize * 2);
                     fields.push(field);
                 }
             }
