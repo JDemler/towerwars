@@ -10,6 +10,8 @@ type Tower struct {
 	X           float64 `json:"x"`
 	Y           float64 `json:"y"`
 	Damage      int     `json:"damage"`
+	SplashRange float64 `json:"splash"`
+	SplashDmg   float64 `json:"splashDmg"`
 	Range       float64 `json:"range"`
 	FireRate    float64 `json:"fireRate"`
 	Cooldown    float64 `json:"cooldown"`
@@ -34,6 +36,8 @@ func (t *Tower) Upgrade(towerLevel *TowerLevel) {
 	t.Range = towerLevel.Range
 	t.FireRate = towerLevel.FireRate
 	t.BulletSpeed = towerLevel.BulletSpeed
+	t.SplashRange = towerLevel.SplashRange
+	t.SplashDmg = towerLevel.SplashDmg
 	t.Level = towerLevel.Level
 }
 
@@ -53,7 +57,8 @@ func (t *Tower) Update(delta float64, mobs []*Mob, getID func() int) []*Bullet {
 			t.Cooldown += t.FireRate
 			bulletID := getID()
 			// create bullet
-			return []*Bullet{{ID: bulletID, X: t.X, Y: t.Y, Target: mobs[j], Damage: t.Damage, Speed: t.BulletSpeed, TargetID: mobs[j].ID}}
+			return []*Bullet{{ID: bulletID, X: t.X, Y: t.Y, Target: mobs[j],
+				Damage: t.Damage, Speed: t.BulletSpeed, TargetID: mobs[j].ID, SplashRange: t.SplashRange, SplashDmg: t.SplashDmg}}
 		}
 	}
 	return []*Bullet{}

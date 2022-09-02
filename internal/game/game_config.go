@@ -61,6 +61,8 @@ type TowerLevel struct {
 	Cost        int     `json:"cost"`
 	Damage      int     `json:"damage"`
 	Range       float64 `json:"range"`
+	SplashRange float64 `json:"splashRange"`
+	SplashDmg   float64 `json:"splashDmg"`
 	FireRate    float64 `json:"fireRate"`
 	BulletSpeed float64 `json:"bulletSpeed"`
 }
@@ -76,6 +78,7 @@ func (t *TowerType) Tower(x float64, y float64, level int, id int) *Tower {
 		Y: y, Level: level, Damage: towerLevel.Damage,
 		Range: towerLevel.Range, FireRate: towerLevel.FireRate,
 		BulletSpeed: towerLevel.BulletSpeed, Cooldown: 0,
+		SplashRange: towerLevel.SplashRange, SplashDmg: towerLevel.SplashDmg,
 		Type: t.Key}
 }
 

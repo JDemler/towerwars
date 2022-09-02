@@ -2,6 +2,7 @@ package game
 
 import (
 	"fmt"
+	"math"
 	"math/rand"
 	"time"
 )
@@ -67,6 +68,20 @@ func (f *Field) removeTowerByID(id int) {
 	}
 }
 
+func (f *Field) applySplashDamage(bullet *Bullet) {
+	for _, mob := range f.Mobs {
+		if mob.ID == bullet.Target.ID {
+			continue
+		}
+		dx := mob.X - bullet.X
+		dy := mob.Y - bullet.Y
+		dist := math.Sqrt(dx*dx + dy*dy)
+		if dist <= bullet.SplashRange {
+			mob.Health -= int(float64(bullet.Damage) * bullet.SplashDmg)
+		}
+	}
+}
+
 // HandleEvent for field
 func (f *Field) HandleEvent(event Event, otherFields []*Field, gameConfig *Config) ([]*ServerEvent, error) {
 	// Iterate over event targetfieldids and get targetfields
@@ -109,7 +124,7 @@ func (f *Field) Update(delta float64) []*ServerEvent {
 
 	// Update bullets and remove irrelevant bullets from the game
 	for i := len(f.Bullets) - 1; i >= 0; i-- {
-		if !f.Bullets[i].update(delta) || f.Bullets[i].Target.isDead() {
+		if !f.Bullets[i].update(delta, f) || f.Bullets[i].Target.isDead() {
 			// Create BulletDestroyedEvent
 			events = append(events, deleteEvent(f.Bullets[i], f.ID))
 			// Remove bullet from field

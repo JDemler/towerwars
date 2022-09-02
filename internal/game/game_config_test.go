@@ -22,12 +22,13 @@ func standardTWMap() *MapConfig {
 
 var TestGameConfig = Config{
 	TowerTypes: []*TowerType{
-		{Name: "FastBullet", Key: "FastBullet", Levels: []*TowerLevel{{Level: 1, Damage: 1, Range: 300, FireRate: 1, Cost: 5, BulletSpeed: 5}}},
+		{Name: "FastBullet", Key: "FastBullet", Levels: []*TowerLevel{{Level: 1, Damage: 1, Range: 15, FireRate: 1, Cost: 5, BulletSpeed: 5}}},
 		{Name: "SlowBullet", Key: "SlowBullet", Levels: []*TowerLevel{
-			{Level: 1, Damage: 5, Range: 150, FireRate: 1, Cost: 15, BulletSpeed: 0.8},
-			{Level: 2, Damage: 10, Range: 150, FireRate: 1, Cost: 15, BulletSpeed: 0.8},
-			{Level: 3, Damage: 15, Range: 150, FireRate: 1, Cost: 15, BulletSpeed: 0.8}}},
-		{Name: "StationaryBullet", Key: "StationaryBullet", Levels: []*TowerLevel{{Level: 1, Damage: 5, Range: 150, FireRate: 1, Cost: 15, BulletSpeed: 0}}},
+			{Level: 1, Damage: 5, Range: 15, FireRate: 1, Cost: 15, BulletSpeed: 0.8},
+			{Level: 2, Damage: 10, Range: 15, FireRate: 1, Cost: 15, BulletSpeed: 0.8},
+			{Level: 3, Damage: 15, Range: 15, FireRate: 1, Cost: 15, BulletSpeed: 0.8}}},
+		{Name: "StationaryBullet", Key: "StationaryBullet", Levels: []*TowerLevel{{Level: 1, Damage: 5, Range: 15, FireRate: 1, Cost: 15, BulletSpeed: 0}}},
+		{Name: "SplashBullet", Key: "SplashBullet", Levels: []*TowerLevel{{Level: 1, Damage: 10, Range: 15, FireRate: 1, Cost: 15, BulletSpeed: 2, SplashRange: 1, SplashDmg: 0.5}}},
 	},
 	MobTypes: []*MobType{
 		{Name: "FastMob", Key: "FastMob", Health: 50, Speed: 2, Reward: 1, Income: 1, Cost: 5, Delay: 0, Respawn: 0.1},

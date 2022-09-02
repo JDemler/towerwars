@@ -333,3 +333,28 @@ func TestSellTower(t *testing.T) {
 		t.Errorf("Expected 97 money, got %d", field.Player.Money)
 	}
 }
+
+// Test that splash damage also hits mobs in the splash radius
+func TestSplashDamage(t *testing.T) {
+	field := prepareField(false, false, true)
+	// add mob by handling an event
+	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "StationaryMob", TargetFieldID: 0}, []*Field{field}, &TestGameConfig)
+	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "StationaryMob", TargetFieldID: 0}, []*Field{field}, &TestGameConfig)
+	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "StationaryMob", TargetFieldID: 0}, []*Field{field}, &TestGameConfig)
+	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "StationaryMob", TargetFieldID: 0}, []*Field{field}, &TestGameConfig)
+	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "StationaryMob", TargetFieldID: 0}, []*Field{field}, &TestGameConfig)
+	// add tower by handling an event
+	field.HandleEvent(BuildEvent{X: 1, Y: 1, TowerType: "SplashBullet"}, []*Field{field}, &TestGameConfig)
+	// Firerate of 1 = 10DPS without splash = 50s to kill 5 mobs
+	// Firerate of 1 = 10DPS + 5DPS splash < 50s to kill 5 mobs
+	for i := 0; i < 25; i++ {
+		field.Update(1)
+	}
+	// check that there are no bullets and no mobs on the field
+	if len(field.Bullets) != 0 {
+		t.Errorf("Expected 0 bullets, got %d", len(field.Bullets))
+	}
+	if len(field.Mobs) != 0 {
+		t.Errorf("Expected 0 mobs, got %d", len(field.Mobs))
+	}
+}

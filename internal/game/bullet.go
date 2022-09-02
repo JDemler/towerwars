@@ -1,17 +1,21 @@
 package game
 
-import "math"
+import (
+	"math"
+)
 
 // Bullet represents a bullet
 type Bullet struct {
-	ID         int     `json:"id"`
-	X          float64 `json:"x"`
-	Y          float64 `json:"y"`
-	Speed      float64 `json:"speed"`
-	Damage     int     `json:"damage"`
-	Irrelevant bool    `json:"-"`
-	Target     *Mob    `json:"-"`
-	TargetID   int     `json:"targetId"`
+	ID          int     `json:"id"`
+	X           float64 `json:"x"`
+	Y           float64 `json:"y"`
+	Speed       float64 `json:"speed"`
+	Damage      int     `json:"damage"`
+	SplashRange float64 `json:"splash"`
+	SplashDmg   float64 `json:"splashDmg"`
+	Irrelevant  bool    `json:"-"`
+	Target      *Mob    `json:"-"`
+	TargetID    int     `json:"targetId"`
 }
 
 // Implement Crud interface
@@ -25,7 +29,7 @@ func (bullet *Bullet) getType() string {
 }
 
 // update bullet returning if it is still relevant to the game
-func (bullet *Bullet) update(delta float64) bool {
+func (bullet *Bullet) update(delta float64, field *Field) bool {
 	if bullet.Target == nil || bullet.Target.Health <= 0 {
 		// remove bullet from game
 		bullet.Irrelevant = true
@@ -41,6 +45,12 @@ func (bullet *Bullet) update(delta float64) bool {
 	if dist < (bullet.Speed * delta) {
 		bullet.Target.Health -= bullet.Damage
 		bullet.Irrelevant = true
+		// splash damage
+		if bullet.SplashRange > 0 {
+			bullet.X = bullet.Target.X
+			bullet.Y = bullet.Target.Y
+			field.applySplashDamage(bullet)
+		}
 		return false
 	}
 	// update bullet position

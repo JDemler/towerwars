@@ -93,6 +93,7 @@ func (e BuildEvent) TryExecute(sourceField *Field, targetFields []*Field, gc *Co
 		return nil, fmt.Errorf("Player cannot afford tower")
 	}
 	tower := towerType.Tower(float64(e.X)+0.5, float64(e.Y)+0.5, 1, sourceField.getNextTowerID())
+	fmt.Println("Tower", tower)
 	//Occupy tower position in twmap
 	sourceField.TWMap.occupy(e.X, e.Y)
 	sourceField.Towers = append(sourceField.Towers, tower)
