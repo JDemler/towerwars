@@ -47,7 +47,7 @@ func (game *Game) AddPlayer(playerName string) string {
 		Income: game.Config.StartStats.Income,
 		Lives:  game.Config.StartStats.Lives,
 	}
-	barracks := newBarracks(game.Config.MobTypes)
+	barracks := newBarracks(game.Config)
 	field := NewField(id, player, barracks, game.Config.Map.GenerateMap())
 	game.Fields = append(game.Fields, field)
 	game.events = append(game.events, createEvent(player, id))

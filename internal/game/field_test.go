@@ -5,7 +5,7 @@ import (
 )
 
 func testBarracks(c Config) *Barracks {
-	return newBarracks(c.MobTypes)
+	return newBarracks(&c)
 }
 
 // prepare a field containing a single tower and a single mob using the standardtwmap

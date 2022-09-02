@@ -1,14 +1,15 @@
 package game
 
 type MobSlot struct {
-	MobType *MobType `json:"mob"`
-	Count   int      `json:"count"`
-	Respawn float64  `json:"respawn"`
+	MobType string  `json:"mob"`
+	Count   int     `json:"count"`
+	Respawn float64 `json:"respawn"`
 }
 
 type Barracks struct {
-	ID   int        `json:"id"`
-	Mobs []*MobSlot `json:"mobSlots"`
+	ID     int        `json:"id"`
+	Mobs   []*MobSlot `json:"mobSlots"`
+	Config *Config    `json:"-"` // game config
 }
 
 func (b *Barracks) getID() int {
@@ -21,20 +22,20 @@ func (b *Barracks) getType() string {
 
 // New MobSlot
 func newMobSlot(mob *MobType) *MobSlot {
-	return &MobSlot{MobType: mob, Count: 0, Respawn: float64(mob.Delay)}
+	return &MobSlot{MobType: mob.Key, Count: 0, Respawn: float64(mob.Delay)}
 }
 
 // New Barracks
-func newBarracks(mobTypes []*MobType) *Barracks {
+func newBarracks(gameConfig *Config) *Barracks {
 	mobs := []*MobSlot{}
-	for _, m := range mobTypes {
+	for _, m := range gameConfig.MobTypes {
 		mobs = append(mobs, newMobSlot(m))
 	}
-	return &Barracks{ID: 0, Mobs: mobs}
+	return &Barracks{ID: 0, Mobs: mobs, Config: gameConfig}
 }
 
 // Update function for MobSlot
-func (m *MobSlot) update(delta float64) bool {
+func (m *MobSlot) update(delta float64, gameConfig *Config) bool {
 	changed := false
 	if m.Count > 29 {
 		return false
@@ -42,7 +43,7 @@ func (m *MobSlot) update(delta float64) bool {
 	m.Respawn -= delta
 	if m.Respawn <= 0 {
 		m.Count++
-		m.Respawn = float64(m.MobType.Respawn)
+		m.Respawn = float64(gameConfig.GetMobType(m.MobType).Respawn)
 		changed = true
 	}
 	return changed
@@ -52,7 +53,7 @@ func (m *MobSlot) update(delta float64) bool {
 func (b *Barracks) update(delta float64) bool {
 	changed := false
 	for _, m := range b.Mobs {
-		if m.update(delta) {
+		if m.update(delta, b.Config) {
 			changed = true
 		}
 	}
@@ -62,7 +63,7 @@ func (b *Barracks) update(delta float64) bool {
 // TrySend from MobType
 func (b *Barracks) TrySend(m *MobType) bool {
 	for _, ms := range b.Mobs {
-		if ms.MobType.Key == m.Key {
+		if ms.MobType == m.Key {
 			if ms.Count > 0 {
 				ms.Count--
 				return true
