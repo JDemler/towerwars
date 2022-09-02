@@ -2,7 +2,6 @@ import { Application } from "pixi.js";
 import { useEffect, useRef, useState } from "react";
 import GameClient from "../../game/GameClient";
 import beginGameLoop from "../../game/stage";
-import GridCoordinate from "../../lib/GridCoordinate";
 
 const GameCanvas: React.FC = () => {
     // Create a ref to the below div

@@ -1,6 +1,4 @@
 import { GridSettings } from "./GridSettings";
-import { ServerTileSize } from '../models/GameState';
-import { reduceEachTrailingCommentRange } from "typescript";
 
 // Defines a potion on the grid
 export default class GridCoordinate {
@@ -23,6 +21,25 @@ export default class GridCoordinate {
         this.tileCenterX = this.tileX + GridSettings.tileSize / 2;
         this.tileCenterY = this.tileY + GridSettings.tileSize / 2;
     }
+
+    moveTo(targetCoordinate: GridCoordinate, speed: number, deltaMs: number) {
+        const distanceX = targetCoordinate.x - this.x;
+        const distanceY = targetCoordinate.y - this.y;
+        const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+    
+        const distancePerMillisecond = speed / 1000;
+    
+        const moveDistance = distancePerMillisecond * deltaMs;
+        
+        if (moveDistance > distance) {
+            return new GridCoordinate(targetCoordinate.x, targetCoordinate.y);
+        }
+    
+        return new GridCoordinate(
+            this.x + distanceX / distance * moveDistance,
+            this.y + distanceY / distance * moveDistance,
+        );
+    }
 }
 
 function getDistanceBetweenTwoPoints (x1: number, y1: number, x2: number, y2: number) {
@@ -36,11 +53,11 @@ function getDistanceBetweenTwoPoints (x1: number, y1: number, x2: number, y2: nu
   
 export const getDurationFromServerSpeed = (startCoordinate: GridCoordinate, targetCoordinate: GridCoordinate, speed: number) => {
     const serverDistance = getDistanceBetweenTwoPoints(
-        startCoordinate.x * ServerTileSize,
-        startCoordinate.y * ServerTileSize,
+        startCoordinate.x,
+        startCoordinate.y,
 
-        targetCoordinate.y * ServerTileSize,
-        targetCoordinate.x * ServerTileSize,
+        targetCoordinate.y,
+        targetCoordinate.x,
     );
   
     const durationInSeconds = serverDistance / speed;

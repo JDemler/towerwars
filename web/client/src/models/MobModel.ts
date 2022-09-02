@@ -1,5 +1,4 @@
 import GridCoordinate from '../lib/GridCoordinate';
-import { ServerTileSize } from './GameState';
 
 interface MobModel {
     id: number;
@@ -16,14 +15,8 @@ namespace MobModel {
     export function fromJSON(json: any): MobModel {
         return {
             id: json.id,
-            coordinate: new GridCoordinate(
-                json.x / ServerTileSize,
-                json.y / ServerTileSize
-            ),
-            targetCoordinate: new GridCoordinate(
-                json.targetX / ServerTileSize,
-                json.targetY / ServerTileSize
-            ),
+            coordinate: new GridCoordinate(json.x - 0.5, json.y - 0.5),
+            targetCoordinate: new GridCoordinate(json.targetX - 0.5, json.targetY - 0.5),
             speed: json.speed,
             health: json.health,
             maxHealth: json.maxHealth,

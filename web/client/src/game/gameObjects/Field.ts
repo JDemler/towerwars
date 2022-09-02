@@ -71,11 +71,11 @@ export default class Field extends GameObject {
     }
 
     onUpdate(delta: number, deltaMs: number): void {
-        // this.container.x += 0.1 * delta;
+        
     }
     
     onDestroy(): void {
-
+        this.container.destroy();
     }
 
     onTileClick(coordinate: GridCoordinate) {

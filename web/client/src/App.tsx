@@ -1,18 +1,17 @@
 import React from 'react';
 import './App.css';
-import { GameStateProvider } from './hooks/useGameState';
-import SceneManager from './ui/scenes/SceneManager';
+import GameCanvas from './ui/GameCanvas/GameCanvas';
 
 function App() {
   return (
-    <GameStateProvider>
-      {/* Strict Mode is not enabled for the GameState provider */}
-      {/* Since React 18, strict mode causes hooks to be run twice causing data in the GameState Context to be loaded twice. */}
+    <>
+      <GameCanvas />
+      
       <React.StrictMode>
-        <SceneManager />
+        {/* UI will be placed here */}
       </React.StrictMode>
-    </GameStateProvider>
-  )
+    </>
+  );
 }
 
 export default App;
