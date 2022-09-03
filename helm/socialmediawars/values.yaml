@@ -9,6 +9,10 @@ domains:
   client: socialmediawars.io
   altclient: alt.socialmediawars.io
 
+apiUrls:
+  http: https://api.socialmediawars.io
+  ws: wss://api.socialmediawars.io
+
 client:
   image:
     repository: socialmaulwars.azurecr.io/socialmediawars-client

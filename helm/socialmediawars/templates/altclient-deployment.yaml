@@ -39,3 +39,8 @@ spec:
               protocol: TCP          
           resources:
             {{- toYaml .Values.resources | nindent 12 }}      
+          env: 
+          - name: VITE_API_URL
+            value: {{ .Values.apiUrls.http | quote }}
+          - name: VITE_WS_API_URL
+            value: {{ .Values.apiUrls.ws | quote }}
