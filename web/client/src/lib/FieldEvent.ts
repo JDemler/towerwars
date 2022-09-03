@@ -27,7 +27,6 @@ export class BuildTurretEvent extends FieldEvent {
 export class BuyMobEvent extends FieldEvent {
     constructor(player: AddedPlayerModel, targetFieldId: number, mobType: string) {
         super(player, "buyMob", {
-            fieldId: player,
             targetFieldId: targetFieldId,
             mobType: mobType,
         });
