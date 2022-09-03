@@ -39,3 +39,8 @@ spec:
               protocol: TCP          
           resources:
             {{- toYaml .Values.resources | nindent 12 }}      
+          env: 
+          - name: REACT_APP_API_URL
+            value: {{ .Values.apiUrls.http | quote }}
+          - name: REACT_APP_WS_URL
+            value: {{ .Values.apiUrls.ws | quote }}
