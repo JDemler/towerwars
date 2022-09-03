@@ -1,5 +1,4 @@
 import GameState from "../../models/GameState";
-import { FieldEvent } from '../FieldEvent';
 import { isAbsoluteUrl } from '../helpers';
 import { AddedPlayerModel } from '../../models';
 

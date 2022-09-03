@@ -1,7 +1,6 @@
 import { Application, Graphics } from "pixi.js";
 import { GridSettings } from '../../lib/GridSettings';
 import { GameObject } from "./GameObject";
-import Field from './Field';
 
 export class Healthbar extends GameObject {
     currentHealth: number;
@@ -35,6 +34,7 @@ export class Healthbar extends GameObject {
             .endFill();
         this.outerHealthBarGraphics.zIndex = 2;
         this.outerHealthBarGraphics.pivot.set(this.healthBarWidth / 2, this.healthBarHeight / 2);
+        this.outerHealthBarGraphics.visible = this.currentHealth !== this.maxHealth;
         
         // Inner healthbar Background
         this.innerHealthBarBackgroundGraphics = new Graphics()
@@ -70,5 +70,6 @@ export class Healthbar extends GameObject {
         this.maxHealth = maxHealth;
         
         this.innerHealthBarGraphics.width = this.currentInnerHealthBarWidth;
+        this.outerHealthBarGraphics.visible = this.currentHealth !== this.maxHealth;
     }
 }
