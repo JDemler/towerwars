@@ -180,7 +180,7 @@ func NewBuyMobEvent(fieldID int) BuyMobEvent {
 // TryExecute BuyMobEvent to buy a mob
 func (e BuyMobEvent) TryExecute(sourceField *Field, targetFields []*Field, config *Config) ([]*ServerEvent, error) {
 	// Check if player can afford mob
-	mobType := config.GetMobType(e.MobType)
+	mobType := config.GetMobTypeByKey(e.MobType)
 	if mobType == nil {
 		// Invalid mob type
 		fmt.Println("Invalid mob type")

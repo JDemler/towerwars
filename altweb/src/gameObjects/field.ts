@@ -159,7 +159,7 @@ export class GameField extends Phaser.GameObjects.GameObject {
                             fieldId: this.id,
                             eventType: "buyMob",
                             payload: {
-                                mobType: mobType.name,
+                                mobType: mobType.key,
                                 targetFieldId: 1 - this.id
                             }
                         })

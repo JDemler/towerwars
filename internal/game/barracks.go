@@ -1,5 +1,7 @@
 package game
 
+import "fmt"
+
 type MobSlot struct {
 	MobType string  `json:"mob"`
 	Count   int     `json:"count"`
@@ -43,8 +45,13 @@ func (m *MobSlot) update(delta float64, gameConfig *Config) bool {
 	m.Respawn -= delta
 	if m.Respawn <= 0 {
 		m.Count++
-		m.Respawn = float64(gameConfig.GetMobType(m.MobType).Respawn)
-		changed = true
+		MobType := gameConfig.GetMobTypeByKey(m.MobType)
+		if MobType != nil {
+			m.Respawn = float64(MobType.Respawn)
+			changed = true
+		} else {
+			fmt.Printf("Error: MobType %s not found\n", m.MobType)
+		}
 	}
 	return changed
 }

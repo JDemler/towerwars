@@ -144,9 +144,19 @@ func (g *Config) GetTowerTypeByKey(key string) *TowerType {
 }
 
 // GetMobType looks up MobType by name
-func (g *Config) GetMobType(name string) *MobType {
+func (g *Config) GetMobTypeByName(name string) *MobType {
 	for _, t := range g.MobTypes {
 		if t.Name == name {
+			return t
+		}
+	}
+	return nil
+}
+
+// GetMobType looks up MobType by key
+func (g *Config) GetMobTypeByKey(key string) *MobType {
+	for _, t := range g.MobTypes {
+		if t.Key == key {
 			return t
 		}
 	}
