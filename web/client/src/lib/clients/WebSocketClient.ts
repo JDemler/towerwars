@@ -1,8 +1,8 @@
 import { FieldEvent } from '../FieldEvent';
 import { isAbsoluteUrl } from '../helpers';
 
-const getWebsocketUrl = () => {
-    let webSocketUrl = process.env.REACT_APP_WS_URL; // `ws://localhost:8080/`;
+const getWebsocketUrl = (gameId: string, playerKey: string) => {
+    let webSocketUrl = process.env.REACT_APP_WS_URL;
 
     if (webSocketUrl === undefined)
         throw new Error("WebSocket URL is not defined");
@@ -10,18 +10,22 @@ const getWebsocketUrl = () => {
     if (!isAbsoluteUrl(webSocketUrl))
         webSocketUrl = `ws://${window.location.host}${webSocketUrl}`;
 
+    webSocketUrl += `?gameId=${gameId}&playerKey=${playerKey}`;
+
+    console.log("WebSocket URL:", webSocketUrl);
+
     return webSocketUrl;
 }
 
 export default class WebSocketClient {
     webSocket: WebSocket;
 
-    constructor() {
-        this.webSocket = this.connect();
+    constructor(gameId: string, playerKey: string) {
+        this.webSocket = this.connect(gameId, playerKey);
     }
 
-    connect(): WebSocket {
-        this.webSocket = new WebSocket(getWebsocketUrl());
+    connect(gameId: string, playerKey: string): WebSocket {
+        this.webSocket = new WebSocket(getWebsocketUrl(gameId, playerKey));
 
         return this.webSocket;
     }

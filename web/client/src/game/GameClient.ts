@@ -35,7 +35,7 @@ export type GameChangeAction =
 export type GameUpdateDispatch = (action: GameChangeAction, gameClient: GameClient) => void;
 
 export default class GameClient {
-    private webSocketClient: WebSocketClient;
+    private webSocketClient?: WebSocketClient;
 
     private updateDispatch: GameUpdateDispatch;
 
@@ -50,54 +50,81 @@ export default class GameClient {
     constructor(updateDispatch: GameUpdateDispatch) {
         this.updateDispatch = updateDispatch;
 
-        this.webSocketClient = this.initializeWebSocket();
+        // this.webSocketClient = this.initializeWebSocket();
 
         this.initializeApi();
     }
 
     initializeWebSocket() {
-        const webSocketClient = new WebSocketClient();
-
-        webSocketClient.webSocket.onmessage = (event: MessageEvent) => {
-            const message = JSON.parse(event.data);
-
-            this.handleWebSocketEvent(message);
+        if (this.player === undefined) {
+            console.error('Cannot initialize websocket without player');
+            return;
         }
 
-        return webSocketClient;
+        try {
+            this.webSocketClient = new WebSocketClient(this.player.gameId, this.player.key);
+
+            this.webSocketClient.webSocket.onmessage = (event: MessageEvent) => {
+                const message = JSON.parse(event.data);
+
+                this.handleWebSocketEvent(message);
+            }
+
+            return this.webSocketClient;
+        } catch (error) {
+            console.error(error);
+            return;
+        }
     }
 
     initializeApi() {
-        ApiClient.getGameState()
-            .then(gameState => {
-                this.updateDispatch({ type: "gameState", kind: 'create', gameState }, this);
+        const sessionAddedPlayer = sessionStorage.getItem("addedPlayer");
 
-                // Try loading the added player from the session storage
-                if (gameState.state !== "WaitingForPlayers") {
-                    const sessionAddedPlayer = sessionStorage.getItem("addedPlayer");
+        if (sessionAddedPlayer !== null) {
+            const addedPlayer = AddedPlayerModel.fromJSON(sessionAddedPlayer);
+            this.player = addedPlayer;
 
-                    if (sessionAddedPlayer !== null) {
-                        const addedPlayer = JSON.parse(sessionAddedPlayer);
-                        this.player = addedPlayer;
+            if (!addedPlayer.gameId) {
+                return;
+            }
 
-                        console.log("Loaded added player from session storage:", addedPlayer);
+            console.log("Loaded added player from session storage:", addedPlayer);
+
+            this.initializeWebSocket();
+
+            ApiClient.getGameState(addedPlayer.gameId)
+                .then(gameState => {
+                    if (gameState.state === "GameOver") {
+                        console.log("Found game is already over.");
+                        return;
                     }
-                }
-            }).catch(error => {
-                console.error(error);
-            })
+
+                    this.updateDispatch({ type: "gameState", kind: 'create', gameState }, this);
+                }).catch(error => {
+                    console.error(error);
+                })
+        }
     }
 
     end() {
-        this.webSocketClient.disconnect();
+        this.webSocketClient?.disconnect();
     }
 
     joinGame(playerName: string) {
         ApiClient.joinGame(playerName)
-            .then(addedPlayerModel => {
-                this.player = addedPlayerModel;
-                sessionStorage.setItem('addedPlayer', JSON.stringify(addedPlayerModel));
-                console.log('Joined', addedPlayerModel);
+            .then(addedPlayer => {
+                this.player = addedPlayer;
+                sessionStorage.setItem('addedPlayer', JSON.stringify(addedPlayer));
+                console.log('Joined', addedPlayer);
+
+                this.initializeWebSocket();
+
+                ApiClient.getGameState(addedPlayer.gameId)
+                    .then(gameState => {
+                        this.updateDispatch({ type: "gameState", kind: 'create', gameState }, this);
+                    }).catch(error => {
+                        console.error(error);
+                    })
             }).catch(err => {
                 console.error('Error while joining game', err);
             })
@@ -105,19 +132,25 @@ export default class GameClient {
 
     // Game Functions
     buyMob() {
+        if (this.webSocketClient === undefined) {
+            return console.error('Websocket not initialised');
+        }
         if (this.player === undefined || this.enemyPlayerFieldId === undefined) {
             return console.error('Not a player');
         }
 
-        this.webSocketClient?.dispatchFieldEvent(new BuyMobEvent(this.player, this.enemyPlayerFieldId, 'Confused Kid'));
+        this.webSocketClient.dispatchFieldEvent(new BuyMobEvent(this.player, this.enemyPlayerFieldId, 'facebookMom'));
     }
 
     buildTurret(coordinate: GridCoordinate) {
+        if (this.webSocketClient === undefined) {
+            return console.error('Websocket not initialised');
+        }
         if (this.player === undefined) {
             return console.error('Not a player');
         }
 
-        this.webSocketClient?.dispatchFieldEvent(new BuildTurretEvent(this.player, coordinate.x, coordinate.y, 'likeButton'));
+        this.webSocketClient.dispatchFieldEvent(new BuildTurretEvent(this.player, coordinate.x, coordinate.y, 'likeButton'));
     }
 
     handleWebSocketEvent(event: any) {
@@ -134,7 +167,12 @@ export default class GameClient {
             case "gameStateChanged":
                 this.updateDispatch({ type: "state", gameStatus: eventPayload.gameState }, this);
 
-                ApiClient.getGameState().then(gameState => {
+                if (!this.player) {
+                    console.error('Game State changed, but player is not loaded');
+                    return;
+                }
+
+                ApiClient.getGameState(this.player.gameId).then(gameState => {
                     this.updateDispatch({ type: "gameState", kind: 'update', gameState }, this);
                 }).catch(error => {
                     console.error(error);

@@ -1,6 +1,7 @@
 interface AddedPlayerModel {
     fieldId: number;
     key: string;
+    gameId: string;
 }
 
 namespace AddedPlayerModel {
@@ -8,6 +9,7 @@ namespace AddedPlayerModel {
         return {
             fieldId: json.fieldId,
             key: json.key,
+            gameId: json.gameId,
         };
     }
 }

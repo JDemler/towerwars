@@ -3,7 +3,6 @@ import { FieldEvent } from '../FieldEvent';
 import { isAbsoluteUrl } from '../helpers';
 import { AddedPlayerModel } from '../../models';
 
-// const ServerURL = "127.0.0.1:8080";
 const getApiRoot = () => {
     let url = process.env.REACT_APP_API_URL;
 
@@ -15,19 +14,25 @@ const getApiRoot = () => {
 
     return url;
 } 
-const getApiUrl = (path: string) => `${getApiRoot()}${path}`;
+const getApiUrl = (path: string, gameId?: string) => {
+    let url = `${getApiRoot()}${path}`;
+    if (gameId) {
+        url += `?gameId=${gameId}`;
+    }
+    return url;
+}
 
 export default class ApiClient {
     // Fuction that fetches the /game endpoint and returns the game state
-    static getGameState: () => Promise<GameState> = async () => {
-        const response = await fetch(getApiUrl('game'));
+    static getGameState = async (gameId: string) => {
+        const response = await fetch(getApiUrl('game', gameId));
         const responseJson = await response.json();
 
         return GameState.fromJSON(responseJson);
     }
 
     // Function that adds the player to the game
-    static joinGame: (playerName: string) => Promise<AddedPlayerModel> = async () => {
+    static joinGame = async (playerName: string) => {
         const response = await fetch(getApiUrl('add_player'));
         const responseJson = await response.json();
 
@@ -35,8 +40,8 @@ export default class ApiClient {
     }
 
     // Fuction that pushes the payload with an event type for a specific fieldId to the /register_event endpoint
-    static registerEvent: (fieldEvent: FieldEvent) => Promise<void> = async (fieldEvent) => {
-        await fetch(getApiUrl('register_event'), {
+    static registerEvent = async (gameId: string, fieldEvent: FieldEvent) => {
+        await fetch(getApiUrl('register_event', gameId), {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
