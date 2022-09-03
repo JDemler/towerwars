@@ -64,8 +64,3 @@ jobs:
         run: |
           docker build -f Dockerfile.altclient -t ${{ secrets.ACR_LOGIN_SERVER }}/socialmediawars-altclient:latest .          
           docker push ${{ secrets.ACR_LOGIN_SERVER }}/socialmediawars-altclient:latest          
-
-      - name: Build the Docker for client2 code
-        run: |
-          docker build -f Dockerfile.client2 -t ${{ secrets.ACR_LOGIN_SERVER }}/socialmediawars-client2:latest .
-          docker push ${{ secrets.ACR_LOGIN_SERVER }}/socialmediawars-client2:latest          
