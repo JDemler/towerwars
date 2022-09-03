@@ -14,7 +14,9 @@ export class Mob extends GameObject {
     mobCircle: Sprite;
     currentCoordinate: GridCoordinate;
 
-    healthbar: Healthbar;
+    get healthbar() {
+        return this.getChild(Healthbar)!;
+    }
 
     constructor(app: Application, field: Field, mobModel: MobModel) {
         super(app);
@@ -41,10 +43,11 @@ export class Mob extends GameObject {
         this.mobContainer.addChild(this.mobCircle);
 
         // Healthbar
-        this.healthbar = new Healthbar(app, field, mobModel.health, mobModel.maxHealth);
-        this.healthbar.outerHealthBarGraphics.position.y = GridSettings.tileSize * -0.5;
+        const healthbar = new Healthbar(app, mobModel.health, mobModel.maxHealth);
+        healthbar.outerHealthBarGraphics.position.y = GridSettings.tileSize * -0.5;
 
-        this.mobContainer.addChild(this.healthbar.outerHealthBarGraphics);
+        this.mobContainer.addChild(healthbar.outerHealthBarGraphics);
+        this.children.push(healthbar);
 
         // Others
         field.container.addChild(this.mobContainer);

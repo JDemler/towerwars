@@ -12,7 +12,7 @@ export class Healthbar extends GameObject {
     innerHealthBarBackgroundGraphics: Graphics;
     
     healthBarWidth = GridSettings.tileSize * 0.8;
-    healthBarHeight = GridSettings.tileSize * 0.2;
+    healthBarHeight = GridSettings.tileSize * 0.15;
     healthBarPadding = GridSettings.tileSize * 0.025;
 
     innerHealthbarWidth = this.healthBarWidth - this.healthBarPadding * 2;
@@ -22,7 +22,7 @@ export class Healthbar extends GameObject {
         return this.innerHealthbarWidth * (this.currentHealth / this.maxHealth);
     }
 
-    constructor(app: Application, field: Field, currentHealth: number, maxHealth: number) {
+    constructor(app: Application, currentHealth: number, maxHealth: number) {
         super(app);
 
         this.currentHealth = currentHealth;
@@ -55,11 +55,10 @@ export class Healthbar extends GameObject {
         this.innerHealthBarGraphics.position.set(this.healthBarPadding, this.healthBarPadding);
 
         this.outerHealthBarGraphics.addChild(this.innerHealthBarGraphics);
-
-        // field.container.addChild(this.outerHealthBarGraphics);
     }
 
     onUpdate(delta: number, deltaMs: number): void {
+        
     }
 
     onDestroy(): void {

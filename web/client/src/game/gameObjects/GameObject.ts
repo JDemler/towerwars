@@ -1,5 +1,5 @@
 import { Application } from "pixi.js";
-
+import { Constructor } from "../../lib/helpers";
 
 export abstract class GameObject {
     app: Application;
@@ -32,4 +32,16 @@ export abstract class GameObject {
     abstract onUpdate(delta: number, deltaMs: number): void;
 
     abstract onDestroy(): void;
+
+    
+    public getChild<T extends GameObject>(type: Constructor<T>) {
+        return this.children
+            .find(child => child instanceof type) as T | undefined
+    }
+    
+    public getChildren<T extends GameObject>(type: Constructor<T>) {
+        return this.children
+            .filter(child => child instanceof type)
+            .map(child => child as T)
+    }
 }

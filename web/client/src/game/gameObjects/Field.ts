@@ -18,20 +18,20 @@ export default class Field extends GameObject {
 
     container: Container;
 
-    get towers(): Tower[] {
-        return this.children.filter(child => child instanceof Tower) as Tower[];
+    get towers() {
+        return this.getChildren(Tower);
     }
 
     get mobs(): Mob[] {
-        return this.children.filter(child => child instanceof Mob) as Mob[];
+        return this.getChildren(Mob);
     }
 
     get bullets(): Bullet[] {
-        return this.children.filter(child => child instanceof Bullet) as Bullet[];
+        return this.getChildren(Bullet);
     }
 
     get map(): Map {
-        return this.children.find(child => child instanceof Map) as Map;
+        return this.getChild(Map)!;
     }
 
     constructor(app: Application, gameClient: GameClient, fieldModel: FieldModel) {
