@@ -7,18 +7,19 @@ import (
 
 // Mob represents a mob in the game
 type Mob struct {
-	ID              int     `json:"id"`
-	X               float64 `json:"x"`
-	Y               float64 `json:"y"`
-	Speed           float64 `json:"speed"`
-	TargetX         float64 `json:"targetX"`
-	TargetY         float64 `json:"targetY"`
-	Health          int     `json:"health"`
-	MaxHealth       int     `json:"maxHealth"`
-	Reward          int     `json:"reward"`
-	SentFromFieldID int     `json:"-"`
-	Reached         bool    `json:"-"`
-	Type            string  `json:"type"`
+	ID              int      `json:"id"`
+	X               float64  `json:"x"`
+	Y               float64  `json:"y"`
+	Speed           float64  `json:"speed"`
+	TargetX         float64  `json:"targetX"`
+	TargetY         float64  `json:"targetY"`
+	Health          float64  `json:"health"`
+	MaxHealth       int      `json:"maxHealth"`
+	Reward          int      `json:"reward"`
+	Effects         []Effect `json:"effects"`
+	SentFromFieldID int      `json:"-"`
+	Reached         bool     `json:"-"`
+	Type            string   `json:"type"`
 }
 
 // Implement Crud interface
@@ -52,12 +53,23 @@ func (m *Mob) isDead() bool {
 
 // update Mob potentially returning mobUpdated event
 func (m *Mob) update(delta float64, twMap *TWMap, fieldID int) []*ServerEvent {
+	// check effects
+	stun, slow, dot := m.updateEffects(delta)
+	if stun {
+		return []*ServerEvent{updateEvent(m, fieldID)}
+	}
+	changed := false
+	if dot > 0 {
+		// Apply dot damage
+		m.Health -= dot * delta
+		changed = true
+	}
 	// Calc differences in Target vs Position
 	dx := m.TargetX - m.X
 	dy := m.TargetY - m.Y
 	totalDiff := math.Sqrt(dx*dx + dy*dy)
 	// If mob is close enough to target, move to target
-	if totalDiff <= (m.Speed * delta) {
+	if totalDiff <= (m.Speed * delta * (1 - slow)) {
 		m.X = m.TargetX
 		m.Y = m.TargetY
 	} else {
@@ -65,12 +77,38 @@ func (m *Mob) update(delta float64, twMap *TWMap, fieldID int) []*ServerEvent {
 		directionX := dx / totalDiff
 		directionY := dy / totalDiff
 		// Move mob in direction
-		m.X += directionX * m.Speed * delta
-		m.Y += directionY * m.Speed * delta
+		m.X += directionX * m.Speed * delta * (1 - slow)
+		m.Y += directionY * m.Speed * delta * (1 - slow)
 	}
 	if m.X == m.TargetX && m.Y == m.TargetY {
 		m.calcDirection(twMap)
+		changed = true
+	}
+	if changed {
 		return []*ServerEvent{updateEvent(m, fieldID)}
 	}
 	return []*ServerEvent{}
+}
+
+func (m *Mob) updateEffects(delta float64) (bool, float64, float64) /*stun slow dot*/ {
+	var stun = false
+	var slow, dot = 0.0, 0.0
+
+	//Reverse for loop over effects. Remove when duration is 0
+	for i := len(m.Effects) - 1; i >= 0; i-- {
+		if m.Effects[i].Type == "stun" {
+			stun = true
+		}
+		if m.Effects[i].Type == "slow" {
+			slow += m.Effects[i].Value
+		}
+		if m.Effects[i].Type == "dot" {
+			dot += m.Effects[i].Value
+		}
+		m.Effects[i].Duration -= delta
+		if m.Effects[i].Duration <= 0 {
+			m.Effects = append(m.Effects[:i], m.Effects[i+1:]...)
+		}
+	}
+	return stun, slow, dot
 }

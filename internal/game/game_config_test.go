@@ -29,6 +29,9 @@ var TestGameConfig = Config{
 			{Level: 3, Damage: 15, Range: 15, FireRate: 1, Cost: 15, BulletSpeed: 0.8}}},
 		{Name: "StationaryBullet", Key: "StationaryBullet", Levels: []*TowerLevel{{Level: 1, Damage: 5, Range: 15, FireRate: 1, Cost: 15, BulletSpeed: 0}}},
 		{Name: "SplashBullet", Key: "SplashBullet", Levels: []*TowerLevel{{Level: 1, Damage: 10, Range: 15, FireRate: 1, Cost: 15, BulletSpeed: 2, SplashRange: 1, SplashDmg: 0.5}}},
+		{Name: "StunBullet", Key: "StunBullet", Levels: []*TowerLevel{{Level: 1, Damage: 0, Range: 15, FireRate: 0.9, Cost: 15, BulletSpeed: 5, Effect: stunEffect}}},
+		{Name: "SlowingBullet", Key: "SlowingBullet", Levels: []*TowerLevel{{Level: 1, Damage: 0, Range: 15, FireRate: 1, Cost: 15, BulletSpeed: 5, Effect: slowEffect}}},
+		{Name: "PoisonBullet", Key: "PoisonBullet", Levels: []*TowerLevel{{Level: 1, Damage: 0, Range: 15, FireRate: 1, Cost: 15, BulletSpeed: 5, Effect: poisonEffect}}},
 	},
 	MobTypes: []*MobType{
 		{Name: "FastMob", Key: "FastMob", Health: 50, Speed: 2, Reward: 1, Income: 1, Cost: 5, Delay: 0, Respawn: 0.1},
@@ -41,4 +44,16 @@ var TestGameConfig = Config{
 		Income: 10,
 		Lives:  50,
 	},
+}
+
+var stunEffect = &Effect{
+	Type: "stun", Value: 1, Duration: 1,
+}
+
+var slowEffect = &Effect{
+	Type: "slow", Value: 0.99, Duration: 1,
+}
+
+var poisonEffect = &Effect{
+	Type: "dot", Value: 1, Duration: 1,
 }

@@ -77,8 +77,23 @@ func (f *Field) applySplashDamage(bullet *Bullet) {
 		dy := mob.Y - bullet.Y
 		dist := math.Sqrt(dx*dx + dy*dy)
 		if dist <= bullet.SplashRange {
-			mob.Health -= int(float64(bullet.Damage) * bullet.SplashDmg)
+			mob.Health -= float64(bullet.Damage) * bullet.SplashDmg
 		}
+	}
+}
+
+func (f *Field) applyEffect(bullet *Bullet) {
+	if bullet.SplashRange > 0 {
+		for _, mob := range f.Mobs {
+			dx := mob.X - bullet.X
+			dy := mob.Y - bullet.Y
+			dist := math.Sqrt(dx*dx + dy*dy)
+			if dist <= bullet.SplashRange {
+				mob.Effects = append(mob.Effects, *bullet.Effect)
+			}
+		}
+	} else {
+		bullet.Target.Effects = append(bullet.Target.Effects, *bullet.Effect)
 	}
 }
 

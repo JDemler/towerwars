@@ -55,6 +55,12 @@ func (t *TowerType) GetLevel(level int) *TowerLevel {
 	return t.Levels[level-1]
 }
 
+type Effect struct {
+	Type     string  `json:"type"` // slow, stun, dot (damage over time), hot (heal over time)
+	Value    float64 `json:"value"`
+	Duration float64 `json:"duration"`
+}
+
 // TowerLevel represents a level of a tower type. Contains all information the tower instance needs
 type TowerLevel struct {
 	Level       int     `json:"level"`
@@ -63,6 +69,7 @@ type TowerLevel struct {
 	Range       float64 `json:"range"`
 	SplashRange float64 `json:"splashRange"`
 	SplashDmg   float64 `json:"splashDmg"`
+	Effect      *Effect `json:"effect"`
 	FireRate    float64 `json:"fireRate"`
 	BulletSpeed float64 `json:"bulletSpeed"`
 }
@@ -79,7 +86,7 @@ func (t *TowerType) Tower(x float64, y float64, level int, id int) *Tower {
 		Range: towerLevel.Range, FireRate: towerLevel.FireRate,
 		BulletSpeed: towerLevel.BulletSpeed, Cooldown: 0,
 		SplashRange: towerLevel.SplashRange, SplashDmg: towerLevel.SplashDmg,
-		Type: t.Key}
+		Effect: towerLevel.Effect, Type: t.Key}
 }
 
 // MobType represents a mob type with necessaray information
@@ -98,7 +105,7 @@ type MobType struct {
 
 // MakeMob from MobType
 func (m *MobType) MakeMob(x float64, y float64, id int) *Mob {
-	return &Mob{ID: id, X: x, Y: y, TargetX: x, TargetY: y, Health: m.Health, MaxHealth: m.Health, Speed: m.Speed, Reward: m.Reward, Type: m.Name}
+	return &Mob{ID: id, X: x, Y: y, TargetX: x, TargetY: y, Health: float64(m.Health), MaxHealth: m.Health, Speed: m.Speed, Reward: m.Reward, Type: m.Name}
 }
 
 // ReadConfigFromFile reads a game config from a file

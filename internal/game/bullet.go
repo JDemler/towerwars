@@ -13,6 +13,7 @@ type Bullet struct {
 	Damage      int     `json:"damage"`
 	SplashRange float64 `json:"splash"`
 	SplashDmg   float64 `json:"splashDmg"`
+	Effect      *Effect `json:"-"`
 	Irrelevant  bool    `json:"-"`
 	Target      *Mob    `json:"-"`
 	TargetID    int     `json:"targetId"`
@@ -43,13 +44,16 @@ func (bullet *Bullet) update(delta float64, field *Field) bool {
 	dist := math.Sqrt(dx*dx + dy*dy)
 	// If distance is smaller than speed, bullet hits
 	if dist < (bullet.Speed * delta) {
-		bullet.Target.Health -= bullet.Damage
+		bullet.X = bullet.Target.X
+		bullet.Y = bullet.Target.Y
+		bullet.Target.Health -= float64(bullet.Damage)
 		bullet.Irrelevant = true
 		// splash damage
 		if bullet.SplashRange > 0 {
-			bullet.X = bullet.Target.X
-			bullet.Y = bullet.Target.Y
 			field.applySplashDamage(bullet)
+		}
+		if bullet.Effect != nil {
+			field.applyEffect(bullet)
 		}
 		return false
 	}

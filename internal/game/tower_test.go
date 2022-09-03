@@ -12,7 +12,7 @@ func TestTowerShootsAtMob(t *testing.T) {
 	if len(bullets) != 1 {
 		t.Errorf("Expected 1 bullet, got %d", len(bullets))
 	}
-	if *bullets[0].Target != mob {
+	if bullets[0].TargetID != mob.ID {
 		t.Errorf("Expected bullet to target mob, got %v", bullets[0].Target)
 	}
 }

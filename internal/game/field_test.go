@@ -172,7 +172,7 @@ func TestMobKilled(t *testing.T) {
 	field.Mobs[0].Reward = 10
 	// Check that mob is alive
 	if field.Mobs[0].Health != 100 {
-		t.Errorf("Expected mob health to be 100, got %d", field.Mobs[0].Health)
+		t.Errorf("Expected mob health to be 100, got %f", field.Mobs[0].Health)
 	}
 	for i := 0; i < 100; i++ {
 		field.Update(1)
@@ -356,5 +356,55 @@ func TestSplashDamage(t *testing.T) {
 	}
 	if len(field.Mobs) != 0 {
 		t.Errorf("Expected 0 mobs, got %d", len(field.Mobs))
+	}
+}
+
+// Test that stun effect stuns mob
+func TestStunEffect(t *testing.T) {
+	field := prepareField(false, false, true)
+	// add mob by handling an event
+	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "FastMob", TargetFieldID: 0}, []*Field{field}, &TestGameConfig)
+	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "FastMob", TargetFieldID: 0}, []*Field{field}, &TestGameConfig)
+	// add tower by handling an event
+	field.HandleEvent(BuildEvent{X: 1, Y: 1, TowerType: "StunBullet"}, []*Field{field}, &TestGameConfig)
+	// Firerate of 0.9 and stun of 1. Mob does not ever reach the end of the field
+	for i := 0; i < 350; i++ {
+		field.Update(0.1)
+	}
+	if len(field.Mobs) != 1 {
+		t.Errorf("Expected 1 mob, got %d", len(field.Mobs))
+	}
+}
+
+// Test that slow effect slows mob
+func TestSlowEffect(t *testing.T) {
+	field := prepareField(false, false, true)
+	// add two mobs by handling an event
+	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "FastMob", TargetFieldID: 0}, []*Field{field}, &TestGameConfig)
+	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "FastMob", TargetFieldID: 0}, []*Field{field}, &TestGameConfig)
+	// add tower by handling an event
+	field.HandleEvent(BuildEvent{X: 1, Y: 1, TowerType: "SlowingBullet"}, []*Field{field}, &TestGameConfig)
+	// Firerate of 0.9 and slow of 0.5. Mob does not ever reach the end of the field
+	for i := 0; i < 150; i++ {
+		field.Update(0.1)
+	}
+	if len(field.Mobs) != 1 {
+		t.Errorf("Expected 1 mob, got %d", len(field.Mobs))
+	}
+}
+
+// Test that poison effect poisons mob
+func TestPoisonEffect(t *testing.T) {
+	field := prepareField(false, false, true)
+	// add mob by handling an event
+	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "StationaryMob", TargetFieldID: 0}, []*Field{field}, &TestGameConfig)
+	// add tower by handling an event
+	field.HandleEvent(BuildEvent{X: 1, Y: 1, TowerType: "PoisonBullet"}, []*Field{field}, &TestGameConfig)
+	// Firerate of 0.9 and poison of 1. Mob does not ever reach the end of the field because it dies from poison
+	for i := 0; i < 1500; i++ {
+		field.Update(0.1)
+	}
+	if len(field.Mobs) != 0 {
+		t.Errorf("Expected 0 mob, got %d", len(field.Mobs))
 	}
 }
