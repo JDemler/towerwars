@@ -7,7 +7,6 @@ ENV REACT_APP_WS_URL /api/ws
 COPY web/client/package.json ./
 COPY web/client/package-lock.json ./
 RUN npm ci --silent
-RUN npm install react-scripts@3.4.1 -g --silent
 COPY web/client/ ./
 RUN npm run build
 
