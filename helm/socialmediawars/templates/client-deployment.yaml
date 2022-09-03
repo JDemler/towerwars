@@ -5,9 +5,6 @@ metadata:
   labels:
     {{- include "socialmediawars.labels" . | nindent 4 }}
     app.kubernetes.io/name: socialmediawars-client
-  annotations:
-    keel.sh/policy: force
-    keel.sh/trigger: poll
 spec:
   selector:
     matchLabels:
@@ -43,4 +40,4 @@ spec:
           - name: REACT_APP_API_URL
             value: {{ .Values.apiUrls.http | quote }}
           - name: REACT_APP_WS_URL
-            value: {{ .Values.apiUrls.ws | quote }}
+            value: {{ $wsUrl = print .Values.apiUrls.ws "ws" }}{{ $wsUrl | quote }}
