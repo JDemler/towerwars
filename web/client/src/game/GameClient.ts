@@ -109,7 +109,7 @@ export default class GameClient {
             return console.error('Not a player');
         }
 
-        this.webSocketClient?.dispatchFieldEvent(new BuyMobEvent(this.player, this.enemyPlayerFieldId, 'Confused Kid'));
+        this.webSocketClient?.dispatchFieldEvent(new BuyMobEvent(this.player, this.enemyPlayerFieldId, 'confusedKid'));
     }
 
     buildTurret(coordinate: GridCoordinate) {
