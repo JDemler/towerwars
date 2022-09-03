@@ -12,13 +12,6 @@
             "webRoot": "${workspaceFolder}/web/client"
         },
         {
-            "type": "pwa-chrome",
-            "request": "launch",
-            "name": "Web Client 2: Launch Chrome against localhost",
-            "url": "http://localhost:3000",
-            "webRoot": "${workspaceFolder}/web/client2"
-        },
-        {
             "type": "go",
             "request": "launch",
             "name": "Launch Web Server",
