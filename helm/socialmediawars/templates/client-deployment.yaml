@@ -40,4 +40,4 @@ spec:
           - name: REACT_APP_API_URL
             value: {{ .Values.apiUrls.http | quote }}
           - name: REACT_APP_WS_URL
-            value: {{ $wsUrl = print .Values.apiUrls.ws "ws" }}{{ $wsUrl | quote }}
+            value: {{ $wsUrl := print .Values.apiUrls.ws "ws" }}{{ $wsUrl | quote }}
