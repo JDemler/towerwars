@@ -4,6 +4,11 @@
 
 replicaCount: 1
 
+domains:
+  server: api.socialmediawars.io
+  client: socialmediawars.io
+  altclient: alt.socialmediawars.io
+
 client:
   image:
     repository: socialmaulwars.azurecr.io/socialmediawars-client
@@ -53,3 +58,8 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+issuer:
+  name: letsencrypt-production
+  enabled: true
+  email: ""
