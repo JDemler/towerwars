@@ -376,6 +376,24 @@ func TestStunEffect(t *testing.T) {
 	}
 }
 
+// Test that stun effect splashes
+func TestStunSplash(t *testing.T) {
+	field := prepareField(false, false, true)
+	// add mob by handling an event
+	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "FastMob", TargetFieldID: 0}, []*Field{field}, &TestGameConfig)
+	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "FastMob", TargetFieldID: 0}, []*Field{field}, &TestGameConfig)
+	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "FastMob", TargetFieldID: 0}, []*Field{field}, &TestGameConfig)
+	// add tower by handling an event
+	field.HandleEvent(BuildEvent{X: 1, Y: 1, TowerType: "SplashStunBullet"}, []*Field{field}, &TestGameConfig)
+	// Firerate of 0.9 and stun of 1. Mob does not ever reach the end of the field
+	for i := 0; i < 350; i++ {
+		field.Update(0.1)
+	}
+	if len(field.Mobs) != 3 {
+		t.Errorf("Expected 3 mob, got %d", len(field.Mobs))
+	}
+}
+
 // Test that slow effect slows mob
 func TestSlowEffect(t *testing.T) {
 	field := prepareField(false, false, true)
@@ -384,12 +402,30 @@ func TestSlowEffect(t *testing.T) {
 	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "FastMob", TargetFieldID: 0}, []*Field{field}, &TestGameConfig)
 	// add tower by handling an event
 	field.HandleEvent(BuildEvent{X: 1, Y: 1, TowerType: "SlowingBullet"}, []*Field{field}, &TestGameConfig)
-	// Firerate of 0.9 and slow of 0.5. Mob does not ever reach the end of the field
+	// Firerate of 0.9 and slow of 0.99. Mob does not ever reach the end of the field
 	for i := 0; i < 150; i++ {
 		field.Update(0.1)
 	}
 	if len(field.Mobs) != 1 {
 		t.Errorf("Expected 1 mob, got %d", len(field.Mobs))
+	}
+}
+
+// Test that slow effect splashes
+func TestSlowEffectSplash(t *testing.T) {
+	field := prepareField(false, false, true)
+	// add mob by handling an event
+	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "FastMob", TargetFieldID: 0}, []*Field{field}, &TestGameConfig)
+	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "FastMob", TargetFieldID: 0}, []*Field{field}, &TestGameConfig)
+	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "FastMob", TargetFieldID: 0}, []*Field{field}, &TestGameConfig)
+	// add tower by handling an event
+	field.HandleEvent(BuildEvent{X: 1, Y: 1, TowerType: "SplashSlowingBullet"}, []*Field{field}, &TestGameConfig)
+	// Firerate of 0.9 and slow of 0.99. Mob does not ever reach the end of the field
+	for i := 0; i < 150; i++ {
+		field.Update(0.1)
+	}
+	if len(field.Mobs) != 3 {
+		t.Errorf("Expected 3 mob, got %d", len(field.Mobs))
 	}
 }
 
@@ -400,6 +436,26 @@ func TestPoisonEffect(t *testing.T) {
 	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "StationaryMob", TargetFieldID: 0}, []*Field{field}, &TestGameConfig)
 	// add tower by handling an event
 	field.HandleEvent(BuildEvent{X: 1, Y: 1, TowerType: "PoisonBullet"}, []*Field{field}, &TestGameConfig)
+	// Firerate of 0.9 and poison of 1. Mob does not ever reach the end of the field because it dies from poison
+	for i := 0; i < 1500; i++ {
+		field.Update(0.1)
+	}
+	if len(field.Mobs) != 0 {
+		t.Errorf("Expected 0 mob, got %d", len(field.Mobs))
+	}
+}
+
+// Test that poison effect splashes
+func TestPoisonSplash(t *testing.T) {
+	field := prepareField(false, false, true)
+	// add mob by handling an event
+	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "StationaryMob", TargetFieldID: 0}, []*Field{field}, &TestGameConfig)
+	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "StationaryMob", TargetFieldID: 0}, []*Field{field}, &TestGameConfig)
+	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "StationaryMob", TargetFieldID: 0}, []*Field{field}, &TestGameConfig)
+	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "StationaryMob", TargetFieldID: 0}, []*Field{field}, &TestGameConfig)
+	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "StationaryMob", TargetFieldID: 0}, []*Field{field}, &TestGameConfig)
+	// add tower by handling an event
+	field.HandleEvent(BuildEvent{X: 1, Y: 1, TowerType: "SplashPoisonBullet"}, []*Field{field}, &TestGameConfig)
 	// Firerate of 0.9 and poison of 1. Mob does not ever reach the end of the field because it dies from poison
 	for i := 0; i < 1500; i++ {
 		field.Update(0.1)

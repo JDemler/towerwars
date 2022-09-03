@@ -112,3 +112,16 @@ func (m *Mob) updateEffects(delta float64) (bool, float64, float64) /*stun slow 
 	}
 	return stun, slow, dot
 }
+
+// Apply effect to mob. They do not stack. Effects of same type take the max duration
+func (m *Mob) applyEffect(effect Effect) {
+	for i := range m.Effects {
+		if m.Effects[i].Type == effect.Type {
+			if m.Effects[i].Duration < effect.Duration {
+				m.Effects[i].Duration = effect.Duration
+			}
+			return
+		}
+	}
+	m.Effects = append(m.Effects, effect)
+}

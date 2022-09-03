@@ -89,11 +89,11 @@ func (f *Field) applyEffect(bullet *Bullet) {
 			dy := mob.Y - bullet.Y
 			dist := math.Sqrt(dx*dx + dy*dy)
 			if dist <= bullet.SplashRange {
-				mob.Effects = append(mob.Effects, *bullet.Effect)
+				mob.applyEffect(*bullet.Effect)
 			}
 		}
 	} else {
-		bullet.Target.Effects = append(bullet.Target.Effects, *bullet.Effect)
+		bullet.Target.applyEffect(*bullet.Effect)
 	}
 }
 
