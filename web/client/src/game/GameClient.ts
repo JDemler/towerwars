@@ -81,10 +81,11 @@ export default class GameClient {
         const sessionAddedPlayer = sessionStorage.getItem("addedPlayer");
 
         if (sessionAddedPlayer !== null) {
-            const addedPlayer = AddedPlayerModel.fromJSON(sessionAddedPlayer);
+            const addedPlayer = AddedPlayerModel.fromJSON(JSON.parse(sessionAddedPlayer));
             this.player = addedPlayer;
 
             if (!addedPlayer.gameId) {
+                console.error('Stored player has no gameId');
                 return;
             }
 
@@ -103,6 +104,8 @@ export default class GameClient {
                 }).catch(error => {
                     console.error(error);
                 })
+        } else {
+            console.log("No added player in session storage.");
         }
     }
 
