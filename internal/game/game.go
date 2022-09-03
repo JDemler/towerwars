@@ -37,6 +37,28 @@ func NewGame(config *Config) *Game {
 	}
 }
 
+// GetMobsSent
+func (game *Game) GetMobsSent() int {
+	mobsSent := 0
+	for _, field := range game.Fields {
+		mobsSent += field.mobCounter
+	}
+	return mobsSent
+}
+
+// GetTowersBuilt
+func (game *Game) GetTowersBuilt() int {
+	towersBuilt := 0
+	for _, field := range game.Fields {
+		towersBuilt += field.towerCounter
+	}
+	return towersBuilt
+}
+
+func (game *Game) GetDuration() float64 {
+	return game.Elapsed
+}
+
 // AddPlayer to Game. Return its key
 func (game *Game) AddPlayer(playerName string) string {
 	id := len(game.Fields)

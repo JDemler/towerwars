@@ -15,12 +15,27 @@ type Server struct {
 	openGames    map[string]*GameInstance
 }
 
+type ServerStatus struct {
+	OpenGames    int                   `json:"openGames"`
+	RunningGames int                   `json:"runningGames"`
+	GameStatus   map[string]GameStatus `json:"gameStatus"`
+}
+
 // new server
 func NewServer() *Server {
 	return &Server{
 		runningGames: make(map[string]*GameInstance),
 		openGames:    make(map[string]*GameInstance),
 	}
+}
+
+func (s *Server) gameOver(gameID string) {
+	gameInstance := s.runningGames[gameID]
+	if gameInstance == nil {
+		return
+	}
+	// Remove game from running games
+	delete(s.runningGames, gameID)
 }
 
 // Http Handler returning the game state
@@ -75,7 +90,7 @@ func (s *Server) AddPlayer(w http.ResponseWriter, r *http.Request) {
 		// create a game id
 		gameID := randomString(16)
 		// Add new game to open games
-		s.openGames[gameID] = NewGameInstance()
+		s.openGames[gameID] = NewGameInstance(gameID)
 	}
 	// Get first open game
 	var gameInstance *GameInstance
@@ -115,7 +130,7 @@ func (s *Server) AddPlayer(w http.ResponseWriter, r *http.Request) {
 		s.runningGames[gameID] = gameInstance
 		// Start game
 		fmt.Println("Game ", gameID, " started")
-		go gameInstance.Start()
+		go gameInstance.Start(s)
 	}
 	// return success
 	w.WriteHeader(http.StatusOK)
@@ -162,13 +177,21 @@ func (s *Server) GetMobTypes(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) GetStatus(w http.ResponseWriter, r *http.Request) {
-	gi, err := s.getGameInstanceFromRequest(r)
-	if err != nil {
-		w.WriteHeader(http.StatusNotFound)
-		return
+	gameStatus := ServerStatus{
+		OpenGames:    len(s.openGames),
+		RunningGames: len(s.runningGames),
+		GameStatus:   make(map[string]GameStatus),
 	}
+
+	for gameID, gameInstance := range s.openGames {
+		gameStatus.GameStatus[gameID] = gameInstance.getStatus()
+	}
+	for gameID, gameInstance := range s.runningGames {
+		gameStatus.GameStatus[gameID] = gameInstance.getStatus()
+	}
+
 	w.Header().Set("Content-Type", "application/json")
-	err = json.NewEncoder(w).Encode(gi.game.State)
+	err := json.NewEncoder(w).Encode(gameStatus)
 	if err != nil {
 		fmt.Println(err)
 	}

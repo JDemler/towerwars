@@ -14,8 +14,16 @@ import (
 
 type GameInstance struct {
 	game          *game.Game
+	id            string
 	writeChannels []*WsChannel
 	channelCount  int
+}
+
+type GameStatus struct {
+	Players     int `json:"players"`
+	Duration    int `json:"duration"`
+	MobsSent    int `json:"mobsSent"`
+	TowersBuilt int `json:"towersBuilt"`
 }
 
 type WsChannel struct {
@@ -35,7 +43,7 @@ func (ws *WsChannel) Close() {
 	ws.Websocket.Close()
 }
 
-func NewGameInstance() *GameInstance {
+func NewGameInstance(id string) *GameInstance {
 	//Try to read config. Get config path from env variable
 	var configPath string
 	if os.Getenv("CONFIG_PATH") == "" {
@@ -53,12 +61,22 @@ func NewGameInstance() *GameInstance {
 	}
 	return &GameInstance{
 		game: game.NewGame(config),
+		id:   id,
 	}
 }
 
 // Update the game
 func (gi *GameInstance) Update(delta float64) []*game.ServerEvent {
 	return gi.game.Update(delta)
+}
+
+func (gi *GameInstance) getStatus() GameStatus {
+	return GameStatus{
+		Players:     len(gi.game.Fields),
+		Duration:    int(gi.game.GetDuration()),
+		MobsSent:    gi.game.GetMobsSent(),
+		TowersBuilt: gi.game.GetTowersBuilt(),
+	}
 }
 
 func (gi *GameInstance) readFromWS(ws *WsChannel) {
@@ -235,11 +253,13 @@ func (gi *GameInstance) WebSocket(w http.ResponseWriter, r *http.Request) {
 	go wsChannel.pingLoop()
 }
 
-func (gi *GameInstance) Start() {
+func (gi *GameInstance) Start(s *Server) {
 	// sleep 1 seconds for all clients to connect
 	time.Sleep(1 * time.Second)
 	gi.game.Start()
+	// Gameloop returns when game is over
 	gi.gameLoop()
+	s.gameOver(gi.id)
 }
 
 // gameLoop
