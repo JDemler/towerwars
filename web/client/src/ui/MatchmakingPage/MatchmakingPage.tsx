@@ -10,12 +10,12 @@ const MatchmakingPage: React.FC = () => {
     }
     
     return (
-        <div>
+        <div style={{ padding: '16px' }}>
+            <h1>Welcome to socialmediawars.io!</h1>
+
             {/* Join Game Action Bar */}
-            <div style={{ position: 'fixed', bottom: '48px', width: '100%', display: 'flex', justifyContent: 'center' }}>
-                <input type="text" placeholder="Player Name" value={playerName} onChange={e => setPlayerName(e.target.value)} style={{ width: '200px', marginRight: '16px' }} />
-                <input type="button" value="Join Game" onClick={() => uiState.gameClient.joinGame(playerName)} />
-            </div>
+            <input type="text" placeholder="Player Name" value={playerName} onChange={e => setPlayerName(e.target.value)} style={{ width: '200px', marginRight: '16px' }} />
+            <input type="button" value="Join Game" onClick={() => uiState.gameClient.joinGame(playerName)} />
         </div>
     );
 }

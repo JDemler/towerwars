@@ -75,13 +75,13 @@ const beginGameLoop = (app: Application, initialGameState: GameState, gameClient
         }
     });
 
-    return {
-        gameClient,
+    // return {
+    //     gameClient,
 
-        end: () => {
-            gameClient.end();
-        }
-    }
+    //     end: () => {
+    //         gameClient.end();
+    //     }
+    // }
 }
 
 export default beginGameLoop;
