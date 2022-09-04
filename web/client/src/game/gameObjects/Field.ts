@@ -1,6 +1,6 @@
 import { Application, Container } from "pixi.js";
 import { FieldModel, MapModel, PlayerModel } from "../../models";
-import { GameChangeAction } from '../GameClient';
+import { GameStateChangeAction, FieldChangeAction } from '../GameClient';
 import Map from "./Map";
 import { GameObject } from "./GameObject";
 import { Tower } from "./Tower";
@@ -82,7 +82,7 @@ export default class Field extends GameObject {
         this.gameClient.buildTurret(coordinate);
     }
 
-    handleGameChangeAction(action: GameChangeAction) {
+    handleGameChangeAction(action: FieldChangeAction) {
         switch(action.type) {
             case 'field':
                 console.error('Field actions not implemented');
@@ -182,7 +182,7 @@ export default class Field extends GameObject {
                 }
                 break;
             default:
-                console.log('Not a field change action: ' + action.type);
+                // console.log('Not a field change action: ' + action.type);
                 break;
         }
     }

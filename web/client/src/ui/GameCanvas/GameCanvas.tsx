@@ -2,12 +2,16 @@ import { Application } from "pixi.js";
 import { useEffect, useRef, useState } from "react";
 import GameClient from "../../game/GameClient";
 import beginGameLoop from "../../game/stage";
+import { useUiState } from "../../hooks/useUiState";
 
 const GameCanvas: React.FC = () => {
     // Create a ref to the below div
     const ref = useRef<HTMLDivElement>(null);
-    const [gameClient, setGameClient] = useState<GameClient>();
+    // const [gameClient, setGameClient] = useState<GameClient>();
     const [playerName, setPlayerName] = useState('');
+    const [uiState, dispatchUiState] = useUiState();
+    const [initialGameState] = useState(uiState!.gameState!);
+    const [gameClient] = useState(uiState!.gameClient);
     
     useEffect(() => {
         const app = new Application({
@@ -23,9 +27,9 @@ const GameCanvas: React.FC = () => {
         // Start the PixiJS app
         app.start();
 
-        const gameLoop = beginGameLoop(app);
+        const gameLoop = beginGameLoop(app, initialGameState, gameClient, dispatchUiState);
 
-        setGameClient(gameLoop.gameClient);
+        // setGameClient(gameLoop.gameClient);
 
         return () => {
             // On unload completely destroy the application and all of it's children
