@@ -1,6 +1,5 @@
 import { Application } from "pixi.js";
 import { useEffect, useRef, useState } from "react";
-import GameClient from "../../game/GameClient";
 import beginGameLoop from "../../game/stage";
 import { useUiState } from "../../hooks/useUiState";
 
@@ -37,7 +36,7 @@ const GameCanvas: React.FC = () => {
 
             gameLoop.end();
         };
-    }, []);
+    }, [dispatchUiState, gameClient, initialGameState]);
 
     return <>
         <div ref={ref} />

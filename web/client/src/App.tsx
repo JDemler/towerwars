@@ -1,7 +1,5 @@
-import React from 'react';
 import './App.css';
 import { UiStateProvider } from './hooks/useUiState';
-import GameCanvas from './ui/GameCanvas/GameCanvas';
 import Router from './ui/Router/Router';
 
 function App() {

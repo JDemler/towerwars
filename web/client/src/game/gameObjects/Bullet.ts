@@ -1,4 +1,4 @@
-import { Application, Graphics, Sprite } from "pixi.js";
+import { Application, Sprite } from "pixi.js";
 import { BulletModel } from "../../models";
 import { GridSettings } from '../../lib/GridSettings';
 import GridCoordinate from '../../lib/GridCoordinate';

@@ -104,6 +104,7 @@ export default class GameClient {
                     }
 
                     this.gameStateUpdateDispatch({ type: "gameState", kind: 'create', gameState }, this);
+                    this.gameStateUpdateDispatch({ type: 'state', gameStatus: gameState.state }, this);
                 }).catch(error => {
                     console.error(error);
                     
@@ -132,6 +133,7 @@ export default class GameClient {
                 ApiClient.getGameState(addedPlayer.gameId)
                     .then(gameState => {
                         this.gameStateUpdateDispatch({ type: "gameState", kind: 'create', gameState }, this);
+                        this.gameStateUpdateDispatch({ type: 'state', gameStatus: gameState.state }, this);
                     }).catch(error => {
                         console.error(error);
                     })

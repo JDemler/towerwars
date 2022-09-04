@@ -1,6 +1,6 @@
 import { Application } from "pixi.js";
 import Field from "./gameObjects/Field";
-import GameClient, { GameStateChangeAction } from './GameClient';
+import GameClient from './GameClient';
 import { GridSettings } from "../lib/GridSettings";
 import { FieldChangeAction } from './GameClient';
 import { GameState } from "../models";

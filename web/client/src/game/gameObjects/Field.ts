@@ -1,6 +1,6 @@
 import { Application, Container } from "pixi.js";
 import { FieldModel, MapModel, PlayerModel } from "../../models";
-import { GameStateChangeAction, FieldChangeAction } from '../GameClient';
+import { FieldChangeAction } from '../GameClient';
 import Map from "./Map";
 import { GameObject } from "./GameObject";
 import { Tower } from "./Tower";
