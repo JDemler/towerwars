@@ -2,8 +2,8 @@ import { Game } from './data/game';
 import { MobType, TowerType } from './data/gameConfig';
 import { AddedPlayer } from './data/player';
 
-const api_url = import.meta.env.VITE_API_URL || 'http://localhost:8080/';
-const ws_api_url = import.meta.env.VITE_WS_API_URL || 'ws://localhost:8080/';
+const api_url = window._env_.VITE_API_URL || 'http://localhost:8080/';
+const ws_api_url = window._env_.VITE_WS_API_URL || 'ws://localhost:8080/';
 
 
 // local api helper function

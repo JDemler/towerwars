@@ -4,8 +4,8 @@
   "description": "Phaser 3 TypeScript Starter",
   "main": "dist/index.js",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build --base=/altclient/",
+    "dev": "./env.sh && cp env-config.js ./public/ && vite",
+    "build": "vite build",
     "serve": "vite preview"
   },
   "repository": {

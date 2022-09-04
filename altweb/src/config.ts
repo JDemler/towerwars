@@ -8,7 +8,7 @@ export default {
   type: Phaser.AUTO,
   parent: 'game',
   backgroundColor: '#000000',
-  fps: { target: import.meta.env.VITE_FPS, forceSetTimeOut: true },
+  fps: { target: window._env_.VITE_FPS, forceSetTimeOut: true },
   physics: {
     default: 'arcade',
     arcade: {

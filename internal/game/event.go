@@ -117,7 +117,10 @@ func (e SellEvent) TryExecute(sourceField *Field, targetFields []*Field, gc *Con
 	if tower == nil {
 		return nil, fmt.Errorf("Tower %d does not exist", e.TowerID)
 	}
-	towerType := gc.GetTowerTypeByName(tower.Type)
+	towerType := gc.GetTowerTypeByKey(tower.Type)
+	if towerType == nil {
+		return nil, fmt.Errorf("Invalid tower type %s", tower.Type)
+	}
 	sourceField.TWMap.free(int((tower.X - 0.5)), int((tower.Y - 0.5)))
 	sourceField.removeTowerByID(e.TowerID)
 	sourceField.Player.Money += towerType.GetLevel(tower.Level).Cost * 80
@@ -142,7 +145,7 @@ func (e UpgradeEvent) TryExecute(sourceField *Field, targetFields []*Field, gc *
 		return nil, fmt.Errorf("Tower not found")
 	}
 	// Get TowerType from gameConfig
-	towerType := gc.GetTowerTypeByName(tower.Type)
+	towerType := gc.GetTowerTypeByKey(tower.Type)
 	if towerType == nil {
 		return nil, fmt.Errorf("Invalid tower type %s", tower.Type)
 	}
