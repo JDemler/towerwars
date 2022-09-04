@@ -3,7 +3,7 @@ import { isAbsoluteUrl } from '../helpers';
 import { AddedPlayerModel } from '../../models';
 
 const getApiRoot = () => {
-    let url = window._env_.REACT_APP_API_URL;
+    let url = process.env.REACT_APP_API_URL;
 
     if (url === undefined)
         throw new Error("API URL is not defined");

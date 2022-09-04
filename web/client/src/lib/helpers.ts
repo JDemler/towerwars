@@ -3,11 +3,3 @@ export function isAbsoluteUrl(url: string): boolean {
 }
 
 export type Constructor<T> = new (...args: any[]) => T;
-
-
-// Probably does not belong here but solves problems :)
-declare global {
-    interface Window {
-        _env_: any;
-    }
-}
