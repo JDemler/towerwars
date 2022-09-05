@@ -10,7 +10,7 @@
                     "level": 1,
                     "cost": 10,
                     "damage": 1,
-                    "range": 250,
+                    "range": 5,
                     "fireRate": 0.5,
                     "bulletSpeed": 11
                 },
@@ -18,7 +18,7 @@
                     "level": 2,
                     "cost": 30,
                     "damage": 2,
-                    "range": 300,
+                    "range": 6,
                     "fireRate": 0.4,
                     "bulletSpeed": 11
                 }
@@ -33,7 +33,7 @@
                     "level": 1,
                     "cost": 20,
                     "damage": 5,
-                    "range": 290,
+                    "range": 6,
                     "fireRate": 1.5,
                     "bulletSpeed": 8
                 },
@@ -41,7 +41,7 @@
                     "level": 2,
                     "cost": 60,
                     "damage": 10,
-                    "range": 450,
+                    "range": 7,
                     "fireRate": 1.5,
                     "bulletSpeed": 10
                 }
@@ -56,7 +56,7 @@
                     "level": 1,
                     "cost": 120,
                     "damage": 5,
-                    "range": 500,
+                    "range": 8,
                     "fireRate": 0.5,
                     "bulletSpeed": 14
                 },
@@ -64,7 +64,7 @@
                     "level": 2,
                     "cost": 230,
                     "damage": 7,
-                    "range": 600,
+                    "range": 9,
                     "fireRate": 0.4,
                     "bulletSpeed": 15
                 }
@@ -146,11 +146,11 @@
         }
     ],
     "map": {
-        "width": 10,
+        "width": 11,
         "height": 18,
         "startX": 0,
         "startY": 0,
-        "endX": 9,
+        "endX": 10,
         "endY": 17
     },
     "startStats": {

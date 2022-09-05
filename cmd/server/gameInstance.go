@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"sync"
 	"time"
+	"towerwars/internal/agent"
 	"towerwars/internal/game"
 
 	"github.com/gorilla/websocket"
@@ -17,6 +18,7 @@ type GameInstance struct {
 	id            string
 	writeChannels []*WsChannel
 	channelCount  int
+	agent         *agent.Agent
 }
 
 type GameStatus struct {
@@ -123,6 +125,9 @@ func (gi *GameInstance) readFromWS(ws *WsChannel) {
 				}
 			}
 		}
+		if gi.agent != nil && len(events) > 0 {
+			gi.agent.HandleEvents(events)
+		}
 	}
 }
 
@@ -204,7 +209,6 @@ func (ws *WsChannel) handlePong(message string) error {
 	}
 	// calculate latency
 	latency := t.UnixMicro() - timestamp
-	fmt.Println("Latency: ", latency)
 	ws.ping = latency
 	ws.game.Ping(ws.playerID, latency)
 	return nil
@@ -253,6 +257,12 @@ func (gi *GameInstance) WebSocket(w http.ResponseWriter, r *http.Request) {
 	go wsChannel.pingLoop()
 }
 
+func (gi *GameInstance) AddAgent() {
+	gi.game.AddPlayer("agent")
+	fieldID := len(gi.game.Fields) - 1
+	gi.agent = agent.NewAgent(gi.game, fieldID, agent.NaiveAgentConfig())
+}
+
 func (gi *GameInstance) Start(s *Server) {
 	// sleep 1 seconds for all clients to connect
 	time.Sleep(1 * time.Second)
@@ -274,6 +284,19 @@ func (gi *GameInstance) gameLoop() {
 			fmt.Println("Game started")
 		}
 		events := gi.Update(delta)
+		if gi.agent != nil && len(events) > 0 {
+			outEvents := gi.agent.Act(events)
+			for _, event := range outEvents {
+				serverEvents, err := gi.game.HandleEvent(event)
+				if err != nil {
+					fmt.Println("Error handling event from agent!")
+					fmt.Println(err)
+				} else {
+					events = append(events, serverEvents...)
+					gi.agent.HandleEvents(serverEvents)
+				}
+			}
+		}
 		for _, event := range events {
 			for _, c := range gi.writeChannels {
 				if c.open {
@@ -281,6 +304,7 @@ func (gi *GameInstance) gameLoop() {
 				}
 			}
 		}
+
 		time.Sleep(time.Second / 60)
 		if gi.game.State == game.GameOverState {
 			return

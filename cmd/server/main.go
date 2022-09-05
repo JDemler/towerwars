@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"math/rand"
 	"net/http"
@@ -13,6 +14,7 @@ import (
 type Server struct {
 	runningGames map[string]*GameInstance
 	openGames    map[string]*GameInstance
+	agentsEnabld bool
 }
 
 type ServerStatus struct {
@@ -22,10 +24,11 @@ type ServerStatus struct {
 }
 
 // new server
-func NewServer() *Server {
+func NewServer(agentsEnabled bool) *Server {
 	return &Server{
 		runningGames: make(map[string]*GameInstance),
 		openGames:    make(map[string]*GameInstance),
+		agentsEnabld: agentsEnabled,
 	}
 }
 
@@ -122,6 +125,11 @@ func (s *Server) AddPlayer(w http.ResponseWriter, r *http.Request) {
 	fieldID := len(gameInstance.game.Fields) - 1
 	//log player joined
 	fmt.Println("Player joined")
+
+	if s.agentsEnabld {
+		gameInstance.AddAgent()
+	}
+
 	// Check if game is full and start if so
 	if gameInstance.game.CanStart() {
 		// Remove game from open games
@@ -213,7 +221,16 @@ func logAndAddCorsHeadersToRequest(handler http.Handler) http.Handler {
 }
 
 func main() {
-	s := NewServer()
+	agent := false
+	// iterate cmd line args
+	for _, arg := range flag.Args() {
+		// check if arg is agent
+		if arg == "agent" {
+			agent = true
+		}
+	}
+
+	s := NewServer(agent)
 
 	http.HandleFunc("/status", s.GetStatus)
 	http.HandleFunc("/game", s.GetGameState)

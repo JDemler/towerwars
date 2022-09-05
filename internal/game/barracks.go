@@ -28,12 +28,12 @@ func newMobSlot(mob *MobType) *MobSlot {
 }
 
 // New Barracks
-func newBarracks(gameConfig *Config) *Barracks {
+func newBarracks(id int, gameConfig *Config) *Barracks {
 	mobs := []*MobSlot{}
 	for _, m := range gameConfig.MobTypes {
 		mobs = append(mobs, newMobSlot(m))
 	}
-	return &Barracks{ID: 0, Mobs: mobs, Config: gameConfig}
+	return &Barracks{ID: id, Mobs: mobs, Config: gameConfig}
 }
 
 // Update function for MobSlot
