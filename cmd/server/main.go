@@ -222,6 +222,8 @@ func logAndAddCorsHeadersToRequest(handler http.Handler) http.Handler {
 
 func main() {
 	agent := false
+	flag.Parse()
+	fmt.Println(flag.Args())
 	// iterate cmd line args
 	for _, arg := range flag.Args() {
 		// check if arg is agent

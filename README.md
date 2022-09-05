@@ -5,9 +5,16 @@
 Run server with
 
 ``` 
-cmd cmd/server
-go run server.go
+cd cmd/server
+go run .
 ``` 
+
+Run server that uses an agent to play against you:
+
+```
+cd cmd/server
+go run . agent
+```
 
 ### Endpoints
 
