@@ -69,7 +69,7 @@ func (game *Game) AddPlayer(playerName string) string {
 		Income: game.Config.StartStats.Income,
 		Lives:  game.Config.StartStats.Lives,
 	}
-	barracks := newBarracks(game.Config)
+	barracks := newBarracks(id, game.Config)
 	field := NewField(id, player, barracks, game.Config.Map.GenerateMap())
 	game.Fields = append(game.Fields, field)
 	game.events = append(game.events, createEvent(player, id))
@@ -134,8 +134,6 @@ func (game *Game) HandleEvent(fieldEvent FieldEvent) ([]*ServerEvent, error) {
 func (game *Game) Ping(fieldID int, latency int64) {
 	field := game.getFieldAt(fieldID)
 	if field != nil {
-		//Log latency
-		fmt.Println("Latency for player", field.Player.Name, "is", latency, "ms")
 		field.Player.Latency = latency
 		field.Player.LastPing = time.Now().UnixMicro()
 		// Update Player Event
