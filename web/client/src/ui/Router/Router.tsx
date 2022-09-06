@@ -1,6 +1,6 @@
 import { useUiState } from "../../hooks/useUiState";
-import GameCanvas from '../GameCanvas/GameCanvas';
 import MatchmakingPage from "../MatchmakingPage/MatchmakingPage";
+import GamePage from '../Game/GamePage';
 
 const Router: React.FC = () => {
     const [uiState] = useUiState();
@@ -11,7 +11,7 @@ const Router: React.FC = () => {
         case 'WaitingForPlayers':
             return <MatchmakingPage />;
         case 'Playing':
-            return <GameCanvas />;
+            return <GamePage />;
         case 'GameOver':
             return <div>Game Over</div>;
         default:
