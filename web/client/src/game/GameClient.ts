@@ -18,7 +18,7 @@ export type GameStateChangeAction =
     // State
     | { type: "state"; gameStatus: GamePhase }
 
-export type FieldChangeAction =
+export type FieldChangeAction = GameStateChangeAction | (
     // Player actions
     | { type: "player"; kind: GameChangeActionChangeKind; fieldId: number; player: PlayerModel }
     | { type: "player"; kind: GameChangeActionDeleteKind; fieldId: number; playerId: number }
@@ -34,6 +34,7 @@ export type FieldChangeAction =
     // Bullet actions
     | { type: "bullet"; kind: GameChangeActionChangeKind; fieldId: number; bullet: BulletModel }
     | { type: "bullet"; kind: GameChangeActionDeleteKind; fieldId: number; bulletId: number }
+)
 
 export type GameStateUpdateDispatch = (action: GameStateChangeAction, gameClient: GameClient) => void;
 export type FieldUpdateDispatch = (action: FieldChangeAction, gameClient: GameClient) => void;
@@ -105,15 +106,20 @@ export default class GameClient {
 
                     this.gameStateUpdateDispatch({ type: "gameState", kind: 'create', gameState }, this);
                     this.gameStateUpdateDispatch({ type: 'state', gameStatus: gameState.state }, this);
+
+                    this.fieldUpdateDispatch && this.fieldUpdateDispatch({ type: "gameState", kind: 'create', gameState }, this);
+                    this.fieldUpdateDispatch && this.fieldUpdateDispatch({ type: 'state', gameStatus: gameState.state }, this);
                 }).catch(error => {
                     console.error(error);
                     
                     this.gameStateUpdateDispatch({ type: 'state', gameStatus: 'WaitingForPlayers'}, this);
+                    this.fieldUpdateDispatch && this.fieldUpdateDispatch({ type: 'state', gameStatus: 'WaitingForPlayers'}, this);
                 })
         } else {
             console.log("No added player in session storage.");
 
             this.gameStateUpdateDispatch({ type: 'state', gameStatus: 'WaitingForPlayers'}, this);
+            this.fieldUpdateDispatch && this.fieldUpdateDispatch({ type: 'state', gameStatus: 'WaitingForPlayers'}, this);
         }
     }
 
@@ -134,6 +140,9 @@ export default class GameClient {
                     .then(gameState => {
                         this.gameStateUpdateDispatch({ type: "gameState", kind: 'create', gameState }, this);
                         this.gameStateUpdateDispatch({ type: 'state', gameStatus: gameState.state }, this);
+                        
+                        this.fieldUpdateDispatch && this.fieldUpdateDispatch({ type: "gameState", kind: 'create', gameState }, this);
+                        this.fieldUpdateDispatch && this.fieldUpdateDispatch({ type: 'state', gameStatus: gameState.state }, this);
                     }).catch(error => {
                         console.error(error);
                     })
@@ -178,6 +187,9 @@ export default class GameClient {
             //     break;
             case "gameStateChanged":
                 this.gameStateUpdateDispatch({ type: "state", gameStatus: eventPayload.gameState }, this);
+                this.fieldUpdateDispatch && this.fieldUpdateDispatch({ type: "state", gameStatus: eventPayload.gameState }, this);
+
+                console.log('Game state changed', eventPayload.gameState);
 
                 if (!this.player) {
                     console.error('Game State changed, but player is not loaded');
@@ -186,6 +198,7 @@ export default class GameClient {
 
                 ApiClient.getGameState(this.player.gameId).then(gameState => {
                     this.gameStateUpdateDispatch({ type: "gameState", kind: 'update', gameState }, this);
+                    this.fieldUpdateDispatch && this.fieldUpdateDispatch({ type: "gameState", kind: 'update', gameState }, this);
                 }).catch(error => {
                     console.error(error);
                 })

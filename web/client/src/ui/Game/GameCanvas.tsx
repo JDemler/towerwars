@@ -8,7 +8,7 @@ const GameCanvas: React.FC = () => {
     const ref = useRef<HTMLDivElement>(null);
     const [playerName, setPlayerName] = useState('');
     const [uiState, dispatchUiState] = useUiState();
-    const [initialGameState] = useState(uiState!.gameState!);
+    const [initialGameState] = useState(uiState!.gameState);
     const [gameClient] = useState(uiState!.gameClient);
     
     useEffect(() => {
