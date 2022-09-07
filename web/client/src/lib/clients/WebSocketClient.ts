@@ -2,7 +2,7 @@ import { FieldEvent } from '../FieldEvent';
 import { isAbsoluteUrl } from '../helpers';
 
 const getWebsocketUrl = (gameId: string, playerKey: string) => {
-    let webSocketUrl = process.env.REACT_APP_WS_URL;
+    let webSocketUrl = window._env_.REACT_APP_WS_URL;
 
     if (webSocketUrl === undefined)
         throw new Error("WebSocket URL is not defined");
@@ -39,7 +39,7 @@ export default class WebSocketClient {
             return console.error('WebSocket not open');
         }
 
-        
+
         console.log("->", fieldEvent.eventType, fieldEvent)
 
         this.webSocket.send(JSON.stringify(fieldEvent));
