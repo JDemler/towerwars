@@ -6,7 +6,6 @@ import { useUiState } from "../../hooks/useUiState";
 const GameCanvas: React.FC = () => {
     // Create a ref to the below div
     const ref = useRef<HTMLDivElement>(null);
-    const [playerName, setPlayerName] = useState('');
     const [uiState, dispatchUiState] = useUiState();
     const [initialGameState] = useState(uiState!.gameState);
     const [gameClient] = useState(uiState!.gameClient);

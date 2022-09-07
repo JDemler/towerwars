@@ -21,9 +21,14 @@ const beginGameLoop = (app: Application, initialGameState: GameState | undefined
                 for (let i = 0; i < action.gameState.fields.length; i++) {
                     const fieldModel = action.gameState.fields[i];
 
-                    const field = new Field(app, gameClient, fieldModel);
-                    field.container.position.x = i * (fieldModel.map.size.width * GridSettings.tileSize + GridSettings.tileSize * 2);
+                    const field = new Field(app, gameClient, fieldModel, dispatchUiState);
+                    field.container.position.x = i * (fieldModel.map.size.width * GridSettings.tileSize + GridSettings.tileSize * 2) + GridSettings.tileSize
+                    field.container.position.y = GridSettings.tileSize;
                     fields.push(field);
+
+                    if (fieldModel.id === gameClient.player?.fieldId) {
+                        dispatchUiState({ type: 'set-playerModel', playerModel: fieldModel.player });
+                    }
                 }
             }
         } else if (action.type === 'state') {
@@ -46,7 +51,7 @@ const beginGameLoop = (app: Application, initialGameState: GameState | undefined
 
     // const gameClient = new GameClient(handleGameChangeAction);
     gameClient.fieldUpdateDispatch = handleGameChangeAction;
-    
+
     if (initialGameState !== undefined)
         handleGameChangeAction({ type: 'gameState', kind: 'create', gameState: initialGameState }, gameClient);
     

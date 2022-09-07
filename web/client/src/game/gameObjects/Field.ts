@@ -8,10 +8,12 @@ import { Mob } from "./Mob";
 import { Bullet } from "./Bullet";
 import GameClient from '../GameClient';
 import GridCoordinate from "../../lib/GridCoordinate";
+import { UiStateContextAction } from '../../hooks/useUiState';
 
 export default class Field extends GameObject {
     id: number;
     gameClient: GameClient;
+    dispatchUiState: React.Dispatch<UiStateContextAction>;
 
     mapModel: MapModel;
     player: PlayerModel;
@@ -34,10 +36,11 @@ export default class Field extends GameObject {
         return this.getChild(Map)!;
     }
 
-    constructor(app: Application, gameClient: GameClient, fieldModel: FieldModel) {
+    constructor(app: Application, gameClient: GameClient, fieldModel: FieldModel, dispatchUiState: React.Dispatch<UiStateContextAction>) {
         super(app);
         this.id = fieldModel.id;
         this.gameClient = gameClient;
+        this.dispatchUiState = dispatchUiState;
 
         this.mapModel = fieldModel.map;
         this.player = fieldModel.player;
@@ -88,11 +91,15 @@ export default class Field extends GameObject {
                 console.error('Field actions not implemented');
                 break;
             case 'player':
+                console.log('Player action', action, action.fieldId, this.gameClient.player?.fieldId);
+                if (action.kind !== 'delete' && action.fieldId === this.gameClient.player?.fieldId) {
+                    this.dispatchUiState({ type: 'set-playerModel', playerModel: action.player });
+                }
+
                 if (action.kind === 'update') {
                     this.player = action.player;
                     break;
                 }
-                console.error(`Player actions with kind "${action.kind}" not implemented`);
                 break;
             case 'tower':
                 switch (action.kind) {

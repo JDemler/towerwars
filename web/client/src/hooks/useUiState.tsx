@@ -4,10 +4,10 @@ import UiState from '../models/UiState';
 import GamePhase from '../models/GamePhase';
 import GameClient from '../game/GameClient';
 import { GameStateUpdateDispatch } from '../game/GameClient';
-import { GameState } from '../models';
+import { GameState, PlayerModel } from '../models';
 import { InitialUiState } from '../models/UiState';
     
-type UiStateContextAction =
+export type UiStateContextAction =
     | { type: "set-loading"; }
     | { type: "set-uiState"; uiState: UiState }
 
@@ -18,6 +18,8 @@ type UiStateContextAction =
 
     | { type: "set-mobTypes"; mobTypes: string[] }
     | { type: "set-towerTypes"; towerTypes: string[] }
+    
+    | { type: "set-playerModel"; playerModel: PlayerModel }
 
 function reducer (state: InitialUiState | undefined, action: UiStateContextAction): InitialUiState | undefined {
     switch (action.type) {
@@ -63,6 +65,12 @@ function reducer (state: InitialUiState | undefined, action: UiStateContextActio
                 towerTypes: action.towerTypes,
             }
         }
+        case 'set-playerModel': {
+            return state === undefined ? undefined : {
+                ...state,
+                playerModel: action.playerModel,
+            }
+        }
         default:
             return state;
     }
@@ -84,6 +92,8 @@ export const UiStateProvider: React.FC<React.PropsWithChildren> = ({ children })
 
         mobTypes: undefined,
         towerTypes: undefined,
+
+        playerModel: undefined,
     });
 
     useEffect(() => {
