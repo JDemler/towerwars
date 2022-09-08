@@ -13,6 +13,7 @@ const GameCanvas: React.FC = () => {
     useEffect(() => {
         const app = new Application({
             resizeTo: window,
+            resolution: window.devicePixelRatio,
 
             backgroundColor: 0x50a161,
         });
