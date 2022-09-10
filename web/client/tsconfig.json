@@ -1,4 +1,5 @@
 {
+  "extends": "./tsconfig.paths.json",
   "compilerOptions": {
     "target": "es5",
     "lib": [
@@ -19,19 +20,6 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "baseUrl": "./src",
-    "paths": {
-      "@gameObjects": ["game/gameObjects"],
-      "@models": ["models"],
-      "@hooks": ["hooks"],
-      "@grid": ["lib/grid"],
-      "@helpers": ["lib/helpers"],
-
-      "@game/*": ["game/*"],
-      "@lib/*": ["lib/*"],
-      "@clients/*": ["lib/clients/*"],
-      "@ui/*": ["ui/*"],
-    }
   },
   "include": [
     "src"
