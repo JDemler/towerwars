@@ -1,14 +1,9 @@
 import { Application, Container } from "pixi.js";
-import { FieldModel, MapModel, PlayerModel } from "../../models";
-import { FieldChangeAction } from '../GameClient';
-import Map from "./Map";
-import { GameObject } from "./GameObject";
-import { Tower } from "./Tower";
-import { Mob } from "./Mob";
-import { Bullet } from "./Bullet";
-import GameClient from '../GameClient';
-import GridCoordinate from "../../lib/GridCoordinate";
-import { UiStateContextAction } from '../../hooks/useUiState';
+import { FieldModel, MapModel, PlayerModel } from "@models";
+import { GameObject, Tower, Mob, Bullet, Map } from "@gameObjects";
+import GameClient, { FieldChangeAction } from '@game/GameClient';
+import { GridCoordinate } from "@grid";
+import { UiStateContextAction } from '@hooks';
 
 export default class Field extends GameObject {
     id: number;

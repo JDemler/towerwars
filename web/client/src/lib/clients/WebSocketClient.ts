@@ -1,5 +1,5 @@
-import { FieldEvent } from '../FieldEvent';
-import { isAbsoluteUrl } from '../helpers';
+import { FieldEvent } from '@lib/FieldEvent';
+import { isAbsoluteUrl } from '@helpers';
 
 const getWebsocketUrl = (gameId: string, playerKey: string) => {
     let webSocketUrl = window._env_.REACT_APP_WS_URL;

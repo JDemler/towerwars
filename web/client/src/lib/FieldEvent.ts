@@ -1,4 +1,4 @@
-import { AddedPlayerModel } from "../models";
+import { AddedPlayerModel } from "@models";
 
 export class FieldEvent {
     fieldId: number;

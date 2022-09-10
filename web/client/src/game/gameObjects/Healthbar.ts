@@ -1,8 +1,8 @@
 import { Application, Graphics } from "pixi.js";
-import { GridSettings } from '../../lib/GridSettings';
-import { GameObject } from "./GameObject";
+import { GridSettings } from '@grid';
+import { GameObject } from "@gameObjects";
 
-export class Healthbar extends GameObject {
+export default class Healthbar extends GameObject {
     currentHealth: number;
     maxHealth: number;
 

@@ -1,9 +1,7 @@
-import { GameObject } from "./GameObject";
-import { MapModel } from '../../models';
-import { GridSettings } from '../../lib/GridSettings';
-import Field from './Field';
 import * as PIXI from 'pixi.js';
-import GridCoordinate from "../../lib/GridCoordinate";
+import { GameObject, Field } from "@gameObjects";
+import { MapModel } from '@models';
+import { GridSettings, GridCoordinate } from '@grid';
 
 export default class Map extends GameObject {
     mapModel: MapModel;

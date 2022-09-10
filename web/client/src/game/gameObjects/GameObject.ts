@@ -1,7 +1,7 @@
 import { Application } from "pixi.js";
-import { Constructor } from "../../lib/helpers";
+import { Constructor } from "@helpers";
 
-export abstract class GameObject {
+export default abstract class GameObject {
     app: Application;
 
     children: GameObject[] = [];

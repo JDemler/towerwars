@@ -1,8 +1,4 @@
-import BulletModel from "./BulletModel";
-import TowerModel from "./TowerModel";
-import MobModel from "./MobModel";
-import PlayerModel from "./PlayerModel";
-import MapModel from "./MapModel";
+import { BulletModel, TowerModel, MobModel, PlayerModel, MapModel } from "@models";
 
 interface FieldModel {
     id: number;

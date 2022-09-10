@@ -1,6 +1,6 @@
-import { useUiState } from "../../hooks/useUiState";
-import MatchmakingPage from "../MatchmakingPage/MatchmakingPage";
-import GamePage from '../Game/GamePage';
+import { useUiState } from "@hooks";
+import MatchmakingPage from "@ui/MatchmakingPage/MatchmakingPage";
+import GamePage from '@ui/Game/GamePage';
 
 const Router: React.FC = () => {
     const [uiState] = useUiState();

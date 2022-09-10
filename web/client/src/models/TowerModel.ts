@@ -1,4 +1,4 @@
-import GridCoordinate from '../lib/GridCoordinate';
+import { GridCoordinate } from '@grid';
 
 interface TowerModel {
     id: number;

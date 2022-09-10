@@ -1,11 +1,6 @@
-import { useContext, useEffect, useReducer, createContext } from 'react';
-import React from 'react';
-import UiState from '../models/UiState';
-import GamePhase from '../models/GamePhase';
-import GameClient from '../game/GameClient';
-import { GameStateUpdateDispatch } from '../game/GameClient';
-import { GameState, PlayerModel } from '../models';
-import { InitialUiState } from '../models/UiState';
+import React, { useContext, useEffect, useReducer, createContext } from 'react';
+import { GamePhase, GameState, PlayerModel, UiState, InitialUiState } from '@models';
+import GameClient, { GameStateUpdateDispatch } from '@game/GameClient';
     
 export type UiStateContextAction =
     | { type: "set-loading"; }

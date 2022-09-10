@@ -1,6 +1,5 @@
-import GameState from "../../models/GameState";
-import { isAbsoluteUrl } from '../helpers';
-import { AddedPlayerModel } from '../../models';
+import { GameState, AddedPlayerModel } from "@models";
+import { isAbsoluteUrl } from '@helpers';
 
 const getApiRoot = () => {
     let url = window._env_.REACT_APP_API_URL;

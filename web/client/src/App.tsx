@@ -1,6 +1,6 @@
-import './App.css';
-import { UiStateProvider } from './hooks/useUiState';
 import Router from './ui/Router/Router';
+import { UiStateProvider } from './hooks/useUiState';
+import './App.css';
 
 function App() {
   return (

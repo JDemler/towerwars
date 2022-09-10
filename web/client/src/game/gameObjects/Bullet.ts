@@ -1,12 +1,9 @@
 import { Application, Sprite } from "pixi.js";
-import { BulletModel } from "../../models";
-import { GridSettings } from '../../lib/GridSettings';
-import GridCoordinate from '../../lib/GridCoordinate';
-import { GameObject } from "./GameObject";
-import { Mob } from "./Mob";
-import Field from './Field';
+import { BulletModel } from "@models";
+import { GridSettings, GridCoordinate } from '@grid';
+import { GameObject, Mob, Field } from "@gameObjects";
 
-export class Bullet extends GameObject {
+export default class Bullet extends GameObject {
     id: number;
     bulletModel: BulletModel;
 

@@ -1,7 +1,5 @@
-import GameClient from '../game/GameClient';
-import GamePhase from './GamePhase';
-import GameState from './GameState';
-import PlayerModel from './PlayerModel';
+import GameClient from "@game/GameClient";
+import { GamePhase, GameState, PlayerModel } from '@models';
 
 export interface InitialUiState {
     gameClient: GameClient | undefined;

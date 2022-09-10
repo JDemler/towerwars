@@ -1,9 +1,8 @@
-import ApiClient from '../lib/clients/ApiClient';
-import WebSocketClient from '../lib/clients/WebSocketClient';
-import { BuildTurretEvent, BuyMobEvent } from '../lib/FieldEvent';
-import GridCoordinate from '../lib/GridCoordinate';
-import { AddedPlayerModel, BulletModel, FieldModel, GameState, MobModel, PlayerModel, TowerModel } from '../models';
-import GamePhase from '../models/GamePhase';
+import ApiClient from '@clients/ApiClient';
+import WebSocketClient from '@clients/WebSocketClient';
+import { BuildTurretEvent, BuyMobEvent } from '@lib/FieldEvent';
+import { GridCoordinate } from '@grid';
+import { AddedPlayerModel, BulletModel, FieldModel, GameState, MobModel, PlayerModel, TowerModel, GamePhase } from '@models';
 
 export type GameChangeActionGameType = 'gameState' | 'state';
 export type GameChangeActionFieldType = 'player' | 'field' | 'tower' | 'mob' | 'bullet';

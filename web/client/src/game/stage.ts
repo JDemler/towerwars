@@ -1,10 +1,9 @@
 import { Application } from "pixi.js";
-import Field from "./gameObjects/Field";
-import GameClient from './GameClient';
-import { GridSettings } from "../lib/GridSettings";
-import { FieldChangeAction } from './GameClient';
-import { GameState } from "../models";
-import { UiStateDispatch } from '../hooks/useUiState';
+import { Field } from "@gameObjects";
+import { GridSettings } from "@grid";
+import GameClient, { FieldChangeAction } from '@game/GameClient';
+import { GameState } from "@models";
+import { UiStateDispatch } from '@hooks';
 
 const beginGameLoop = (app: Application, initialGameState: GameState | undefined, gameClient: GameClient, dispatchUiState: UiStateDispatch) => {
     const fields: Field[] = [];

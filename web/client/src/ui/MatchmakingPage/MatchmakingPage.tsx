@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useUiState } from "../../hooks/useUiState";
+import { useUiState } from "@hooks";
 
 const MatchmakingPage: React.FC = () => {
     const [uiState] = useUiState();

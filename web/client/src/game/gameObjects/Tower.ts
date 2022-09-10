@@ -1,10 +1,9 @@
 import { Application, Sprite } from "pixi.js";
-import { TowerModel } from "../../models";
-import { GridSettings } from '../../lib/GridSettings';
-import { GameObject } from "./GameObject";
-import Field from './Field';
+import { TowerModel } from "@models";
+import { GridSettings } from '@grid';
+import { GameObject, Field } from "@gameObjects";
 
-export class Tower extends GameObject {
+export default class Tower extends GameObject {
     id: number;
     towerModel: TowerModel;
 

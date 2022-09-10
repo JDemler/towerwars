@@ -1,7 +1,7 @@
 import { Application } from "pixi.js";
 import { useEffect, useRef, useState } from "react";
-import beginGameLoop from "../../game/stage";
-import { useUiState } from "../../hooks/useUiState";
+import beginGameLoop from "@game/stage";
+import { useUiState } from "@hooks";
 
 const GameCanvas: React.FC = () => {
     // Create a ref to the below div
@@ -14,6 +14,7 @@ const GameCanvas: React.FC = () => {
         const app = new Application({
             resizeTo: window,
             resolution: window.devicePixelRatio,
+            antialias: true,
 
             backgroundColor: 0x50a161,
         });

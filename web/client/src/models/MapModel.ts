@@ -1,5 +1,4 @@
-import GridCoordinate from '../lib/GridCoordinate';
-import { GridSize } from '../lib/GridSize';
+import { GridCoordinate, GridSize } from '@grid';
 
 interface MapModel {
     size: GridSize;

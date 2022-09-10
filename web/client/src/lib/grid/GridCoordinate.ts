@@ -1,4 +1,4 @@
-import { GridSettings } from "./GridSettings";
+import { GridSettings } from "@grid";
 
 // Defines a potion on the grid
 export default class GridCoordinate {

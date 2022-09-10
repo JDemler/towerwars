@@ -1,4 +1,4 @@
-import FieldModel from './FieldModel';
+import { FieldModel } from '@models';
 
 interface GameState {
     fields: FieldModel[];

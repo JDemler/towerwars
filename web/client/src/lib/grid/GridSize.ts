@@ -1,8 +1,7 @@
-import GridCoordinate from "./GridCoordinate";
-import { GridSettings } from "./GridSettings";
+import { GridCoordinate, GridSettings } from "@grid";
 
 // Class which has a width and height and can calculate the difference between two GridCoordinates.
-export class GridSize {
+export default class GridSize {
     width: number;
     height: number;
 

@@ -1,12 +1,9 @@
 import { Application, Container, Sprite } from "pixi.js";
-import { MobModel } from "../../models";
-import { GridSettings } from '../../lib/GridSettings';
-import GridCoordinate from '../../lib/GridCoordinate';
-import { GameObject } from "./GameObject";
-import Field from './Field';
-import { Healthbar } from "./Healthbar";
+import { MobModel } from "@models";
+import { GridSettings, GridCoordinate } from '@grid';
+import { GameObject, Field, Healthbar } from "@gameObjects";
 
-export class Mob extends GameObject {
+export default class Mob extends GameObject {
     id: number;
     mobModel: MobModel;
 
