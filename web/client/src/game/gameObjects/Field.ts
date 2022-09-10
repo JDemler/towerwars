@@ -1,4 +1,5 @@
 import { Application, Container } from "pixi.js";
+import { Viewport } from 'pixi-viewport';
 import { FieldModel, MapModel, PlayerModel } from "@models";
 import { GameObject, Tower, Mob, Bullet, Map } from "@gameObjects";
 import GameClient, { FieldChangeAction } from '@game/GameClient';
@@ -31,7 +32,7 @@ export default class Field extends GameObject {
         return this.getChild(Map)!;
     }
 
-    constructor(app: Application, gameClient: GameClient, fieldModel: FieldModel, dispatchUiState: React.Dispatch<UiStateContextAction>) {
+    constructor(app: Application, viewport: Viewport, gameClient: GameClient, fieldModel: FieldModel, dispatchUiState: React.Dispatch<UiStateContextAction>) {
         super(app);
         this.id = fieldModel.id;
         this.gameClient = gameClient;
@@ -43,7 +44,7 @@ export default class Field extends GameObject {
         this.container = new Container();
         this.container.sortableChildren = true;
 
-        app.stage.addChild(this.container);
+        viewport.addChild(this.container);
 
         this.createChild(new Map(app, this, this.mapModel));
 

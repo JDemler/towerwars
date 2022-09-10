@@ -1,11 +1,12 @@
 import { Application } from "pixi.js";
+import { Viewport } from 'pixi-viewport';
 import { Field } from "@gameObjects";
 import { GridSettings } from "@grid";
 import GameClient, { FieldChangeAction } from '@game/GameClient';
 import { GameState } from "@models";
 import { UiStateDispatch } from '@hooks';
 
-const beginGameLoop = (app: Application, initialGameState: GameState | undefined, gameClient: GameClient, dispatchUiState: UiStateDispatch) => {
+const beginGameLoop = (app: Application, viewport: Viewport, initialGameState: GameState | undefined, gameClient: GameClient, dispatchUiState: UiStateDispatch) => {
     const fields: Field[] = [];
 
     const clearFields = () => {
@@ -20,7 +21,7 @@ const beginGameLoop = (app: Application, initialGameState: GameState | undefined
                 for (let i = 0; i < action.gameState.fields.length; i++) {
                     const fieldModel = action.gameState.fields[i];
 
-                    const field = new Field(app, gameClient, fieldModel, dispatchUiState);
+                    const field = new Field(app, viewport, gameClient, fieldModel, dispatchUiState);
                     field.container.position.x = i * (fieldModel.map.size.width * GridSettings.tileSize + GridSettings.tileSize * 2) + GridSettings.tileSize
                     field.container.position.y = GridSettings.tileSize;
                     fields.push(field);
