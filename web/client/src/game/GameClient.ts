@@ -2,7 +2,7 @@ import ApiClient from '@clients/ApiClient';
 import WebSocketClient from '@clients/WebSocketClient';
 import { BuildTurretEvent, BuyMobEvent } from '@lib/FieldEvent';
 import { GridCoordinate } from '@grid';
-import { AddedPlayerModel, BulletModel, FieldModel, GameState, MobModel, PlayerModel, TowerModel, GamePhase } from '@models';
+import { AddedPlayerModel, BulletModel, FieldModel, GameState, MobModel, PlayerModel, TowerModel, GamePhase, TowerTypeModel, MobTypeModel } from '@models';
 
 export type GameChangeActionChangeKind = 'create' | 'update';
 export type GameChangeActionDeleteKind = 'delete';
@@ -13,6 +13,11 @@ export type FieldChangeAction =
     | { type: "gameState"; kind: GameChangeActionDeleteKind; }
     // State
     | { type: "state"; gameStatus: GamePhase }
+
+    // TowerTypes actions
+    | { type: "towerTypes"; kind: GameChangeActionChangeKind; towerTypes: TowerTypeModel[] }
+    // MobTypes actions
+    | { type: "mobTypes"; kind: GameChangeActionChangeKind; mobTypes: MobTypeModel[] }
 
     // Player actions
     | { type: "player"; kind: GameChangeActionChangeKind; fieldId: number; player: PlayerModel }
@@ -106,16 +111,36 @@ export default class GameClient {
 
                     this.dispatch({ type: "gameState", kind: 'create', gameState });
                     this.dispatch({ type: 'state', gameStatus: gameState.state });
+
+                    this.loadTowerTypes(addedPlayer.gameId);
+                    this.loadMobTypes(addedPlayer.gameId);
                 }).catch(error => {
                     console.error(error);
                     
                     this.dispatch({ type: 'state', gameStatus: 'WaitingForPlayers'});
                 })
+
         } else {
             console.log("No added player in session storage.");
 
             this.dispatch({ type: 'state', gameStatus: 'WaitingForPlayers'});
         }
+    }
+
+    public loadTowerTypes(gameId: string) {
+        ApiClient.getTowerTypes(gameId)
+            .then(towerTypes => {
+                console.log('Tower types', towerTypes);
+                this.dispatch({ type: 'towerTypes', kind: 'create', towerTypes });
+            })
+    }
+
+    public loadMobTypes(gameId: string) {
+        ApiClient.getMobTypes(gameId)
+            .then(mobTypes => {
+                console.log('Mob types', mobTypes);
+                this.dispatch({ type: 'mobTypes', kind: 'create', mobTypes });
+            })
     }
 
     public end() {
@@ -144,7 +169,7 @@ export default class GameClient {
     }
 
     // Game Functions
-    public buyMob() {
+    public buyMob(mobKey: string) {
         if (this.webSocketClient === undefined) {
             return console.error('Websocket not initialised');
         }
@@ -152,7 +177,7 @@ export default class GameClient {
             return console.error('Not a player');
         }
 
-        this.webSocketClient.dispatchFieldEvent(new BuyMobEvent(this.player, this.enemyPlayerFieldId, 'confusedKid'));
+        this.webSocketClient.dispatchFieldEvent(new BuyMobEvent(this.player, this.enemyPlayerFieldId, mobKey));
     }
 
     public buildTurret(coordinate: GridCoordinate) {
@@ -220,6 +245,7 @@ export default class GameClient {
                     this.dispatch({ type: 'bullet', kind: eventKind, fieldId, bulletId: eventPayload });
                 break;
             case "barracks":
+                // console.log('Barracks event', event);
                 break;
             default:
                 console.log("Unknown event type:", eventType, event);

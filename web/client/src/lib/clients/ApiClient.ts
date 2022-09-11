@@ -1,4 +1,4 @@
-import { GameState, AddedPlayerModel } from "@models";
+import { GameState, AddedPlayerModel, TowerTypeModel, MobTypeModel } from "@models";
 import { isAbsoluteUrl } from '@helpers';
 
 const getApiRoot = () => {
@@ -27,6 +27,22 @@ export default class ApiClient {
         const responseJson = await response.json();
 
         return GameState.fromJSON(responseJson);
+    }
+
+    // Function that fetches the tower types
+    static getTowerTypes = async (gameId: string) => {
+        const response = await fetch(getApiUrl('tower_types', gameId));
+        const responseJson = await response.json() as any[];
+
+        return responseJson.map((towerType: any) => TowerTypeModel.fromJSON(towerType));
+    }
+
+    // Function that fetches the tower types
+    static getMobTypes = async (gameId: string) => {
+        const response = await fetch(getApiUrl('mob_types', gameId));
+        const responseJson = await response.json() as any[];
+
+        return responseJson.map((mobType: any) => MobTypeModel.fromJSON(mobType));
     }
 
     // Function that adds the player to the game

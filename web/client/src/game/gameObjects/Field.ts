@@ -3,12 +3,15 @@ import { FieldModel, MapModel, PlayerModel } from "@models";
 import { GameObject, Tower, Mob, Bullet, Map, IGameObjectProps } from "@gameObjects";
 import { FieldChangeAction } from '@game/GameClient';
 import { GridCoordinate } from "@grid";
+import { GameInfo } from "@game/GameEntryPoint";
 
 export default class Field extends GameObject {
     id: number;
 
     mapModel: MapModel;
     player: PlayerModel;
+
+    gameInfo: GameInfo;
 
     container: Container;
 
@@ -32,9 +35,11 @@ export default class Field extends GameObject {
         return this.gameClient.player?.fieldId === this.id;
     }
 
-    constructor(props: IGameObjectProps, fieldModel: FieldModel) {
+    constructor(props: IGameObjectProps, fieldModel: FieldModel, gameInfo: GameInfo) {
         super(props);
         this.id = fieldModel.id;
+
+        this.gameInfo = gameInfo;
 
         this.mapModel = fieldModel.map;
         this.player = fieldModel.player;

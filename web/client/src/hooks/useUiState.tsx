@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useReducer, createContext } from 'react';
-import { GamePhase, GameState, PlayerModel, UiState, InitialUiState } from '@models';
+import { GamePhase, GameState, PlayerModel, UiState, InitialUiState, MobTypeModel, TowerTypeModel } from '@models';
 import GameClient from '@game/GameClient';
     
 export type UiStateContextAction =
@@ -11,8 +11,8 @@ export type UiStateContextAction =
     | { type: "clear-gameState" }
     | { type: "set-gamePhase"; gamePhase: GamePhase }
 
-    | { type: "set-mobTypes"; mobTypes: string[] }
-    | { type: "set-towerTypes"; towerTypes: string[] }
+    | { type: "set-mobTypes"; mobTypes: MobTypeModel[] }
+    | { type: "set-towerTypes"; towerTypes: TowerTypeModel[] }
     
     | { type: "set-playerModel"; playerModel: PlayerModel }
 

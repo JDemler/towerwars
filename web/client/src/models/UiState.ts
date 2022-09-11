@@ -1,5 +1,5 @@
 import GameClient from "@game/GameClient";
-import { GamePhase, GameState, PlayerModel } from '@models';
+import { GamePhase, GameState, MobTypeModel, PlayerModel, TowerTypeModel } from '@models';
 
 export interface InitialUiState {
     gameClient: GameClient | undefined;
@@ -7,8 +7,8 @@ export interface InitialUiState {
     gameState: GameState | undefined;
     gamePhase: GamePhase | undefined;
 
-    mobTypes: string[] | undefined;
-    towerTypes: string[] | undefined;
+    mobTypes: MobTypeModel[] | undefined;
+    towerTypes: TowerTypeModel[] | undefined;
 
     playerModel: PlayerModel | undefined;
 }

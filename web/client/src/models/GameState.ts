@@ -16,8 +16,6 @@ namespace GameState {
             state: json.state,
         }
     }
-
-    export const testVar: number = 0;
 }
 
 export default GameState;
