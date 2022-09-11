@@ -59,8 +59,6 @@ export default class Field extends GameObject {
 
             this.createChild(new Bullet(this.props, this, bulletModel, mob));
         }
-
-        console.log('Creating field', fieldModel);
     }
     
     onDestroy(): void {
@@ -81,7 +79,6 @@ export default class Field extends GameObject {
                 console.error('Field actions not implemented');
                 break;
             case 'player':
-                console.log('Player action', action, action.fieldId, this.gameClient.player?.fieldId);
                 if (action.kind !== 'delete' && action.fieldId === this.gameClient.player?.fieldId) {
                     this.dispatchUiState({ type: 'set-playerModel', playerModel: action.player });
                 }
@@ -179,7 +176,7 @@ export default class Field extends GameObject {
                 }
                 break;
             default:
-                // console.log('Not a field change action: ' + action.type);
+                console.warn('Not a field change action: ' + action.type);
                 break;
         }
     }

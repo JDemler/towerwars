@@ -43,8 +43,6 @@ const beginGameLoop = (app: Application, viewport: Viewport, initialGameState: G
                 return;
             }
 
-            console.log('handlingFieldEvent', { fieldId, action });
-
             field.handleGameChangeAction(action);
         }
     }

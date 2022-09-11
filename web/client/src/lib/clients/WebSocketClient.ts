@@ -39,9 +39,6 @@ export default class WebSocketClient {
             return console.error('WebSocket not open');
         }
 
-
-        console.log("->", fieldEvent.eventType, fieldEvent)
-
         this.webSocket.send(JSON.stringify(fieldEvent));
     }
 }

@@ -174,9 +174,6 @@ export default class GameClient {
 
 
         switch (eventType) {
-            // case "player":
-            //     console.log('Player', eventKind, eventPayload)
-            //     break;
             case "gameStateChanged":
                 this.dispatch({ type: "state", gameStatus: eventPayload.gameState });
 

@@ -64,9 +64,9 @@ export default class Mob extends GameObject {
 
     updateFromModel(mobModel: MobModel) {
         this.mobModel = mobModel;
-        console.log("Mob updated", mobModel);
-        this.currentCoordinate = this.mobModel.coordinate;
 
+        this.currentCoordinate = this.mobModel.coordinate;
+        
         this.healthbar.updateHealth(mobModel.health, mobModel.maxHealth);
     }
 }
