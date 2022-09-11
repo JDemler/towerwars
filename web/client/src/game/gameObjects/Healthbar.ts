@@ -39,7 +39,7 @@ export default class Healthbar extends GameObject {
         // Inner healthbar Background
         this.innerHealthBarBackgroundGraphics = new Graphics()
             .beginFill(0x464E51)
-            .drawRect(0, 0, this.currentInnerHealthBarWidth, this.innerHealthbarHeight)
+            .drawRect(0, 0, this.innerHealthbarWidth, this.innerHealthbarHeight)
             .endFill();
 
         this.innerHealthBarBackgroundGraphics.position.set(this.healthBarPadding, this.healthBarPadding);
