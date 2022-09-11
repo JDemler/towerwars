@@ -35,8 +35,10 @@ export default abstract class GameObject {
         this.dispatchUiState = props.dispatchUiState;
     }
 
+    // #region Game Lifecycle Functions
+    
     public update(delta: number, deltaMs: number) {
-        this.onUpdate(delta, deltaMs);
+        this.onUpdate && this.onUpdate(delta, deltaMs);
         this.children.forEach(child => child.update(delta, deltaMs));
     }
 
@@ -50,15 +52,18 @@ export default abstract class GameObject {
     }
 
     public destroy() {
-        this.onDestroy();
+        this.onDestroy && this.onDestroy();
         this.children.forEach(child => child.destroy());
     }
 
-    abstract onUpdate(delta: number, deltaMs: number): void;
+    protected onUpdate?(delta: number, deltaMs: number): void;
 
-    abstract onDestroy(): void;
+    protected onDestroy?(): void;
 
-    
+
+    // #endregion
+    // #region Children Functionality
+
     public getChild<T extends GameObject>(type: Constructor<T>) {
         return this.children
             .find(child => child instanceof type) as T | undefined
@@ -69,4 +74,6 @@ export default abstract class GameObject {
             .filter(child => child instanceof type)
             .map(child => child as T)
     }
+
+    // #endregion
 }

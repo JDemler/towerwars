@@ -57,10 +57,6 @@ export default class Healthbar extends GameObject {
         this.outerHealthBarGraphics.addChild(this.innerHealthBarGraphics);
     }
 
-    onUpdate(delta: number, deltaMs: number): void {
-        
-    }
-
     onDestroy(): void {
         this.outerHealthBarGraphics.destroy();
     }

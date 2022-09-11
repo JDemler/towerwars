@@ -62,10 +62,6 @@ export default class Field extends GameObject {
 
         console.log('Creating field', fieldModel);
     }
-
-    onUpdate(delta: number, deltaMs: number): void {
-        
-    }
     
     onDestroy(): void {
         this.container.destroy();
@@ -75,7 +71,7 @@ export default class Field extends GameObject {
         if (this.gameClient.player?.fieldId !== this.id) {
             return;
         }
-        
+
         this.gameClient.buildTurret(coordinate);
     }
 

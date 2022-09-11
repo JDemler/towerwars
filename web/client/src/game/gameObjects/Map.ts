@@ -42,10 +42,6 @@ export default class Map extends GameObject {
             }
         }
     }
-
-    onUpdate(delta: number, deltaMs: number): void {
-
-    }
     
     onDestroy(): void {
         for (const tile of this.tileGraphics) {
