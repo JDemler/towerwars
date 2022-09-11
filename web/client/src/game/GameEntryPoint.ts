@@ -14,7 +14,7 @@ const beginGameLoop = (app: Application, viewport: Viewport, initialGameState: G
         fields.length = 0;
     }
 
-    const handleGameChangeAction = (action: FieldChangeAction, gameClient: GameClient) => {
+    const handleGameChangeAction = (action: FieldChangeAction) => {
         if (action.type === 'gameState') {
             clearFields();
             if (action.kind === 'create' || action.kind === 'update') {
@@ -49,10 +49,10 @@ const beginGameLoop = (app: Application, viewport: Viewport, initialGameState: G
         }
     }
 
-    gameClient.fieldUpdateDispatch = handleGameChangeAction;
+    gameClient.onDispatch(handleGameChangeAction);
 
     if (initialGameState !== undefined)
-        handleGameChangeAction({ type: 'gameState', kind: 'create', gameState: initialGameState }, gameClient);
+        handleGameChangeAction({ type: 'gameState', kind: 'create', gameState: initialGameState });
 
     app.ticker.add((delta) => {
         for (const field of fields) {

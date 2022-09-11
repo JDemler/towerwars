@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useReducer, createContext } from 'react';
 import { GamePhase, GameState, PlayerModel, UiState, InitialUiState } from '@models';
-import GameClient, { GameStateUpdateDispatch } from '@game/GameClient';
+import GameClient from '@game/GameClient';
     
 export type UiStateContextAction =
     | { type: "set-loading"; }
@@ -92,7 +92,9 @@ export const UiStateProvider: React.FC<React.PropsWithChildren> = ({ children })
     });
 
     useEffect(() => {
-        const handleGameStateAction: GameStateUpdateDispatch = (action, gameClient) => {
+        const gameClient = new GameClient();
+
+        gameClient.onDispatch((action) => {
             switch(action.type) {
                 case 'state': {
                     dispatch({ type: 'set-gamePhase', gamePhase: action.gameStatus });
@@ -107,13 +109,12 @@ export const UiStateProvider: React.FC<React.PropsWithChildren> = ({ children })
                     break;
                 }
                 default: {
-                    console.error('Unknown game state change action', action);
                     return;
                 }
             }
-        }
+        })
 
-        const gameClient = new GameClient(handleGameStateAction);
+        gameClient.start();
 
         dispatch({ type: 'set-gameClient', gameClient });
     }, []);

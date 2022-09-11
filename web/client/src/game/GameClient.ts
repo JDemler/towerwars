@@ -4,20 +4,16 @@ import { BuildTurretEvent, BuyMobEvent } from '@lib/FieldEvent';
 import { GridCoordinate } from '@grid';
 import { AddedPlayerModel, BulletModel, FieldModel, GameState, MobModel, PlayerModel, TowerModel, GamePhase } from '@models';
 
-export type GameChangeActionGameType = 'gameState' | 'state';
-export type GameChangeActionFieldType = 'player' | 'field' | 'tower' | 'mob' | 'bullet';
-
 export type GameChangeActionChangeKind = 'create' | 'update';
 export type GameChangeActionDeleteKind = 'delete';
 
-export type GameStateChangeAction =
+export type FieldChangeAction = 
     // GameState actions
     | { type: "gameState"; kind: GameChangeActionChangeKind; gameState: GameState }
     | { type: "gameState"; kind: GameChangeActionDeleteKind; }
     // State
     | { type: "state"; gameStatus: GamePhase }
 
-export type FieldChangeAction = GameStateChangeAction | (
     // Player actions
     | { type: "player"; kind: GameChangeActionChangeKind; fieldId: number; player: PlayerModel }
     | { type: "player"; kind: GameChangeActionDeleteKind; fieldId: number; playerId: number }
@@ -33,18 +29,15 @@ export type FieldChangeAction = GameStateChangeAction | (
     // Bullet actions
     | { type: "bullet"; kind: GameChangeActionChangeKind; fieldId: number; bullet: BulletModel }
     | { type: "bullet"; kind: GameChangeActionDeleteKind; fieldId: number; bulletId: number }
-)
 
-export type GameStateUpdateDispatch = (action: GameStateChangeAction, gameClient: GameClient) => void;
 export type FieldUpdateDispatch = (action: FieldChangeAction, gameClient: GameClient) => void;
 
 export default class GameClient {
     private webSocketClient?: WebSocketClient;
 
-    private gameStateUpdateDispatch: GameStateUpdateDispatch;
-    public fieldUpdateDispatch?: FieldUpdateDispatch;
-
     public player?: AddedPlayerModel;
+
+    private gameStateUpdateDispatches: FieldUpdateDispatch[] = [];
 
     public get enemyPlayerFieldId() {
         return this.player !== undefined
@@ -52,13 +45,21 @@ export default class GameClient {
             : undefined
     }
 
-    constructor(gameStateUpdateDispatch: GameStateUpdateDispatch) {
-        this.gameStateUpdateDispatch = gameStateUpdateDispatch;
-
+    public start() {
         this.initializeApi();
     }
 
-    initializeWebSocket() {
+    public onDispatch(callback: FieldUpdateDispatch) {
+        this.gameStateUpdateDispatches.push(callback);
+    }
+
+    private dispatch(action: FieldChangeAction) {
+        for (const dispatcher of this.gameStateUpdateDispatches) {
+            dispatcher(action, this);
+        }
+    }
+
+    private initializeWebSocket() {
         if (this.player === undefined) {
             console.error('Cannot initialize websocket without player');
             return;
@@ -80,7 +81,7 @@ export default class GameClient {
         }
     }
 
-    initializeApi() {
+    private initializeApi() {
         const sessionAddedPlayer = sessionStorage.getItem("addedPlayer");
 
         if (sessionAddedPlayer !== null) {
@@ -103,30 +104,25 @@ export default class GameClient {
                         return;
                     }
 
-                    this.gameStateUpdateDispatch({ type: "gameState", kind: 'create', gameState }, this);
-                    this.gameStateUpdateDispatch({ type: 'state', gameStatus: gameState.state }, this);
-
-                    this.fieldUpdateDispatch?.({ type: "gameState", kind: 'create', gameState }, this);
-                    this.fieldUpdateDispatch?.({ type: 'state', gameStatus: gameState.state }, this);
+                    this.dispatch({ type: "gameState", kind: 'create', gameState });
+                    this.dispatch({ type: 'state', gameStatus: gameState.state });
                 }).catch(error => {
                     console.error(error);
                     
-                    this.gameStateUpdateDispatch({ type: 'state', gameStatus: 'WaitingForPlayers'}, this);
-                    this.fieldUpdateDispatch?.({ type: 'state', gameStatus: 'WaitingForPlayers'}, this);
+                    this.dispatch({ type: 'state', gameStatus: 'WaitingForPlayers'});
                 })
         } else {
             console.log("No added player in session storage.");
 
-            this.gameStateUpdateDispatch({ type: 'state', gameStatus: 'WaitingForPlayers'}, this);
-            this.fieldUpdateDispatch?.({ type: 'state', gameStatus: 'WaitingForPlayers'}, this);
+            this.dispatch({ type: 'state', gameStatus: 'WaitingForPlayers'});
         }
     }
 
-    end() {
+    public end() {
         this.webSocketClient?.disconnect();
     }
 
-    joinGame(playerName: string) {
+    public joinGame(playerName: string) {
         ApiClient.joinGame(playerName)
             .then(addedPlayer => {
                 this.player = addedPlayer;
@@ -137,11 +133,8 @@ export default class GameClient {
 
                 ApiClient.getGameState(addedPlayer.gameId)
                     .then(gameState => {
-                        this.gameStateUpdateDispatch({ type: "gameState", kind: 'create', gameState }, this);
-                        this.gameStateUpdateDispatch({ type: 'state', gameStatus: gameState.state }, this);
-                        
-                        this.fieldUpdateDispatch?.({ type: "gameState", kind: 'create', gameState }, this);
-                        this.fieldUpdateDispatch?.({ type: 'state', gameStatus: gameState.state }, this);
+                        this.dispatch({ type: "gameState", kind: 'create', gameState });
+                        this.dispatch({ type: 'state', gameStatus: gameState.state });
                     }).catch(error => {
                         console.error(error);
                     })
@@ -151,7 +144,7 @@ export default class GameClient {
     }
 
     // Game Functions
-    buyMob() {
+    public buyMob() {
         if (this.webSocketClient === undefined) {
             return console.error('Websocket not initialised');
         }
@@ -162,7 +155,7 @@ export default class GameClient {
         this.webSocketClient.dispatchFieldEvent(new BuyMobEvent(this.player, this.enemyPlayerFieldId, 'confusedKid'));
     }
 
-    buildTurret(coordinate: GridCoordinate) {
+    public buildTurret(coordinate: GridCoordinate) {
         if (this.webSocketClient === undefined) {
             return console.error('Websocket not initialised');
         }
@@ -173,7 +166,7 @@ export default class GameClient {
         this.webSocketClient.dispatchFieldEvent(new BuildTurretEvent(this.player, coordinate.x, coordinate.y, 'likeButton'));
     }
 
-    handleWebSocketEvent(event: any) {
+    private handleWebSocketEvent(event: any) {
         const eventType: 'gameStateChanged' | 'player' | 'tower' | 'mob' | 'bullet' | 'barracks' = event.type;
         const eventKind: 'create' | 'update' | 'delete' | undefined = event.kind;
         const eventPayload = event.payload;
@@ -185,8 +178,7 @@ export default class GameClient {
             //     console.log('Player', eventKind, eventPayload)
             //     break;
             case "gameStateChanged":
-                this.gameStateUpdateDispatch({ type: "state", gameStatus: eventPayload.gameState }, this);
-                this.fieldUpdateDispatch?.({ type: "state", gameStatus: eventPayload.gameState }, this);
+                this.dispatch({ type: "state", gameStatus: eventPayload.gameState });
 
                 console.log('Game state changed', eventPayload.gameState);
 
@@ -196,8 +188,7 @@ export default class GameClient {
                 }
 
                 ApiClient.getGameState(this.player.gameId).then(gameState => {
-                    this.gameStateUpdateDispatch({ type: "gameState", kind: 'update', gameState }, this);
-                    this.fieldUpdateDispatch?.({ type: "gameState", kind: 'update', gameState }, this);
+                    this.dispatch({ type: "gameState", kind: 'update', gameState });
                 }).catch(error => {
                     console.error(error);
                 })
@@ -209,27 +200,27 @@ export default class GameClient {
                 break;
             case "player":
                 if (eventKind === "create" || eventKind === "update")
-                    this.fieldUpdateDispatch?.({ type: 'player', kind: eventKind, fieldId, player: PlayerModel.fromJSON(eventPayload) }, this);
+                    this.dispatch({ type: 'player', kind: eventKind, fieldId, player: PlayerModel.fromJSON(eventPayload) });
                 else if (eventKind === "delete")
-                    this.fieldUpdateDispatch?.({ type: 'player', kind: eventKind, fieldId, playerId: eventPayload }, this);
+                    this.dispatch({ type: 'player', kind: eventKind, fieldId, playerId: eventPayload });
                 break;
             case "tower":
                 if (eventKind === "create" || eventKind === "update")
-                    this.fieldUpdateDispatch?.({ type: 'tower', kind: eventKind, fieldId, tower: TowerModel.fromJSON(eventPayload) }, this);
+                    this.dispatch({ type: 'tower', kind: eventKind, fieldId, tower: TowerModel.fromJSON(eventPayload) });
                 else if (eventKind === 'delete')
-                    this.fieldUpdateDispatch?.({ type: 'tower', kind: eventKind, fieldId, towerId: eventPayload }, this);
+                    this.dispatch({ type: 'tower', kind: eventKind, fieldId, towerId: eventPayload });
                 break;
             case "mob":
                 if (eventKind === "create" || eventKind === "update")
-                    this.fieldUpdateDispatch?.({ type: 'mob', kind: eventKind, fieldId, mob: MobModel.fromJSON(eventPayload) }, this);
+                    this.dispatch({ type: 'mob', kind: eventKind, fieldId, mob: MobModel.fromJSON(eventPayload) });
                 else if (eventKind === 'delete')
-                    this.fieldUpdateDispatch?.({ type: 'mob', kind: eventKind, fieldId, mobId: eventPayload }, this);
+                    this.dispatch({ type: 'mob', kind: eventKind, fieldId, mobId: eventPayload });
                 break;
             case "bullet":
                 if (eventKind === "create" || eventKind === "update")
-                    this.fieldUpdateDispatch?.({ type: 'bullet', kind: eventKind, fieldId, bullet: BulletModel.fromJSON(eventPayload) }, this);
+                    this.dispatch({ type: 'bullet', kind: eventKind, fieldId, bullet: BulletModel.fromJSON(eventPayload) });
                 else if (eventKind === 'delete')
-                    this.fieldUpdateDispatch?.({ type: 'bullet', kind: eventKind, fieldId, bulletId: eventPayload }, this);
+                    this.dispatch({ type: 'bullet', kind: eventKind, fieldId, bulletId: eventPayload });
                 break;
             case "barracks":
                 break;
