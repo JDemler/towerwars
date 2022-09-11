@@ -1,15 +1,16 @@
 import { Application } from "pixi.js";
 import { Viewport } from 'pixi-viewport';
 import { useEffect, useRef, useState } from "react";
-import beginGameLoop from "@game/stage";
+import beginGameLoop from "@game/GameEntryPoint";
 import { useUiState } from "@hooks";
 
 const GameCanvas: React.FC = () => {
-    // Create a ref to the below div
+    // Create a ref to the below div where the canvas is placed inside
     const ref = useRef<HTMLDivElement>(null);
+
     const [uiState, dispatchUiState] = useUiState();
-    const [initialGameState] = useState(uiState!.gameState);
-    const [gameClient] = useState(uiState!.gameClient);
+    const [initialGameState] = useState(uiState.gameState);
+    const [gameClient] = useState(uiState.gameClient);
 
     useEffect(() => {
         const app = new Application({
@@ -23,12 +24,14 @@ const GameCanvas: React.FC = () => {
         // Add the canvas to the DOM
         ref.current?.appendChild(app.view);
 
+        // Rerender the canvas when the window is resized to prevent flickering
         const resizeObserver = new ResizeObserver(() => {
             app.render();
         });
 
         resizeObserver.observe(app.view);
 
+        // Create the camera viewport
         const viewport = new Viewport({
             screenWidth: window.innerWidth,
             screenHeight: window.innerHeight,

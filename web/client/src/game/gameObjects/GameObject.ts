@@ -38,7 +38,7 @@ export default abstract class GameObject {
     // #region Game Lifecycle Functions
     
     public update(delta: number, deltaMs: number) {
-        this.onUpdate && this.onUpdate(delta, deltaMs);
+        this.onUpdate?.(delta, deltaMs);
         this.children.forEach(child => child.update(delta, deltaMs));
     }
 
@@ -52,7 +52,7 @@ export default abstract class GameObject {
     }
 
     public destroy() {
-        this.onDestroy && this.onDestroy();
+        this.onDestroy?.();
         this.children.forEach(child => child.destroy());
     }
 

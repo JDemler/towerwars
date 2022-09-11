@@ -106,19 +106,19 @@ export default class GameClient {
                     this.gameStateUpdateDispatch({ type: "gameState", kind: 'create', gameState }, this);
                     this.gameStateUpdateDispatch({ type: 'state', gameStatus: gameState.state }, this);
 
-                    this.fieldUpdateDispatch && this.fieldUpdateDispatch({ type: "gameState", kind: 'create', gameState }, this);
-                    this.fieldUpdateDispatch && this.fieldUpdateDispatch({ type: 'state', gameStatus: gameState.state }, this);
+                    this.fieldUpdateDispatch?.({ type: "gameState", kind: 'create', gameState }, this);
+                    this.fieldUpdateDispatch?.({ type: 'state', gameStatus: gameState.state }, this);
                 }).catch(error => {
                     console.error(error);
                     
                     this.gameStateUpdateDispatch({ type: 'state', gameStatus: 'WaitingForPlayers'}, this);
-                    this.fieldUpdateDispatch && this.fieldUpdateDispatch({ type: 'state', gameStatus: 'WaitingForPlayers'}, this);
+                    this.fieldUpdateDispatch?.({ type: 'state', gameStatus: 'WaitingForPlayers'}, this);
                 })
         } else {
             console.log("No added player in session storage.");
 
             this.gameStateUpdateDispatch({ type: 'state', gameStatus: 'WaitingForPlayers'}, this);
-            this.fieldUpdateDispatch && this.fieldUpdateDispatch({ type: 'state', gameStatus: 'WaitingForPlayers'}, this);
+            this.fieldUpdateDispatch?.({ type: 'state', gameStatus: 'WaitingForPlayers'}, this);
         }
     }
 
@@ -140,8 +140,8 @@ export default class GameClient {
                         this.gameStateUpdateDispatch({ type: "gameState", kind: 'create', gameState }, this);
                         this.gameStateUpdateDispatch({ type: 'state', gameStatus: gameState.state }, this);
                         
-                        this.fieldUpdateDispatch && this.fieldUpdateDispatch({ type: "gameState", kind: 'create', gameState }, this);
-                        this.fieldUpdateDispatch && this.fieldUpdateDispatch({ type: 'state', gameStatus: gameState.state }, this);
+                        this.fieldUpdateDispatch?.({ type: "gameState", kind: 'create', gameState }, this);
+                        this.fieldUpdateDispatch?.({ type: 'state', gameStatus: gameState.state }, this);
                     }).catch(error => {
                         console.error(error);
                     })
@@ -186,7 +186,7 @@ export default class GameClient {
             //     break;
             case "gameStateChanged":
                 this.gameStateUpdateDispatch({ type: "state", gameStatus: eventPayload.gameState }, this);
-                this.fieldUpdateDispatch && this.fieldUpdateDispatch({ type: "state", gameStatus: eventPayload.gameState }, this);
+                this.fieldUpdateDispatch?.({ type: "state", gameStatus: eventPayload.gameState }, this);
 
                 console.log('Game state changed', eventPayload.gameState);
 
@@ -197,7 +197,7 @@ export default class GameClient {
 
                 ApiClient.getGameState(this.player.gameId).then(gameState => {
                     this.gameStateUpdateDispatch({ type: "gameState", kind: 'update', gameState }, this);
-                    this.fieldUpdateDispatch && this.fieldUpdateDispatch({ type: "gameState", kind: 'update', gameState }, this);
+                    this.fieldUpdateDispatch?.({ type: "gameState", kind: 'update', gameState }, this);
                 }).catch(error => {
                     console.error(error);
                 })
@@ -209,27 +209,27 @@ export default class GameClient {
                 break;
             case "player":
                 if (eventKind === "create" || eventKind === "update")
-                    this.fieldUpdateDispatch && this.fieldUpdateDispatch({ type: 'player', kind: eventKind, fieldId, player: PlayerModel.fromJSON(eventPayload) }, this);
+                    this.fieldUpdateDispatch?.({ type: 'player', kind: eventKind, fieldId, player: PlayerModel.fromJSON(eventPayload) }, this);
                 else if (eventKind === "delete")
-                    this.fieldUpdateDispatch && this.fieldUpdateDispatch({ type: 'player', kind: eventKind, fieldId, playerId: eventPayload }, this);
+                    this.fieldUpdateDispatch?.({ type: 'player', kind: eventKind, fieldId, playerId: eventPayload }, this);
                 break;
             case "tower":
                 if (eventKind === "create" || eventKind === "update")
-                    this.fieldUpdateDispatch && this.fieldUpdateDispatch({ type: 'tower', kind: eventKind, fieldId, tower: TowerModel.fromJSON(eventPayload) }, this);
+                    this.fieldUpdateDispatch?.({ type: 'tower', kind: eventKind, fieldId, tower: TowerModel.fromJSON(eventPayload) }, this);
                 else if (eventKind === 'delete')
-                    this.fieldUpdateDispatch && this.fieldUpdateDispatch({ type: 'tower', kind: eventKind, fieldId, towerId: eventPayload }, this);
+                    this.fieldUpdateDispatch?.({ type: 'tower', kind: eventKind, fieldId, towerId: eventPayload }, this);
                 break;
             case "mob":
                 if (eventKind === "create" || eventKind === "update")
-                    this.fieldUpdateDispatch && this.fieldUpdateDispatch({ type: 'mob', kind: eventKind, fieldId, mob: MobModel.fromJSON(eventPayload) }, this);
+                    this.fieldUpdateDispatch?.({ type: 'mob', kind: eventKind, fieldId, mob: MobModel.fromJSON(eventPayload) }, this);
                 else if (eventKind === 'delete')
-                    this.fieldUpdateDispatch && this.fieldUpdateDispatch({ type: 'mob', kind: eventKind, fieldId, mobId: eventPayload }, this);
+                    this.fieldUpdateDispatch?.({ type: 'mob', kind: eventKind, fieldId, mobId: eventPayload }, this);
                 break;
             case "bullet":
                 if (eventKind === "create" || eventKind === "update")
-                    this.fieldUpdateDispatch && this.fieldUpdateDispatch({ type: 'bullet', kind: eventKind, fieldId, bullet: BulletModel.fromJSON(eventPayload) }, this);
+                    this.fieldUpdateDispatch?.({ type: 'bullet', kind: eventKind, fieldId, bullet: BulletModel.fromJSON(eventPayload) }, this);
                 else if (eventKind === 'delete')
-                    this.fieldUpdateDispatch && this.fieldUpdateDispatch({ type: 'bullet', kind: eventKind, fieldId, bulletId: eventPayload }, this);
+                    this.fieldUpdateDispatch?.({ type: 'bullet', kind: eventKind, fieldId, bulletId: eventPayload }, this);
                 break;
             case "barracks":
                 break;
