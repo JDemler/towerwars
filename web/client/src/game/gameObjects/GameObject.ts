@@ -12,12 +12,12 @@ export interface IGameObjectProps {
 }
 
 export default abstract class GameObject {
-    app: Application;
-    viewport: Viewport;
-    gameClient: GameClient;
-    dispatchUiState: React.Dispatch<UiStateContextAction>;
-
-    get props(): IGameObjectProps {
+    protected app: Application;
+    protected viewport: Viewport;
+    protected gameClient: GameClient;
+    protected dispatchUiState: React.Dispatch<UiStateContextAction>;
+    
+    protected get props(): IGameObjectProps {
         return {
             app: this.app,
             viewport: this.viewport,
@@ -26,7 +26,7 @@ export default abstract class GameObject {
         }
     }
 
-    children: GameObject[] = [];
+    public children: GameObject[] = [];
 
     constructor(props: IGameObjectProps) {
         this.app = props.app;
@@ -35,7 +35,7 @@ export default abstract class GameObject {
         this.dispatchUiState = props.dispatchUiState;
     }
 
-    update(delta: number, deltaMs: number) {
+    public update(delta: number, deltaMs: number) {
         this.onUpdate(delta, deltaMs);
         this.children.forEach(child => child.update(delta, deltaMs));
     }
