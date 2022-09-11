@@ -17,51 +17,54 @@ export type UiStateContextAction =
     | { type: "set-playerModel"; playerModel: PlayerModel }
 
 function reducer (state: InitialUiState | undefined, action: UiStateContextAction): InitialUiState | undefined {
+    if (action.type === 'set-uiState')
+        return action.uiState;
+
+    if (state === undefined)
+        return undefined;
+
     switch (action.type) {
         case 'set-loading': {
             return undefined
         }
-        case 'set-uiState': {
-            return action.uiState;
-        }
         case 'set-gameClient': {
-            return state === undefined ? undefined : {
+            return {
                 ...state,
                 gameClient: action.gameClient
             }
         }
         case 'set-gameState': {
-            return state === undefined ? undefined : {
+            return {
                 ...state,
                 gameState: action.gameState,
             }
         }
         case 'clear-gameState': {
-            return state === undefined ? undefined : {
+            return {
                 ...state,
                 gameState: undefined,
             }
         }
         case 'set-gamePhase': {
-            return state === undefined ? undefined : {
+            return {
                 ...state,
                 gamePhase: action.gamePhase,
             }
         }
         case 'set-mobTypes': {
-            return state === undefined ? undefined : {
+            return {
                 ...state,
                 mobTypes: action.mobTypes,
             }
         }
         case 'set-towerTypes': {
-            return state === undefined ? undefined : {
+            return {
                 ...state,
                 towerTypes: action.towerTypes,
             }
         }
         case 'set-playerModel': {
-            return state === undefined ? undefined : {
+            return {
                 ...state,
                 playerModel: action.playerModel,
             }
