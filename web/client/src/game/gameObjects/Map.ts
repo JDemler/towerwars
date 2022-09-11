@@ -2,13 +2,15 @@ import * as PIXI from 'pixi.js';
 import { GameObject, Field } from "@gameObjects";
 import { MapModel } from '@models';
 import { GridSettings, GridCoordinate } from '@grid';
+import { Viewport } from 'pixi-viewport';
+import { handleViewportClick } from '@helpers';
 
 export default class Map extends GameObject {
     mapModel: MapModel;
 
     tileGraphics: PIXI.Graphics[] = [];
 
-    constructor(app: PIXI.Application, field: Field, mapModel: MapModel) {
+    constructor(app: PIXI.Application, viewport: Viewport, field: Field, mapModel: MapModel) {
         super(app);
 
         this.mapModel = mapModel;
@@ -28,9 +30,12 @@ export default class Map extends GameObject {
                 tile.zIndex = 0;
 
                 tile.interactive = true;
-                tile.on('pointerdown', e => {
+                
+                handleViewportClick(tile, viewport);
+
+                tile.on('viewportClick', e => {
                     field.onTileClick(new GridCoordinate(x, y));
-                })
+                });
 
                 field.container.addChild(tile);
         

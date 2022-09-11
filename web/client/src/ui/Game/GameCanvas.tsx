@@ -43,8 +43,7 @@ const GameCanvas: React.FC = () => {
 
         // activate plugins
         viewport
-            .drag({
-            })
+            .drag()
             .pinch()
             .wheel()
             .decelerate()

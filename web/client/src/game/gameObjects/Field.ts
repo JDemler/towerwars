@@ -46,7 +46,7 @@ export default class Field extends GameObject {
 
         viewport.addChild(this.container);
 
-        this.createChild(new Map(app, this, this.mapModel));
+        this.createChild(new Map(app, viewport, this, this.mapModel));
 
         for (const towerModel of fieldModel.towers) {
             this.createChild(new Tower(app, this, towerModel));
