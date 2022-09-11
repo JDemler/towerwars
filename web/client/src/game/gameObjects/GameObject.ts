@@ -2,20 +2,20 @@ import { Application } from "pixi.js";
 import { Constructor } from "@helpers";
 import { Viewport } from 'pixi-viewport';
 import GameClient from '@game/GameClient';
-import { UiStateContextAction } from '../../hooks/useUiState';
+import { UiStateDispatch } from '@hooks';
 
 export interface IGameObjectProps {
     app: Application;
     viewport: Viewport;
     gameClient: GameClient;
-    dispatchUiState: React.Dispatch<UiStateContextAction>;
+    dispatchUiState: UiStateDispatch;
 }
 
 export default abstract class GameObject {
     protected app: Application;
     protected viewport: Viewport;
     protected gameClient: GameClient;
-    protected dispatchUiState: React.Dispatch<UiStateContextAction>;
+    protected dispatchUiState: UiStateDispatch;
     
     protected get props(): IGameObjectProps {
         return {

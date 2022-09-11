@@ -72,6 +72,10 @@ export default class Field extends GameObject {
     }
 
     onTileClick(coordinate: GridCoordinate) {
+        if (this.gameClient.player?.fieldId !== this.id) {
+            return;
+        }
+        
         this.gameClient.buildTurret(coordinate);
     }
 
