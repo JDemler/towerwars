@@ -9,12 +9,27 @@ export default class Map extends GameObject {
 
     tileGraphics: PIXI.Graphics[] = [];
 
-    constructor(props: IGameObjectProps, field: Field, mapModel: MapModel) {
+    mapContainer: PIXI.Container;
+
+    constructor(props: IGameObjectProps, field: Field, mapModel: MapModel, isCurrentPlayer: boolean) {
         super(props);
 
         this.mapModel = mapModel;
 
+        this.mapContainer = new PIXI.Container();
+
         const tileSize = GridSettings.tileSize;
+
+        if (isCurrentPlayer) {
+            const borderSize = tileSize / 4;
+
+            const currentPlayerBackground = new PIXI.Graphics()
+                .beginFill(0x3b6644)
+                .drawRect(-borderSize, -borderSize, this.mapModel.size.width * tileSize + borderSize * 2, this.mapModel.size.height * tileSize + borderSize * 2)
+                .endFill();
+
+            this.mapContainer.addChild(currentPlayerBackground)
+        }
         
         for (let x = 0; x < mapModel.size.width; x++) {
             for (let y = 0; y < mapModel.size.height; y++) {
@@ -36,16 +51,16 @@ export default class Map extends GameObject {
                     field.onTileClick(new GridCoordinate(x, y));
                 });
 
-                field.container.addChild(tile);
+                this.mapContainer.addChild(tile);
         
                 this.tileGraphics.push(tile);
             }
         }
+
+        field.container.addChild(this.mapContainer);
     }
     
     onDestroy(): void {
-        for (const tile of this.tileGraphics) {
-            tile.destroy();
-        }
+        this.mapContainer.destroy();
     }
 }

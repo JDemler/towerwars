@@ -28,6 +28,10 @@ export default class Field extends GameObject {
         return this.getChild(Map)!;
     }
 
+    get isCurrentPlayer(): boolean {
+        return this.gameClient.player?.fieldId === this.id;
+    }
+
     constructor(props: IGameObjectProps, fieldModel: FieldModel) {
         super(props);
         this.id = fieldModel.id;
@@ -40,7 +44,7 @@ export default class Field extends GameObject {
 
         this.viewport.addChild(this.container);
 
-        this.createChild(new Map(this.props, this, this.mapModel));
+        this.createChild(new Map(this.props, this, this.mapModel, this.isCurrentPlayer));
 
         for (const towerModel of fieldModel.towers) {
             this.createChild(new Tower(this.props, this, towerModel));
@@ -66,7 +70,7 @@ export default class Field extends GameObject {
     }
 
     onTileClick(coordinate: GridCoordinate) {
-        if (this.gameClient.player?.fieldId !== this.id) {
+        if (!this.isCurrentPlayer) {
             return;
         }
 
@@ -79,7 +83,7 @@ export default class Field extends GameObject {
                 console.error('Field actions not implemented');
                 break;
             case 'player':
-                if (action.kind !== 'delete' && action.fieldId === this.gameClient.player?.fieldId) {
+                if (action.kind !== 'delete' && this.isCurrentPlayer) {
                     this.dispatchUiState({ type: 'set-playerModel', playerModel: action.player });
                 }
 
