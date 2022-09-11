@@ -1,7 +1,7 @@
-import { Application, Sprite } from "pixi.js";
+import { Sprite } from "pixi.js";
 import { TowerModel } from "@models";
 import { GridSettings } from '@grid';
-import { GameObject, Field } from "@gameObjects";
+import { GameObject, IGameObjectProps, Field } from "@gameObjects";
 
 export default class Tower extends GameObject {
     id: number;
@@ -9,8 +9,8 @@ export default class Tower extends GameObject {
 
     towerCircle: Sprite;
 
-    constructor(app: Application, field: Field, towerModel: TowerModel) {
-        super(app);
+    constructor(props: IGameObjectProps, field: Field, towerModel: TowerModel) {
+        super(props);
 
         this.id = towerModel.id;
         this.towerModel = towerModel;
@@ -23,12 +23,6 @@ export default class Tower extends GameObject {
         this.towerCircle.anchor.set(0.5, 0.5);
         this.towerCircle.position.set(towerModel.coordinate.tileCenterX, towerModel.coordinate.tileCenterY);
         this.towerCircle.zIndex = 1000;
-
-        
-        // this.towerCircle.interactive = true;
-        // this.towerCircle.on('pointerdown', e => {
-        //     console.log(`Tile clicked`);
-        // })
 
         field.container.addChild(this.towerCircle);
     }

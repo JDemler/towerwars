@@ -1,7 +1,7 @@
-import { Application, Container, Sprite } from "pixi.js";
+import { Container, Sprite } from "pixi.js";
 import { MobModel } from "@models";
 import { GridSettings, GridCoordinate } from '@grid';
-import { GameObject, Field, Healthbar } from "@gameObjects";
+import { GameObject, Field, Healthbar, IGameObjectProps } from "@gameObjects";
 
 export default class Mob extends GameObject {
     id: number;
@@ -15,8 +15,8 @@ export default class Mob extends GameObject {
         return this.getChild(Healthbar)!;
     }
 
-    constructor(app: Application, field: Field, mobModel: MobModel) {
-        super(app);
+    constructor(props: IGameObjectProps, field: Field, mobModel: MobModel) {
+        super(props);
 
         this.id = mobModel.id;
         this.mobModel = mobModel;
@@ -40,7 +40,7 @@ export default class Mob extends GameObject {
         this.mobContainer.addChild(this.mobCircle);
 
         // Healthbar
-        const healthbar = new Healthbar(app, mobModel.health, mobModel.maxHealth);
+        const healthbar = new Healthbar(this.props, mobModel.health, mobModel.maxHealth);
         healthbar.outerHealthBarGraphics.position.y = GridSettings.tileSize * -0.5;
 
         this.mobContainer.addChild(healthbar.outerHealthBarGraphics);

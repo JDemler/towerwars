@@ -1,15 +1,11 @@
-import { Application, Container } from "pixi.js";
-import { Viewport } from 'pixi-viewport';
+import { Container } from "pixi.js";
 import { FieldModel, MapModel, PlayerModel } from "@models";
-import { GameObject, Tower, Mob, Bullet, Map } from "@gameObjects";
-import GameClient, { FieldChangeAction } from '@game/GameClient';
+import { GameObject, Tower, Mob, Bullet, Map, IGameObjectProps } from "@gameObjects";
+import { FieldChangeAction } from '@game/GameClient';
 import { GridCoordinate } from "@grid";
-import { UiStateContextAction } from '@hooks';
 
 export default class Field extends GameObject {
     id: number;
-    gameClient: GameClient;
-    dispatchUiState: React.Dispatch<UiStateContextAction>;
 
     mapModel: MapModel;
     player: PlayerModel;
@@ -32,11 +28,9 @@ export default class Field extends GameObject {
         return this.getChild(Map)!;
     }
 
-    constructor(app: Application, viewport: Viewport, gameClient: GameClient, fieldModel: FieldModel, dispatchUiState: React.Dispatch<UiStateContextAction>) {
-        super(app);
+    constructor(props: IGameObjectProps, fieldModel: FieldModel) {
+        super(props);
         this.id = fieldModel.id;
-        this.gameClient = gameClient;
-        this.dispatchUiState = dispatchUiState;
 
         this.mapModel = fieldModel.map;
         this.player = fieldModel.player;
@@ -44,16 +38,16 @@ export default class Field extends GameObject {
         this.container = new Container();
         this.container.sortableChildren = true;
 
-        viewport.addChild(this.container);
+        this.viewport.addChild(this.container);
 
-        this.createChild(new Map(app, viewport, this, this.mapModel));
+        this.createChild(new Map(this.props, this, this.mapModel));
 
         for (const towerModel of fieldModel.towers) {
-            this.createChild(new Tower(app, this, towerModel));
+            this.createChild(new Tower(this.props, this, towerModel));
         }
         
         for (const mobModel of fieldModel.mobs) {
-            this.createChild(new Mob(app, this, mobModel));
+            this.createChild(new Mob(this.props, this, mobModel));
         }
 
         for (const bulletModel of fieldModel.bullets) {
@@ -63,7 +57,7 @@ export default class Field extends GameObject {
                 continue;
             }
 
-            this.createChild(new Bullet(app, this, bulletModel, mob));
+            this.createChild(new Bullet(this.props, this, bulletModel, mob));
         }
 
         console.log('Creating field', fieldModel);
@@ -100,7 +94,7 @@ export default class Field extends GameObject {
             case 'tower':
                 switch (action.kind) {
                     case 'create': {
-                        this.createChild(new Tower(this.app, this, action.tower));
+                        this.createChild(new Tower(this.props, this, action.tower));
                         break;
                     }
                     case 'update': {
@@ -127,7 +121,7 @@ export default class Field extends GameObject {
             case 'mob':
                 switch (action.kind) {
                     case 'create': {
-                        this.createChild(new Mob(this.app, this, action.mob));
+                        this.createChild(new Mob(this.props, this, action.mob));
                         break;
                     }
                     case 'update': {
@@ -160,7 +154,7 @@ export default class Field extends GameObject {
                             return;
                         }
 
-                        this.createChild(new Bullet(this.app, this, action.bullet, mob));
+                        this.createChild(new Bullet(this.props, this, action.bullet, mob));
                         break;
                     }
                     case 'update': {

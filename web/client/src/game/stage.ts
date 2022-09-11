@@ -21,7 +21,7 @@ const beginGameLoop = (app: Application, viewport: Viewport, initialGameState: G
                 for (let i = 0; i < action.gameState.fields.length; i++) {
                     const fieldModel = action.gameState.fields[i];
 
-                    const field = new Field(app, viewport, gameClient, fieldModel, dispatchUiState);
+                    const field = new Field({ app, viewport, gameClient, dispatchUiState }, fieldModel);
                     field.container.position.x = i * (fieldModel.map.size.width * GridSettings.tileSize + GridSettings.tileSize * 2) + GridSettings.tileSize
                     field.container.position.y = GridSettings.tileSize;
                     fields.push(field);

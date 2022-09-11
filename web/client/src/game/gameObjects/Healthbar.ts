@@ -1,6 +1,6 @@
-import { Application, Graphics } from "pixi.js";
+import { Graphics } from "pixi.js";
 import { GridSettings } from '@grid';
-import { GameObject } from "@gameObjects";
+import { GameObject, IGameObjectProps } from "@gameObjects";
 
 export default class Healthbar extends GameObject {
     currentHealth: number;
@@ -21,8 +21,8 @@ export default class Healthbar extends GameObject {
         return this.innerHealthbarWidth * (this.currentHealth / this.maxHealth);
     }
 
-    constructor(app: Application, currentHealth: number, maxHealth: number) {
-        super(app);
+    constructor(props: IGameObjectProps, currentHealth: number, maxHealth: number) {
+        super(props);
 
         this.currentHealth = currentHealth;
         this.maxHealth = maxHealth;

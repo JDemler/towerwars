@@ -1,4 +1,5 @@
 export { default as GameObject } from './GameObject';
+export type { IGameObjectProps } from './GameObject';
 
 export { default as Field } from './Field';
 export { default as Map } from './Map';

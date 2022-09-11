@@ -1,7 +1,7 @@
-import { Application, Sprite } from "pixi.js";
+import { Sprite } from "pixi.js";
 import { BulletModel } from "@models";
 import { GridSettings, GridCoordinate } from '@grid';
-import { GameObject, Mob, Field } from "@gameObjects";
+import { GameObject, IGameObjectProps, Mob, Field } from "@gameObjects";
 
 export default class Bullet extends GameObject {
     id: number;
@@ -12,8 +12,8 @@ export default class Bullet extends GameObject {
 
     targetMob: Mob;
 
-    constructor(app: Application, field: Field, bulletModel: BulletModel, targetMob: Mob) {
-        super(app);
+    constructor(props: IGameObjectProps, field: Field, bulletModel: BulletModel, targetMob: Mob) {
+        super(props);
 
         this.id = bulletModel.id;
         this.bulletModel = bulletModel;

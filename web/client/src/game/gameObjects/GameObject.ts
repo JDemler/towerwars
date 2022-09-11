@@ -1,13 +1,38 @@
 import { Application } from "pixi.js";
 import { Constructor } from "@helpers";
+import { Viewport } from 'pixi-viewport';
+import GameClient from '@game/GameClient';
+import { UiStateContextAction } from '../../hooks/useUiState';
+
+export interface IGameObjectProps {
+    app: Application;
+    viewport: Viewport;
+    gameClient: GameClient;
+    dispatchUiState: React.Dispatch<UiStateContextAction>;
+}
 
 export default abstract class GameObject {
     app: Application;
+    viewport: Viewport;
+    gameClient: GameClient;
+    dispatchUiState: React.Dispatch<UiStateContextAction>;
+
+    get props(): IGameObjectProps {
+        return {
+            app: this.app,
+            viewport: this.viewport,
+            gameClient: this.gameClient,
+            dispatchUiState: this.dispatchUiState,
+        }
+    }
 
     children: GameObject[] = [];
 
-    constructor(app: Application) {
-        this.app = app;
+    constructor(props: IGameObjectProps) {
+        this.app = props.app;
+        this.viewport = props.viewport;
+        this.gameClient = props.gameClient;
+        this.dispatchUiState = props.dispatchUiState;
     }
 
     update(delta: number, deltaMs: number) {
