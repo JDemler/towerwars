@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useReducer, createContext } from 'react';
-import { GamePhase, GameState, PlayerModel, UiState, InitialUiState, MobTypeModel, TowerTypeModel } from '@models';
+import { GamePhase, GameState, PlayerModel, UiState, InitialUiState, MobTypeModel, TowerTypeModel, BarracksModel } from '@models';
 import GameClient from '@game/GameClient';
     
 export type UiStateContextAction =
@@ -13,6 +13,7 @@ export type UiStateContextAction =
 
     | { type: "set-mobTypes"; mobTypes: MobTypeModel[] }
     | { type: "set-towerTypes"; towerTypes: TowerTypeModel[] }
+    | { type: "set-barracksModel"; barracksModel: BarracksModel }
     
     | { type: "set-playerModel"; playerModel: PlayerModel }
 
@@ -63,6 +64,12 @@ function reducer (state: InitialUiState | undefined, action: UiStateContextActio
                 towerTypes: action.towerTypes,
             }
         }
+        case 'set-barracksModel': {
+            return {
+                ...state,
+                barracksModel: action.barracksModel,
+            }
+        }
         case 'set-playerModel': {
             return {
                 ...state,
@@ -90,6 +97,7 @@ export const UiStateProvider: React.FC<React.PropsWithChildren> = ({ children })
 
         mobTypes: undefined,
         towerTypes: undefined,
+        barracksModel: undefined,
 
         playerModel: undefined,
     });

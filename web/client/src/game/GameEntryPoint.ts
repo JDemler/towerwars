@@ -38,6 +38,7 @@ const beginGameLoop = (app: Application, viewport: Viewport, initialGameState: G
 
                     if (fieldModel.id === gameClient.player?.fieldId) {
                         dispatchUiState({ type: 'set-playerModel', playerModel: fieldModel.player });
+                        dispatchUiState({ type: 'set-barracksModel', barracksModel: fieldModel.barracks });
                     }
                 }
 
@@ -61,6 +62,14 @@ const beginGameLoop = (app: Application, viewport: Viewport, initialGameState: G
             gameInfo.mobTypes = action.mobTypes;
 
             dispatchUiState({ type: 'set-mobTypes', mobTypes: action.mobTypes });
+        }
+        else if (action.type === 'barracks') {
+            if (action.fieldId !== gameClient.player?.fieldId)
+                return;
+            
+            if (action.kind === 'create' || action.kind === 'update') {
+                dispatchUiState({ type: 'set-barracksModel', barracksModel: action.barracks });
+            }
         }
         else {
             const fieldId = action.fieldId;

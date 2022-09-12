@@ -1,4 +1,4 @@
-import { BulletModel, TowerModel, MobModel, PlayerModel, MapModel } from "@models";
+import { BulletModel, TowerModel, MobModel, PlayerModel, MapModel, BarracksModel } from "@models";
 
 interface FieldModel {
     id: number;
@@ -7,6 +7,7 @@ interface FieldModel {
     mobs: MobModel[];
     bullets: BulletModel[];
     towers: TowerModel[];
+    barracks: BarracksModel;
 }
 
 namespace FieldModel {
@@ -18,6 +19,7 @@ namespace FieldModel {
             mobs: json.mobs.map((jsonMob: any) => MobModel.fromJSON(jsonMob)),
             bullets: json.bullets.map((jsonBullet: any) => BulletModel.fromJSON(jsonBullet)),
             towers: json.towers.map((jsonTower: any) => TowerModel.fromJSON(jsonTower)),
+            barracks: BarracksModel.fromJSON(json.barracks),
         }
     }
 }

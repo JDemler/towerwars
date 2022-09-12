@@ -10,4 +10,6 @@ export { default as TowerModel } from './TowerModel';
 export { default as TowerTypeModel } from './TowerTypeModel';
 export type { TowerTypeLevelModel } from './TowerTypeModel';
 export { default as BulletModel } from './BulletModel';
+export { default as BarracksModel } from './BarracksModel';
+export type { MobSlotModel } from './BarracksModel';
 export type { default as UiState, InitialUiState } from './UiState';

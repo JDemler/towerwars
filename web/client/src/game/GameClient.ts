@@ -2,7 +2,7 @@ import ApiClient from '@clients/ApiClient';
 import WebSocketClient from '@clients/WebSocketClient';
 import { BuildTurretEvent, BuyMobEvent } from '@lib/FieldEvent';
 import { GridCoordinate } from '@grid';
-import { AddedPlayerModel, BulletModel, FieldModel, GameState, MobModel, PlayerModel, TowerModel, GamePhase, TowerTypeModel, MobTypeModel } from '@models';
+import { AddedPlayerModel, BulletModel, FieldModel, GameState, MobModel, PlayerModel, TowerModel, GamePhase, TowerTypeModel, MobTypeModel, BarracksModel } from '@models';
 
 export type GameChangeActionChangeKind = 'create' | 'update';
 export type GameChangeActionDeleteKind = 'delete';
@@ -34,6 +34,9 @@ export type FieldChangeAction =
     // Bullet actions
     | { type: "bullet"; kind: GameChangeActionChangeKind; fieldId: number; bullet: BulletModel }
     | { type: "bullet"; kind: GameChangeActionDeleteKind; fieldId: number; bulletId: number }
+    // Barracks actions
+    | { type: "barracks"; kind: GameChangeActionChangeKind; fieldId: number; barracks: BarracksModel }
+    | { type: "barracks"; kind: GameChangeActionDeleteKind; fieldId: number; barracksId: number }
 
 export type FieldUpdateDispatch = (action: FieldChangeAction, gameClient: GameClient) => void;
 
@@ -245,7 +248,11 @@ export default class GameClient {
                     this.dispatch({ type: 'bullet', kind: eventKind, fieldId, bulletId: eventPayload });
                 break;
             case "barracks":
-                // console.log('Barracks event', event);
+                if (eventKind === "create" || eventKind === "update")
+                    this.dispatch({ type: 'barracks', kind: eventKind, fieldId, barracks: BarracksModel.fromJSON(eventPayload) });
+                else if (eventKind === 'delete')
+                    this.dispatch({ type: 'barracks', kind: eventKind, fieldId, barracksId: eventPayload });
+                break;
                 break;
             default:
                 console.log("Unknown event type:", eventType, event);
