@@ -30,7 +30,7 @@ export default class Mob extends GameObject {
         this.mobContainer.zIndex = 1;
 
         // Mob Sprite
-        this.mobCircle = Sprite.from('assets/facebook_troll.jpg');
+        this.mobCircle = this.MobSprite;
 
         this.mobCircle.anchor.set(0.5, 0.5);
 
@@ -48,6 +48,36 @@ export default class Mob extends GameObject {
 
         // Others
         field.container.addChild(this.mobContainer);
+    }
+
+    get MobSprite() {
+        let imgName: string;
+        console.log(this.mobModel);
+        switch (this.mobModel.type) {
+            case 'Confused Kid':
+                imgName = 'confused_kid';
+                break;
+            case 'Facebook Troll':
+                imgName = 'facebook_troll';
+                break;
+            case 'Facebook Mom':
+                imgName = 'facebook_mom';
+                break;
+            case 'Nice Guy':
+                imgName = 'nice_guy';
+                break;
+            case 'Facebook Addict':
+                imgName = 'facebook_addict';
+                break;
+            case 'Karen':
+                imgName = 'karen';
+                break;
+            default:
+                imgName = 'facebook_troll';
+                break;
+        }
+        console.log(`assets/mobSprites/${imgName}.jpg`);
+        return Sprite.from(`assets/mobSprites/${imgName}.jpg`);
     }
 
     onUpdate(_: number, deltaMs: number): void {
