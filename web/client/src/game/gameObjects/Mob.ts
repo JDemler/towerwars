@@ -51,10 +51,18 @@ export default class Mob extends GameObject {
     }
 
     get MobSpritePaths() {
+        // Get a random integer between 1 and 4
+        let animationMobIndex = Math.floor(Math.random() * 4) + 1;
+        // Replace sprites with 1 because Jakob forgot them
+        if (animationMobIndex === 1) 
+            animationMobIndex = 0;
+
+        const animationMobIndexStr = String(animationMobIndex).padStart(5, '0');
+
         const paths = [];
         for (let i = 0; i < 32; i++) {
             const animationSpriteIndex = String(i).padStart(3, '0');
-            paths.push(`assets/aiSprites/00000-${animationSpriteIndex}.png`);
+            paths.push(`assets/aiSprites/${animationMobIndexStr}-${animationSpriteIndex}.png`);
         }
         console.log(paths)
         return paths;
