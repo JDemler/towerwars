@@ -7,6 +7,10 @@ interface TowerModel {
     range: number;
     fireRate: number;
     cooldown: number;
+    level: number;
+    splash: number;
+    splashDmg: number;
+    type: string;
 }
 
 namespace TowerModel {
@@ -18,6 +22,10 @@ namespace TowerModel {
             range: json.range,
             fireRate: json.fireRate,
             cooldown: json.cooldown,
+            level: json.level,
+            splash: json.splash,
+            splashDmg: json.splashDmg,
+            type: json.type,
         };
     }
 }

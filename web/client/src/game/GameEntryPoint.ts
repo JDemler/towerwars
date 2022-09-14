@@ -9,6 +9,8 @@ import { UiStateDispatch } from '@hooks';
 export interface GameInfo {
     towerTypes: TowerTypeModel[] | null;
     mobTypes: MobTypeModel[] | null;
+
+    selectedTowerType: TowerTypeModel | null;
 }
 
 const beginGameLoop = (app: Application, viewport: Viewport, initialGameState: GameState | undefined, gameClient: GameClient, dispatchUiState: UiStateDispatch) => {
@@ -22,7 +24,16 @@ const beginGameLoop = (app: Application, viewport: Viewport, initialGameState: G
     const gameInfo: GameInfo = {
         towerTypes: null,
         mobTypes: null,
+
+        selectedTowerType: null,
     }
+
+    function setSelectedTowerType(towerTypeKey: string) {
+        gameInfo.selectedTowerType = gameInfo.towerTypes?.find(t => t.key === towerTypeKey) ?? null 
+        dispatchUiState({ type: 'set-selectedTowerType', selectedTowerTypeKey: towerTypeKey });
+    }
+
+    dispatchUiState({ type: 'set-selectedTowerTypeHandler', selectedTowerTypeHandler: setSelectedTowerType});
 
     const handleGameChangeAction = (action: FieldChangeAction) => {
         if (action.type === 'gameState') {
@@ -57,6 +68,10 @@ const beginGameLoop = (app: Application, viewport: Viewport, initialGameState: G
             gameInfo.towerTypes = action.towerTypes;
             
             dispatchUiState({ type: 'set-towerTypes', towerTypes: action.towerTypes });
+
+            if (gameInfo.selectedTowerType === null && gameInfo.towerTypes.length > 0) {
+                setSelectedTowerType(gameInfo.towerTypes[0].key);
+            }
         }
         else if (action.type === 'mobTypes') {
             gameInfo.mobTypes = action.mobTypes;

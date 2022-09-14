@@ -10,12 +10,15 @@ export type UiStateContextAction =
     | { type: "set-gameState"; gameState: GameState }
     | { type: "clear-gameState" }
     | { type: "set-gamePhase"; gamePhase: GamePhase }
+    
+    | { type: "set-playerModel"; playerModel: PlayerModel }
 
     | { type: "set-mobTypes"; mobTypes: MobTypeModel[] }
     | { type: "set-towerTypes"; towerTypes: TowerTypeModel[] }
     | { type: "set-barracksModel"; barracksModel: BarracksModel }
     
-    | { type: "set-playerModel"; playerModel: PlayerModel }
+    | { type: "set-selectedTowerTypeHandler"; selectedTowerTypeHandler: (towerType: string) => void }
+    | { type: "set-selectedTowerType"; selectedTowerTypeKey: string }
 
 function reducer (state: InitialUiState | undefined, action: UiStateContextAction): InitialUiState | undefined {
     if (action.type === 'set-uiState')
@@ -52,6 +55,12 @@ function reducer (state: InitialUiState | undefined, action: UiStateContextActio
                 gamePhase: action.gamePhase,
             }
         }
+        case 'set-playerModel': {
+            return {
+                ...state,
+                playerModel: action.playerModel,
+            }
+        }
         case 'set-mobTypes': {
             return {
                 ...state,
@@ -70,10 +79,16 @@ function reducer (state: InitialUiState | undefined, action: UiStateContextActio
                 barracksModel: action.barracksModel,
             }
         }
-        case 'set-playerModel': {
+        case 'set-selectedTowerTypeHandler': {
             return {
                 ...state,
-                playerModel: action.playerModel,
+                setSelectedTowerType: action.selectedTowerTypeHandler,
+            }
+        }
+        case 'set-selectedTowerType': {
+            return {
+                ...state,
+                selectedTowerTypeKey: action.selectedTowerTypeKey,
             }
         }
         default:
@@ -89,18 +104,7 @@ const UiStateContext = createContext<InitialUiStateContextType | undefined>(unde
 export type UiStateDispatch = React.Dispatch<UiStateContextAction>;
 
 export const UiStateProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
-    const [context, dispatch] = useReducer(reducer, {
-        gameClient: undefined,
-        gameState: undefined,
-
-        gamePhase: undefined,
-
-        mobTypes: undefined,
-        towerTypes: undefined,
-        barracksModel: undefined,
-
-        playerModel: undefined,
-    });
+    const [context, dispatch] = useReducer(reducer, {});
 
     useEffect(() => {
         const gameClient = new GameClient();

@@ -75,11 +75,14 @@ export default class Field extends GameObject {
     }
 
     onTileClick(coordinate: GridCoordinate) {
-        if (!this.isCurrentPlayer) {
+        if (!this.isCurrentPlayer)
             return;
-        }
 
-        this.gameClient.buildTurret(coordinate);
+        const towerTypeModel = this.gameInfo.selectedTowerType;
+        if (towerTypeModel === null)
+            return;
+
+        this.gameClient.buildTurret(coordinate, towerTypeModel.key);
     }
 
     handleGameChangeAction(action: FieldChangeAction) {

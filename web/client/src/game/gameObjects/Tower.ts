@@ -15,7 +15,7 @@ export default class Tower extends GameObject {
         this.id = towerModel.id;
         this.towerModel = towerModel;
 
-        this.towerCircle = Sprite.from('assets/facebook_troll.jpg');
+        this.towerCircle = this.TowerSprite;
 
         this.towerCircle.width = GridSettings.tileSize * 0.7;
         this.towerCircle.height = GridSettings.tileSize * 0.7;
@@ -25,6 +25,25 @@ export default class Tower extends GameObject {
         this.towerCircle.zIndex = 1000;
 
         field.container.addChild(this.towerCircle);
+    }
+
+    get TowerSprite() {
+        let imgName: string;
+        switch (this.towerModel.type) {
+            case 'likeButton':
+                imgName = 'like_button';
+                break;
+            case 'comment':
+                imgName = 'comment';
+                break;
+            case 'profilePicture':
+                imgName = 'profile_picture';
+                break;
+            default:
+                imgName = 'likeButton';
+                break;
+        }
+        return Sprite.from(`assets/towerSprites/${imgName}.jpg`);
     }
 
     onUpdate(delta: number, deltaMs: number): void {

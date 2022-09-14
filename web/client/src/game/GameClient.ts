@@ -183,7 +183,7 @@ export default class GameClient {
         this.webSocketClient.dispatchFieldEvent(new BuyMobEvent(this.player, this.enemyPlayerFieldId, mobKey));
     }
 
-    public buildTurret(coordinate: GridCoordinate) {
+    public buildTurret(coordinate: GridCoordinate, towerType: string) {
         if (this.webSocketClient === undefined) {
             return console.error('Websocket not initialised');
         }
@@ -191,7 +191,7 @@ export default class GameClient {
             return console.error('Not a player');
         }
 
-        this.webSocketClient.dispatchFieldEvent(new BuildTurretEvent(this.player, coordinate.x, coordinate.y, 'likeButton'));
+        this.webSocketClient.dispatchFieldEvent(new BuildTurretEvent(this.player, coordinate.x, coordinate.y, towerType));
     }
 
     private handleWebSocketEvent(event: any) {
@@ -252,7 +252,6 @@ export default class GameClient {
                     this.dispatch({ type: 'barracks', kind: eventKind, fieldId, barracks: BarracksModel.fromJSON(eventPayload) });
                 else if (eventKind === 'delete')
                     this.dispatch({ type: 'barracks', kind: eventKind, fieldId, barracksId: eventPayload });
-                break;
                 break;
             default:
                 console.log("Unknown event type:", eventType, event);

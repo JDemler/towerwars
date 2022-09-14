@@ -2,16 +2,19 @@ import GameClient from "@game/GameClient";
 import { GamePhase, GameState, MobTypeModel, PlayerModel, TowerTypeModel, BarracksModel } from '@models';
 
 export interface InitialUiState {
-    gameClient: GameClient | undefined;
+    gameClient?: GameClient;
 
-    gameState: GameState | undefined;
-    gamePhase: GamePhase | undefined;
+    gameState?: GameState;
+    gamePhase?: GamePhase;
 
-    mobTypes: MobTypeModel[] | undefined;
-    towerTypes: TowerTypeModel[] | undefined;
-    barracksModel: BarracksModel | undefined;
+    playerModel?: PlayerModel;
 
-    playerModel: PlayerModel | undefined;
+    mobTypes?: MobTypeModel[];
+    towerTypes?: TowerTypeModel[];
+    barracksModel?: BarracksModel;
+
+    setSelectedTowerType?: (towerType: string) => void;
+    selectedTowerTypeKey?: string;
 }
 
 export default interface UiState extends InitialUiState {
