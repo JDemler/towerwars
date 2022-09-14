@@ -1,4 +1,4 @@
-import { Container, Sprite } from "pixi.js";
+import { AnimatedSprite, Container, Sprite, Texture } from "pixi.js";
 import { MobModel } from "@models";
 import { GridSettings, GridCoordinate } from '@grid';
 import { GameObject, Field, Healthbar, IGameObjectProps } from "@gameObjects";
@@ -8,7 +8,7 @@ export default class Mob extends GameObject {
     mobModel: MobModel;
 
     mobContainer: Container;
-    mobCircle: Sprite;
+    mobCircle: AnimatedSprite;
     currentCoordinate: GridCoordinate;
 
     get healthbar() {
@@ -50,42 +50,63 @@ export default class Mob extends GameObject {
         field.container.addChild(this.mobContainer);
     }
 
-    get MobSprite() {
-        let imgName: string;
-        console.log(this.mobModel);
-        switch (this.mobModel.type) {
-            case 'Confused Kid':
-                imgName = 'confused_kid';
-                break;
-            case 'Facebook Troll':
-                imgName = 'facebook_troll';
-                break;
-            case 'Facebook Mom':
-                imgName = 'facebook_mom';
-                break;
-            case 'Nice Guy':
-                imgName = 'nice_guy';
-                break;
-            case 'Facebook Addict':
-                imgName = 'facebook_addict';
-                break;
-            case 'Karen':
-                imgName = 'karen';
-                break;
-            default:
-                imgName = 'facebook_troll';
-                break;
+    get MobSpritePaths() {
+        const paths = [];
+        for (let i = 0; i < 32; i++) {
+            const animationSpriteIndex = String(i).padStart(3, '0');
+            paths.push(`assets/aiSprites/00000-${animationSpriteIndex}.png`);
         }
-        console.log(`assets/mobSprites/${imgName}.jpg`);
-        return Sprite.from(`assets/mobSprites/${imgName}.jpg`);
+        console.log(paths)
+        return paths;
     }
 
-    onUpdate(_: number, deltaMs: number): void {
+    get MobSprite() {
+        // let imgName: string;
+        // console.log(this.mobModel);
+        // switch (this.mobModel.type) {
+        //     case 'Confused Kid':
+        //         imgName = 'confused_kid';
+        //         break;
+        //     case 'Facebook Troll':
+        //         imgName = 'facebook_troll';
+        //         break;
+        //     case 'Facebook Mom':
+        //         imgName = 'facebook_mom';
+        //         break;
+        //     case 'Nice Guy':
+        //         imgName = 'nice_guy';
+        //         break;
+        //     case 'Facebook Addict':
+        //         imgName = 'facebook_addict';
+        //         break;
+        //     case 'Karen':
+        //         imgName = 'karen';
+        //         break;
+        //     default:
+        //         imgName = 'facebook_troll';
+        //         break;
+        // }
+        // console.log(`assets/mobSprites/${imgName}.jpg`);
+        // return Sprite.from(`assets/mobSprites/${imgName}.jpg`);
+
+        const textures = this.MobSpritePaths.map(path => Texture.from(path));
+
+        const sprite = new AnimatedSprite(textures);
+        sprite.animationSpeed = 0.1;
+        sprite.play()
+
+        return sprite;
+    }
+
+    onUpdate(delta: number, deltaMs: number): void {
         const newPosition = this.currentCoordinate.moveTo(this.mobModel.targetCoordinate, this.mobModel.speed, deltaMs);
 
         this.currentCoordinate = newPosition;
 
         this.mobContainer.position.set(newPosition.tileCenterX, newPosition.tileCenterY);
+
+        
+       this.mobCircle.update(delta);
     }
 
     onDestroy(): void {
