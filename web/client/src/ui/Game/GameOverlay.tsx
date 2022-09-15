@@ -4,7 +4,12 @@ import { MobSlotModel, MobTypeModel } from "@models";
 const GameOverlay: React.FC = () => {
     const [uiState] = useUiState();
 
-    const { playerModel, towerTypes, mobTypes, barracksModel, selectedTowerTypeKey } = uiState;
+    const { gameClient, playerModel, towerTypes, mobTypes, barracksModel, selectedTowerTypeKey, selectedTower } = uiState;
+
+    const selectedTowerType = towerTypes?.find(t => t.key === selectedTower?.type);
+    const selectedTowerNextLevel = selectedTower !== undefined && selectedTowerType !== undefined && selectedTower?.level < selectedTowerType?.levels.length 
+        ? selectedTowerType?.levels[selectedTower.level] 
+        : undefined;
 
     const mobSlots = barracksModel?.mobSlots;
     
@@ -33,6 +38,29 @@ const GameOverlay: React.FC = () => {
 
             {/* Game Action Bar */}
             <div style={{ position: 'fixed', bottom: '16px', width: '100%' }}>
+                {selectedTower !== undefined && playerModel !== undefined && (
+                    <>
+                        <h4 style={{ textAlign: 'center' }}>1 Tower selected:</h4>
+                        <div style={{ display: 'flex', justifyContent: 'center' }}>
+                            <input 
+                                type="button"
+                                value={selectedTowerNextLevel !== undefined
+                                    ? `Upgrade (${selectedTowerNextLevel.cost}€)` 
+                                    : 'Max Level'
+                                }
+                                onClick={() => gameClient.upgradeTurret(selectedTower)}
+                                style={{ margin: '0 2px', padding: '4px' }}
+                                disabled={selectedTowerNextLevel === undefined || playerModel.money < selectedTowerNextLevel.cost}
+                            />
+                            <input 
+                                type="button"
+                                value={'Sell'}
+                                onClick={() => gameClient.sellTurret(selectedTower)}
+                                style={{ margin: '0 2px', padding: '4px' }}
+                            />
+                        </div>
+                    </>
+                )}
                 <h4 style={{ textAlign: 'center' }}>Select your tower:</h4>
                 <div style={{ display: 'flex', justifyContent: 'center' }}>
                     { towerTypes === undefined || playerModel === undefined ? (
@@ -59,7 +87,7 @@ const GameOverlay: React.FC = () => {
                             key={mobType.key}
                             value={`${mobType.name} ${mobType.cost}€ (${mobSlot.count})`}
                             title={`${mobType.description} (${mobType.health} HP, Delay: ${mobType.delay})`}
-                            onClick={() => uiState.gameClient.buyMob(mobType.key)} 
+                            onClick={() => gameClient.buyMob(mobType.key)} 
                             style={{ margin: '0 2px', padding: '4px' }}
                             disabled={mobSlot.count === 0 || playerModel.money < mobType.cost}
                         />

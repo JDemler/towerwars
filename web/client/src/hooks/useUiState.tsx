@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useReducer, createContext } from 'react';
-import { GamePhase, GameState, PlayerModel, UiState, InitialUiState, MobTypeModel, TowerTypeModel, BarracksModel } from '@models';
+import { GamePhase, GameState, PlayerModel, UiState, InitialUiState, MobTypeModel, TowerTypeModel, BarracksModel, TowerModel } from '@models';
 import GameClient from '@game/GameClient';
     
 export type UiStateContextAction =
@@ -19,6 +19,8 @@ export type UiStateContextAction =
     
     | { type: "set-selectedTowerTypeHandler"; selectedTowerTypeHandler: (towerType: string) => void }
     | { type: "set-selectedTowerType"; selectedTowerTypeKey: string }
+    
+    | { type: "set-selectedTower"; selectedTower: TowerModel }
 
 function reducer (state: InitialUiState | undefined, action: UiStateContextAction): InitialUiState | undefined {
     if (action.type === 'set-uiState')
@@ -89,6 +91,12 @@ function reducer (state: InitialUiState | undefined, action: UiStateContextActio
             return {
                 ...state,
                 selectedTowerTypeKey: action.selectedTowerTypeKey,
+            }
+        }
+        case 'set-selectedTower': {
+            return {
+                ...state,
+                selectedTower: action.selectedTower,
             }
         }
         default:

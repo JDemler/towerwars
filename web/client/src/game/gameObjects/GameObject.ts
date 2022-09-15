@@ -3,11 +3,13 @@ import { Constructor } from "@helpers";
 import { Viewport } from 'pixi-viewport';
 import GameClient from '@game/GameClient';
 import { UiStateDispatch } from '@hooks';
+import { GameInfo } from "@game/GameEntryPoint";
 
 export interface IGameObjectProps {
     app: Application;
     viewport: Viewport;
     gameClient: GameClient;
+    gameInfo: GameInfo;
     dispatchUiState: UiStateDispatch;
 }
 
@@ -15,6 +17,7 @@ export default abstract class GameObject {
     protected app: Application;
     protected viewport: Viewport;
     protected gameClient: GameClient;
+    protected gameInfo: GameInfo;
     protected dispatchUiState: UiStateDispatch;
     
     protected get props(): IGameObjectProps {
@@ -22,6 +25,7 @@ export default abstract class GameObject {
             app: this.app,
             viewport: this.viewport,
             gameClient: this.gameClient,
+            gameInfo: this.gameInfo,
             dispatchUiState: this.dispatchUiState,
         }
     }
@@ -32,6 +36,7 @@ export default abstract class GameObject {
         this.app = props.app;
         this.viewport = props.viewport;
         this.gameClient = props.gameClient;
+        this.gameInfo = props.gameInfo;
         this.dispatchUiState = props.dispatchUiState;
     }
 

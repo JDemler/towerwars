@@ -3,15 +3,12 @@ import { FieldModel, MapModel, PlayerModel } from "@models";
 import { GameObject, Tower, Mob, Bullet, Map, IGameObjectProps } from "@gameObjects";
 import { FieldChangeAction } from '@game/GameClient';
 import { GridCoordinate } from "@grid";
-import { GameInfo } from "@game/GameEntryPoint";
 
 export default class Field extends GameObject {
     id: number;
 
     mapModel: MapModel;
     player: PlayerModel;
-
-    gameInfo: GameInfo;
 
     container: Container;
 
@@ -35,11 +32,9 @@ export default class Field extends GameObject {
         return this.gameClient.player?.fieldId === this.id;
     }
 
-    constructor(props: IGameObjectProps, fieldModel: FieldModel, gameInfo: GameInfo) {
+    constructor(props: IGameObjectProps, fieldModel: FieldModel) {
         super(props);
         this.id = fieldModel.id;
-
-        this.gameInfo = gameInfo;
 
         this.mapModel = fieldModel.map;
         this.player = fieldModel.player;
@@ -78,11 +73,22 @@ export default class Field extends GameObject {
         if (!this.isCurrentPlayer)
             return;
 
-        const towerTypeModel = this.gameInfo.selectedTowerType;
-        if (towerTypeModel === null)
-            return;
+        const existingTower = this.towers.find(tower => tower.towerModel.coordinate.equals(coordinate))
 
-        this.gameClient.buildTurret(coordinate, towerTypeModel.key);
+        if (existingTower === undefined) {
+            // No tower at that position. Buy a new one.
+            const towerTypeModel = this.gameInfo.selectedTowerType;
+            if (towerTypeModel === null)
+                return;
+
+            this.gameClient.buildTurret(coordinate, towerTypeModel.key);
+        } else {
+            // There is already a tower here. Select the tower.
+            this.dispatchUiState({ type: 'set-selectedTower', selectedTower: existingTower.towerModel });
+            this.gameInfo.selectedTowerId = existingTower.id;
+
+            console.log('Selected tower: ' + existingTower.towerModel.id);
+        }
     }
 
     handleGameChangeAction(action: FieldChangeAction) {

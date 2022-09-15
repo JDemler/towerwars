@@ -11,6 +11,7 @@ export interface GameInfo {
     mobTypes: MobTypeModel[] | null;
 
     selectedTowerType: TowerTypeModel | null;
+    selectedTowerId: number | null;
 }
 
 const beginGameLoop = (app: Application, viewport: Viewport, initialGameState: GameState | undefined, gameClient: GameClient, dispatchUiState: UiStateDispatch) => {
@@ -26,6 +27,7 @@ const beginGameLoop = (app: Application, viewport: Viewport, initialGameState: G
         mobTypes: null,
 
         selectedTowerType: null,
+        selectedTowerId: null,
     }
 
     function setSelectedTowerType(towerTypeKey: string) {
@@ -42,7 +44,7 @@ const beginGameLoop = (app: Application, viewport: Viewport, initialGameState: G
                 for (let i = 0; i < action.gameState.fields.length; i++) {
                     const fieldModel = action.gameState.fields[i];
 
-                    const field = new Field({ app, viewport, gameClient, dispatchUiState }, fieldModel, gameInfo);
+                    const field = new Field({ app, viewport, gameClient, gameInfo, dispatchUiState }, fieldModel);
                     field.container.position.x = i * (fieldModel.map.size.width * GridSettings.tileSize + GridSettings.tileSize * 2) + GridSettings.tileSize
                     field.container.position.y = GridSettings.tileSize;
                     fields.push(field);

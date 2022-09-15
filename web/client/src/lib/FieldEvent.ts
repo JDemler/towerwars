@@ -32,3 +32,19 @@ export class BuyMobEvent extends FieldEvent {
         });
     }
 }
+
+export class UpgradeTowerEvent extends FieldEvent {
+    constructor(player: AddedPlayerModel, towerId: number) {
+        super(player, "upgradeTower", {
+            towerId: towerId,
+        });
+    }
+}
+
+export class SellTowerEvent extends FieldEvent {
+    constructor(player: AddedPlayerModel, towerId: number) {
+        super(player, "sellTower", {
+            towerId: towerId,
+        });
+    }
+}
