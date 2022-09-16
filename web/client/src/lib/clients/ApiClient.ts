@@ -12,10 +12,13 @@ const getApiRoot = () => {
 
     return url;
 }
-const getApiUrl = (path: string, gameId?: string) => {
+const getApiUrl = (path: string, gameId?: string, fieldId?: number) => {
     let url = `${getApiRoot()}${path}`;
     if (gameId) {
         url += `?gameId=${gameId}`;
+    }
+    if (fieldId) {
+        url += `&fieldId=${fieldId}`;
     }
     return url;
 }
@@ -30,16 +33,16 @@ export default class ApiClient {
     }
 
     // Function that fetches the tower types
-    static getTowerTypes = async (gameId: string) => {
-        const response = await fetch(getApiUrl('tower_types', gameId));
+    static getTowerTypes = async (gameId: string, fieldId: number) => {
+        const response = await fetch(getApiUrl('tower_types', gameId, fieldId));
         const responseJson = await response.json() as any[];
 
         return responseJson.map((towerType: any) => TowerTypeModel.fromJSON(towerType));
     }
 
     // Function that fetches the tower types
-    static getMobTypes = async (gameId: string) => {
-        const response = await fetch(getApiUrl('mob_types', gameId));
+    static getMobTypes = async (gameId: string, fieldId: number) => {
+        const response = await fetch(getApiUrl('mob_types', gameId, fieldId));
         const responseJson = await response.json() as any[];
 
         return responseJson.map((mobType: any) => MobTypeModel.fromJSON(mobType));

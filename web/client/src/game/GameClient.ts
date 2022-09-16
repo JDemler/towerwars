@@ -7,7 +7,7 @@ import { AddedPlayerModel, BulletModel, FieldModel, GameState, MobModel, PlayerM
 export type GameChangeActionChangeKind = 'create' | 'update';
 export type GameChangeActionDeleteKind = 'delete';
 
-export type FieldChangeAction = 
+export type FieldChangeAction =
     // GameState actions
     | { type: "gameState"; kind: GameChangeActionChangeKind; gameState: GameState }
     | { type: "gameState"; kind: GameChangeActionDeleteKind; }
@@ -115,31 +115,31 @@ export default class GameClient {
                     this.dispatch({ type: "gameState", kind: 'create', gameState });
                     this.dispatch({ type: 'state', gameStatus: gameState.state });
 
-                    this.loadTowerTypes(addedPlayer.gameId);
-                    this.loadMobTypes(addedPlayer.gameId);
+                    this.loadTowerTypes(addedPlayer.gameId, addedPlayer.fieldId);
+                    this.loadMobTypes(addedPlayer.gameId, addedPlayer.fieldId);
                 }).catch(error => {
                     console.error(error);
-                    
-                    this.dispatch({ type: 'state', gameStatus: 'WaitingForPlayers'});
+
+                    this.dispatch({ type: 'state', gameStatus: 'WaitingForPlayers' });
                 })
 
         } else {
             console.log("No added player in session storage.");
 
-            this.dispatch({ type: 'state', gameStatus: 'WaitingForPlayers'});
+            this.dispatch({ type: 'state', gameStatus: 'WaitingForPlayers' });
         }
     }
 
-    public loadTowerTypes(gameId: string) {
-        ApiClient.getTowerTypes(gameId)
+    public loadTowerTypes(gameId: string, fieldId: number) {
+        ApiClient.getTowerTypes(gameId, fieldId)
             .then(towerTypes => {
                 console.log('Tower types', towerTypes);
                 this.dispatch({ type: 'towerTypes', kind: 'create', towerTypes });
             })
     }
 
-    public loadMobTypes(gameId: string) {
-        ApiClient.getMobTypes(gameId)
+    public loadMobTypes(gameId: string, fieldId: number) {
+        ApiClient.getMobTypes(gameId, fieldId)
             .then(mobTypes => {
                 console.log('Mob types', mobTypes);
                 this.dispatch({ type: 'mobTypes', kind: 'create', mobTypes });

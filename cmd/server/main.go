@@ -93,8 +93,8 @@ func (s *Server) getGameInstanceFromRequest(r *http.Request) (*GameInstance, err
 	return gameInstance, nil
 }
 
-func getPlayerIdFromRequest(r *http.Request) (int, error) {
-	playerID := r.URL.Query().Get("playerId")
+func getFieldIDFromRequest(r *http.Request) (int, error) {
+	playerID := r.URL.Query().Get("fieldId")
 	if playerID == "" {
 		return 0, fmt.Errorf("playerId not found")
 	}
@@ -181,13 +181,13 @@ func (s *Server) GetTowerTypes(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
-	playerId, err := getPlayerIdFromRequest(r)
+	fieldID, err := getFieldIDFromRequest(r)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
-	err = json.NewEncoder(w).Encode(gi.game.GetTowerTypes(playerId))
+	err = json.NewEncoder(w).Encode(gi.game.GetTowerTypes(fieldID))
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -199,13 +199,13 @@ func (s *Server) GetMobTypes(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
-	playerId, err := getPlayerIdFromRequest(r)
+	fieldID, err := getFieldIDFromRequest(r)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
-	err = json.NewEncoder(w).Encode(gi.game.GetMobTypes(playerId))
+	err = json.NewEncoder(w).Encode(gi.game.GetMobTypes(fieldID))
 	if err != nil {
 		fmt.Println(err)
 	}

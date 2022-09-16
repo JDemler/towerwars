@@ -31,11 +31,11 @@ const beginGameLoop = (app: Application, viewport: Viewport, initialGameState: G
     }
 
     function setSelectedTowerType(towerTypeKey: string) {
-        gameInfo.selectedTowerType = gameInfo.towerTypes?.find(t => t.key === towerTypeKey) ?? null 
+        gameInfo.selectedTowerType = gameInfo.towerTypes?.find(t => t.key === towerTypeKey) ?? null
         dispatchUiState({ type: 'set-selectedTowerType', selectedTowerTypeKey: towerTypeKey });
     }
 
-    dispatchUiState({ type: 'set-selectedTowerTypeHandler', selectedTowerTypeHandler: setSelectedTowerType});
+    dispatchUiState({ type: 'set-selectedTowerTypeHandler', selectedTowerTypeHandler: setSelectedTowerType });
 
     const handleGameChangeAction = (action: FieldChangeAction) => {
         if (action.type === 'gameState') {
@@ -58,8 +58,8 @@ const beginGameLoop = (app: Application, viewport: Viewport, initialGameState: G
                 const player = gameClient.player;
 
                 if (player) {
-                    gameClient.loadTowerTypes(player.gameId);
-                    gameClient.loadMobTypes(player.gameId);
+                    gameClient.loadTowerTypes(player.gameId, player.fieldId);
+                    gameClient.loadMobTypes(player.gameId, player.fieldId);
                 }
             }
         }
@@ -68,7 +68,7 @@ const beginGameLoop = (app: Application, viewport: Viewport, initialGameState: G
         }
         else if (action.type === 'towerTypes') {
             gameInfo.towerTypes = action.towerTypes;
-            
+
             dispatchUiState({ type: 'set-towerTypes', towerTypes: action.towerTypes });
 
             if (gameInfo.selectedTowerType === null && gameInfo.towerTypes.length > 0) {
@@ -83,7 +83,7 @@ const beginGameLoop = (app: Application, viewport: Viewport, initialGameState: G
         else if (action.type === 'barracks') {
             if (action.fieldId !== gameClient.player?.fieldId)
                 return;
-            
+
             if (action.kind === 'create' || action.kind === 'update') {
                 dispatchUiState({ type: 'set-barracksModel', barracksModel: action.barracks });
             }
