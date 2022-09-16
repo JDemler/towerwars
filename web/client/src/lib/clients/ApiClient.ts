@@ -23,6 +23,7 @@ const getApiUrl = (path: string, gameId?: string, fieldId?: number) => {
     return url;
 }
 
+
 export default class ApiClient {
     // Fuction that fetches the /game endpoint and returns the game state
     static getGameState = async (gameId: string) => {
@@ -50,7 +51,13 @@ export default class ApiClient {
 
     // Function that adds the player to the game
     static joinGame = async (playerName: string) => {
-        const response = await fetch(getApiUrl('add_player'));
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            // @Niklas: RaceSelector result goes here
+            body: JSON.stringify({ name: playerName, race: "facebook" })
+        }
+        const response = await fetch(getApiUrl('add_player'), requestOptions)
         const responseJson = await response.json();
 
         return AddedPlayerModel.fromJSON(responseJson);
