@@ -10,7 +10,7 @@ type MobSlot struct {
 
 type Barracks struct {
 	ID     int        `json:"id"`
-	race   string     `json:"race"`
+	race   string     `json:"-"`
 	Mobs   []*MobSlot `json:"mobSlots"`
 	Config *Config    `json:"-"` // game config
 }
