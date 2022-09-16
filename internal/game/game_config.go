@@ -8,11 +8,18 @@ import (
 
 // Config contains all configuration for the game. TowerTypes, MobTypes, Map and so on. One config defines the whole content of the game
 type Config struct {
-	TowerTypes     []*TowerType `json:"towerTypes"`
-	MobTypes       []*MobType   `json:"mobTypes"`
-	Map            *MapConfig   `json:"map"`
-	StartStats     *Player      `json:"startStats"`
-	IncomeCooldown int          `json:"incomeCooldown"`
+	Races          []*RaceConfig `json:"races"`
+	Map            *MapConfig    `json:"map"`
+	StartStats     *Player       `json:"startStats"`
+	IncomeCooldown int           `json:"incomeCooldown"`
+}
+
+type RaceConfig struct {
+	Key         string       `json:"key"`
+	Name        string       `json:"name"`
+	Description string       `json:"description"`
+	TowerTypes  []*TowerType `json:"towerTypes"`
+	MobTypes    []*MobType   `json:"mobTypes"`
 }
 
 // MapConfig contains all information about the map
@@ -123,19 +130,22 @@ func ReadConfigFromFile(filename string) (*Config, error) {
 	return &config, nil
 }
 
-// GetTowerTypeByName looks up GetTowerTypeByName by name
-func (g *Config) GetTowerTypeByName(name string) *TowerType {
-	for _, t := range g.TowerTypes {
-		if t.Name == name {
-			return t
+func (c *Config) getRaceConfigByKey(key string) *RaceConfig {
+	for _, rc := range c.Races {
+		if rc.Key == key {
+			return rc
 		}
 	}
 	return nil
 }
 
 // GetTowerTypeByKey looks up GetTowerTypeByKey by key
-func (g *Config) GetTowerTypeByKey(key string) *TowerType {
-	for _, t := range g.TowerTypes {
+func (c *Config) GetTowerTypeByKey(race string, key string) *TowerType {
+	rc := c.getRaceConfigByKey(race)
+	if rc == nil {
+		return nil
+	}
+	for _, t := range rc.TowerTypes {
 		if t.Key == key {
 			return t
 		}
@@ -143,19 +153,13 @@ func (g *Config) GetTowerTypeByKey(key string) *TowerType {
 	return nil
 }
 
-// GetMobType looks up MobType by name
-func (g *Config) GetMobTypeByName(name string) *MobType {
-	for _, t := range g.MobTypes {
-		if t.Name == name {
-			return t
-		}
-	}
-	return nil
-}
-
 // GetMobType looks up MobType by key
-func (g *Config) GetMobTypeByKey(key string) *MobType {
-	for _, t := range g.MobTypes {
+func (c *Config) GetMobTypeByKey(race string, key string) *MobType {
+	rc := c.getRaceConfigByKey(race)
+	if rc == nil {
+		return nil
+	}
+	for _, t := range rc.MobTypes {
 		if t.Key == key {
 			return t
 		}

@@ -11,6 +11,7 @@ import (
 type Field struct {
 	ID            int       `json:"id"`
 	Key           string    `json:"-"`
+	Race          string    `json:"race"`
 	Player        *Player   `json:"player"`
 	TWMap         *TWMap    `json:"twmap"`
 	Mobs          []*Mob    `json:"mobs"`
@@ -30,12 +31,13 @@ func randomString(length int) string {
 }
 
 // NewField creates a new field from a map, player and id
-func NewField(id int, player *Player, barracks *Barracks, twmap *TWMap) *Field {
+func NewField(id int, race string, player *Player, barracks *Barracks, twmap *TWMap) *Field {
 	// Generate a random key for the field
 	key := randomString(16)
 	return &Field{
 		ID:            id,
 		Key:           key,
+		Race:          race,
 		Player:        player,
 		TWMap:         twmap,
 		Mobs:          []*Mob{},

@@ -60,7 +60,7 @@ func (game *Game) GetDuration() float64 {
 }
 
 // AddPlayer to Game. Return its key
-func (game *Game) AddPlayer(playerName string) string {
+func (game *Game) AddPlayer(playerName string, race string) string {
 	id := len(game.Fields)
 	player := &Player{
 		ID:     id,
@@ -69,8 +69,8 @@ func (game *Game) AddPlayer(playerName string) string {
 		Income: game.Config.StartStats.Income,
 		Lives:  game.Config.StartStats.Lives,
 	}
-	barracks := newBarracks(id, game.Config)
-	field := NewField(id, player, barracks, game.Config.Map.GenerateMap())
+	barracks := newBarracks(id, race, game.Config)
+	field := NewField(id, race, player, barracks, game.Config.Map.GenerateMap())
 	game.Fields = append(game.Fields, field)
 	game.events = append(game.events, createEvent(player, id))
 	return field.Key
@@ -223,11 +223,19 @@ func (game *Game) Update(delta float64) []*ServerEvent {
 }
 
 // GetTowerTypes returns all tower types for that game instance
-func (game *Game) GetTowerTypes() []*TowerType {
-	return game.Config.TowerTypes
+func (game *Game) GetTowerTypes(fieldID int) []*TowerType {
+	field := game.getFieldAt(fieldID)
+	if field != nil {
+		return game.Config.getRaceConfigByKey(field.Race).TowerTypes
+	}
+	return nil
 }
 
 // GetMobTypes returns all mob types for that game instance
-func (game *Game) GetMobTypes() []*MobType {
-	return game.Config.MobTypes
+func (game *Game) GetMobTypes(fieldID int) []*MobType {
+	field := game.getFieldAt(fieldID)
+	if field != nil {
+		return game.Config.getRaceConfigByKey(field.Race).MobTypes
+	}
+	return nil
 }

@@ -80,7 +80,7 @@ func (e BuildEvent) TryExecute(sourceField *Field, targetFields []*Field, gc *Co
 		return nil, fmt.Errorf("Position already occupied")
 	}
 	// Get TowerType from gameConfig
-	towerType := gc.GetTowerTypeByKey(e.TowerType)
+	towerType := gc.GetTowerTypeByKey(sourceField.Race, e.TowerType)
 	if towerType == nil {
 		return nil, fmt.Errorf("Invalid tower type %s", e.TowerType)
 	}
@@ -117,7 +117,7 @@ func (e SellEvent) TryExecute(sourceField *Field, targetFields []*Field, gc *Con
 	if tower == nil {
 		return nil, fmt.Errorf("Tower %d does not exist", e.TowerID)
 	}
-	towerType := gc.GetTowerTypeByKey(tower.Type)
+	towerType := gc.GetTowerTypeByKey(sourceField.Race, tower.Type)
 	if towerType == nil {
 		return nil, fmt.Errorf("Invalid tower type %s", tower.Type)
 	}
@@ -145,7 +145,7 @@ func (e UpgradeEvent) TryExecute(sourceField *Field, targetFields []*Field, gc *
 		return nil, fmt.Errorf("Tower not found")
 	}
 	// Get TowerType from gameConfig
-	towerType := gc.GetTowerTypeByKey(tower.Type)
+	towerType := gc.GetTowerTypeByKey(sourceField.Race, tower.Type)
 	if towerType == nil {
 		return nil, fmt.Errorf("Invalid tower type %s", tower.Type)
 	}
@@ -183,7 +183,7 @@ func NewBuyMobEvent(fieldID int) BuyMobEvent {
 // TryExecute BuyMobEvent to buy a mob
 func (e BuyMobEvent) TryExecute(sourceField *Field, targetFields []*Field, config *Config) ([]*ServerEvent, error) {
 	// Check if player can afford mob
-	mobType := config.GetMobTypeByKey(e.MobType)
+	mobType := config.GetMobTypeByKey(sourceField.Race, e.MobType)
 	if mobType == nil {
 		// Invalid mob type
 		fmt.Println("Invalid mob type")

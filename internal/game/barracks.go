@@ -10,6 +10,7 @@ type MobSlot struct {
 
 type Barracks struct {
 	ID     int        `json:"id"`
+	race   string     `json:"race"`
 	Mobs   []*MobSlot `json:"mobSlots"`
 	Config *Config    `json:"-"` // game config
 }
@@ -28,16 +29,16 @@ func newMobSlot(mob *MobType) *MobSlot {
 }
 
 // New Barracks
-func newBarracks(id int, gameConfig *Config) *Barracks {
+func newBarracks(id int, race string, gameConfig *Config) *Barracks {
 	mobs := []*MobSlot{}
-	for _, m := range gameConfig.MobTypes {
+	for _, m := range gameConfig.getRaceConfigByKey(race).MobTypes {
 		mobs = append(mobs, newMobSlot(m))
 	}
-	return &Barracks{ID: id, Mobs: mobs, Config: gameConfig}
+	return &Barracks{ID: id, Mobs: mobs, race: race, Config: gameConfig}
 }
 
 // Update function for MobSlot
-func (m *MobSlot) update(delta float64, gameConfig *Config) bool {
+func (m *MobSlot) update(delta float64, race string, gameConfig *Config) bool {
 	changed := false
 	if m.Count > 29 {
 		return false
@@ -45,7 +46,7 @@ func (m *MobSlot) update(delta float64, gameConfig *Config) bool {
 	m.Respawn -= delta
 	if m.Respawn <= 0 {
 		m.Count++
-		MobType := gameConfig.GetMobTypeByKey(m.MobType)
+		MobType := gameConfig.GetMobTypeByKey(race, m.MobType)
 		if MobType != nil {
 			m.Respawn = float64(MobType.Respawn)
 			changed = true
@@ -60,7 +61,7 @@ func (m *MobSlot) update(delta float64, gameConfig *Config) bool {
 func (b *Barracks) update(delta float64) bool {
 	changed := false
 	for _, m := range b.Mobs {
-		if m.update(delta, b.Config) {
+		if m.update(delta, b.race, b.Config) {
 			changed = true
 		}
 	}

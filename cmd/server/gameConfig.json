@@ -1,148 +1,155 @@
 {
     "incomeCooldown": 20,
-    "towerTypes": [
+    "races": [
         {
-            "name": "Like Button",
-            "description": "Liking your enemies will confuse them and hurt their feelings.",
-            "key": "likeButton",
-            "levels": [
+            "name": "Facebook",
+            "key": "facebook",
+            "description": "",
+            "towerTypes": [
                 {
-                    "level": 1,
+                    "name": "Like Button",
+                    "description": "Liking your enemies will confuse them and hurt their feelings.",
+                    "key": "likeButton",
+                    "levels": [
+                        {
+                            "level": 1,
+                            "cost": 10,
+                            "damage": 1,
+                            "range": 5,
+                            "fireRate": 0.5,
+                            "bulletSpeed": 11
+                        },
+                        {
+                            "level": 2,
+                            "cost": 30,
+                            "damage": 2,
+                            "range": 6,
+                            "fireRate": 0.4,
+                            "bulletSpeed": 11
+                        }
+                    ]
+                },
+                {
+                    "name": "Profile Picture",
+                    "description": "A picture so ugly your enemies will be blinded by it.",
+                    "key": "profilePicture",
+                    "levels": [
+                        {
+                            "level": 1,
+                            "cost": 20,
+                            "damage": 5,
+                            "range": 6,
+                            "fireRate": 1.5,
+                            "bulletSpeed": 8
+                        },
+                        {
+                            "level": 2,
+                            "cost": 60,
+                            "damage": 10,
+                            "range": 7,
+                            "fireRate": 1.5,
+                            "bulletSpeed": 10
+                        }
+                    ]
+                },
+                {
+                    "name": "Comment",
+                    "description": "A comment so stupid your enemies will start to question humanity.",
+                    "key": "comment",
+                    "levels": [
+                        {
+                            "level": 1,
+                            "cost": 120,
+                            "damage": 5,
+                            "range": 8,
+                            "fireRate": 0.5,
+                            "bulletSpeed": 14
+                        },
+                        {
+                            "level": 2,
+                            "cost": 230,
+                            "damage": 7,
+                            "range": 9,
+                            "fireRate": 0.4,
+                            "bulletSpeed": 15
+                        }
+                    ]
+                }
+            ],
+            "mobTypes": [
+                {
+                    "name": "Confused Kid",
+                    "description": "Not really sure what they are supposed to do on Facebook. But their grandparents forced them to join.",
+                    "key": "confusedKid",
+                    "health": 30,
+                    "speed": 1.5,
+                    "reward": 100,
+                    "income": 90,
+                    "cost": 5,
+                    "respawn": 1.5,
+                    "delay": 25
+                },
+                {
+                    "name": "Facebook Troll",
+                    "description": "They are the reason you don't have a profile picture.",
+                    "key": "facebookTroll",
+                    "health": 50,
+                    "speed": 1.8,
+                    "reward": 200,
+                    "income": 180,
                     "cost": 10,
-                    "damage": 1,
-                    "range": 5,
-                    "fireRate": 0.5,
-                    "bulletSpeed": 11
+                    "respawn": 2.5,
+                    "delay": 35
                 },
                 {
-                    "level": 2,
-                    "cost": 30,
-                    "damage": 2,
-                    "range": 6,
-                    "fireRate": 0.4,
-                    "bulletSpeed": 11
-                }
-            ]
-        },
-        {
-            "name": "Profile Picture",
-            "description": "A picture so ugly your enemies will be blinded by it.",
-            "key": "profilePicture",
-            "levels": [
-                {
-                    "level": 1,
+                    "name": "Facebook Mom",
+                    "description": "She's always posting pictures of her kids. You don't care.",
+                    "key": "facebookMom",
+                    "health": 80,
+                    "speed": 2,
+                    "reward": 400,
+                    "income": 360,
                     "cost": 20,
-                    "damage": 5,
-                    "range": 6,
-                    "fireRate": 1.5,
-                    "bulletSpeed": 8
+                    "respawn": 3,
+                    "delay": 55
                 },
                 {
-                    "level": 2,
-                    "cost": 60,
-                    "damage": 10,
-                    "range": 7,
-                    "fireRate": 1.5,
-                    "bulletSpeed": 10
-                }
-            ]
-        },
-        {
-            "name": "Comment",
-            "description": "A comment so stupid your enemies will start to question humanity.",
-            "key": "comment",
-            "levels": [
-                {
-                    "level": 1,
-                    "cost": 120,
-                    "damage": 5,
-                    "range": 8,
-                    "fireRate": 0.5,
-                    "bulletSpeed": 14
+                    "name": "Nice Guy",
+                    "description": "He's always trying to be your friend. He's really creepy.",
+                    "key": "niceGuy",
+                    "health": 100,
+                    "speed": 2.8,
+                    "reward": 600,
+                    "income": 450,
+                    "cost": 30,
+                    "respawn": 4,
+                    "delay": 75
                 },
                 {
-                    "level": 2,
-                    "cost": 230,
-                    "damage": 7,
-                    "range": 9,
-                    "fireRate": 0.4,
-                    "bulletSpeed": 15
+                    "name": "Facebook Addict",
+                    "description": "They can't go more than 5 minutes without checking their feed.",
+                    "key": "facebookAddict",
+                    "health": 120,
+                    "speed": 3,
+                    "reward": 800,
+                    "income": 600,
+                    "cost": 50,
+                    "respawn": 4.5,
+                    "delay": 95
+                },
+                {
+                    "name": "Karen",
+                    "description": "She's always complaining about something. She's a real buzzkill.",
+                    "key": "karen",
+                    "health": 150,
+                    "speed": 3.2,
+                    "reward": 1000,
+                    "income": 750,
+                    "cost": 100,
+                    "respawn": 5,
+                    "delay": 115
                 }
             ]
-        }
-    ],
-    "mobTypes": [
-        {
-            "name": "Confused Kid",
-            "description": "Not really sure what they are supposed to do on Facebook. But their grandparents forced them to join.",
-            "key": "confusedKid",
-            "health": 30,
-            "speed": 1.5,
-            "reward": 100,
-            "income": 90,
-            "cost": 5,
-            "respawn": 1.5,
-            "delay": 25
-        },
-        {
-            "name": "Facebook Troll",
-            "description": "They are the reason you don't have a profile picture.",
-            "key": "facebookTroll",
-            "health": 50,
-            "speed": 1.8,
-            "reward": 200,
-            "income": 180,
-            "cost": 10,
-            "respawn": 2.5,
-            "delay": 35
-        },
-        {
-            "name": "Facebook Mom",
-            "description": "She's always posting pictures of her kids. You don't care.",
-            "key": "facebookMom",
-            "health": 80,
-            "speed": 2,
-            "reward": 400,
-            "income": 360,
-            "cost": 20,
-            "respawn": 3,
-            "delay": 55
-        },
-        {
-            "name": "Nice Guy",
-            "description": "He's always trying to be your friend. He's really creepy.",
-            "key": "niceGuy",
-            "health": 100,
-            "speed": 2.8,
-            "reward": 600,
-            "income": 450,
-            "cost": 30,
-            "respawn": 4,
-            "delay": 75
-        },
-        {
-            "name": "Facebook Addict",
-            "description": "They can't go more than 5 minutes without checking their feed.",
-            "key": "facebookAddict",
-            "health": 120,
-            "speed": 3,
-            "reward": 800,
-            "income": 600,
-            "cost": 50,
-            "respawn": 4.5,
-            "delay": 95
-        },
-        {
-            "name": "Karen",
-            "description": "She's always complaining about something. She's a real buzzkill.",
-            "key": "karen",
-            "health": 150,
-            "speed": 3.2,
-            "reward": 1000,
-            "income": 750,
-            "cost": 100,
-            "respawn": 5,
-            "delay": 115
         }
     ],
     "map": {

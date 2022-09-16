@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"math/rand"
 	"net/http"
+	"strconv"
 	"time"
 
 	"towerwars/internal/game"
@@ -66,6 +67,11 @@ type AddedPlayer struct {
 	GameID  string `json:"gameId"`
 }
 
+type JoinGame struct {
+	Name string `json:"name"`
+	Race string `json:"race"`
+}
+
 func randomString(length int) string {
 	rand.Seed(time.Now().UnixNano())
 	b := make([]byte, length)
@@ -85,6 +91,16 @@ func (s *Server) getGameInstanceFromRequest(r *http.Request) (*GameInstance, err
 		}
 	}
 	return gameInstance, nil
+}
+
+func getPlayerIdFromRequest(r *http.Request) (int, error) {
+	playerID := r.URL.Query().Get("playerId")
+	if playerID == "" {
+		return 0, fmt.Errorf("playerId not found")
+	}
+	// id to int
+	id, err := strconv.Atoi(playerID)
+	return id, err
 }
 
 func (s *Server) AddPlayer(w http.ResponseWriter, r *http.Request) {
@@ -110,18 +126,19 @@ func (s *Server) AddPlayer(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	// Read player name from body
-	var playerName string
-	err := json.NewDecoder(r.Body).Decode(&playerName)
+	// Read join game object from body
+	var joinPlayer JoinGame
+	err := json.NewDecoder(r.Body).Decode(&joinPlayer)
 	if err != nil {
 		fmt.Println(err)
 		// Keep playername optional for now
 		// w.WriteHeader(http.StatusBadRequest)
 		// return
-		playerName = "hans"
+		joinPlayer = JoinGame{Name: "hans", Race: "facebook"}
 	}
+
 	// add player to game and get its playerKey
-	playerKey := gameInstance.game.AddPlayer(playerName)
+	playerKey := gameInstance.game.AddPlayer(joinPlayer.Name, joinPlayer.Race)
 	fieldID := len(gameInstance.game.Fields) - 1
 	//log player joined
 	fmt.Println("Player joined")
@@ -164,8 +181,13 @@ func (s *Server) GetTowerTypes(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
+	playerId, err := getPlayerIdFromRequest(r)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
 	w.Header().Set("Content-Type", "application/json")
-	err = json.NewEncoder(w).Encode(gi.game.GetTowerTypes())
+	err = json.NewEncoder(w).Encode(gi.game.GetTowerTypes(playerId))
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -177,8 +199,13 @@ func (s *Server) GetMobTypes(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
+	playerId, err := getPlayerIdFromRequest(r)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
 	w.Header().Set("Content-Type", "application/json")
-	err = json.NewEncoder(w).Encode(gi.game.GetMobTypes())
+	err = json.NewEncoder(w).Encode(gi.game.GetMobTypes(playerId))
 	if err != nil {
 		fmt.Println(err)
 	}

@@ -258,7 +258,7 @@ func (gi *GameInstance) WebSocket(w http.ResponseWriter, r *http.Request) {
 }
 
 func (gi *GameInstance) AddAgent() {
-	gi.game.AddPlayer("agent")
+	gi.game.AddPlayer("agent", "facebook")
 	fieldID := len(gi.game.Fields) - 1
 	gi.agent = agent.NewAgent(gi.game, fieldID, agent.NaiveAgentConfig())
 }

@@ -8,11 +8,13 @@ import (
 )
 
 type Agent struct {
-	game     *game.Game
-	playerID int
-	config   *Config
-	state    *State
-	barracks *game.Barracks
+	game       *game.Game
+	playerID   int
+	config     *Config
+	state      *State
+	barracks   *game.Barracks
+	race       string
+	towerTypes []*game.TowerType
 }
 
 type State struct {
@@ -115,16 +117,16 @@ func (a *Agent) Act(events []*game.ServerEvent) []game.FieldEvent {
 
 func (a *Agent) mostSensibleTowerType(towerMoney float64) *game.TowerType {
 	winningDps := 0.0
-	winningTowerType := ""
-	for _, towerType := range a.game.Config.TowerTypes {
+	var winningTowerType *game.TowerType
+	for _, towerType := range a.towerTypes {
 		towerLevel := towerType.GetLevel(1)
 		dps := float64(towerLevel.Damage) * float64(towerLevel.FireRate)
 		if float64(towerLevel.Cost) < towerMoney && dps > winningDps {
 			winningDps = dps
-			winningTowerType = towerType.Key
+			winningTowerType = towerType
 		}
 	}
-	return a.game.Config.GetTowerTypeByKey(winningTowerType)
+	return winningTowerType
 }
 
 func (a *Agent) mostSensibleMobType(mobMoney float64) *game.MobType {
@@ -132,7 +134,7 @@ func (a *Agent) mostSensibleMobType(mobMoney float64) *game.MobType {
 	winningMobType := ""
 	for _, mobSlot := range a.barracks.Mobs {
 		if mobSlot.Count > 0 {
-			mobType := a.game.Config.GetMobTypeByKey(mobSlot.MobType)
+			mobType := a.game.Config.GetMobTypeByKey(a.race, mobSlot.MobType)
 			roi := float64(mobType.Income) / float64(mobType.Cost)
 			if float64(mobType.Cost) < mobMoney && roi > winningRoi {
 				winningRoi = roi
@@ -140,5 +142,5 @@ func (a *Agent) mostSensibleMobType(mobMoney float64) *game.MobType {
 			}
 		}
 	}
-	return a.game.Config.GetMobTypeByKey(winningMobType)
+	return a.game.Config.GetMobTypeByKey(a.race, winningMobType)
 }

@@ -13,8 +13,8 @@ func prepareGame() *Game {
 		State:          WaitingState,
 		Config:         &TestGameConfig,
 	}
-	game.AddPlayer("test1")
-	game.AddPlayer("test2")
+	game.AddPlayer("test1", "sr")
+	game.AddPlayer("test2", "sr")
 	return &game
 }
 

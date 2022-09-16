@@ -5,12 +5,12 @@ import (
 )
 
 func testBarracks(c Config) *Barracks {
-	return newBarracks(0, &c)
+	return newBarracks(0, "sr", &c)
 }
 
 // prepare a field containing a single tower and a single mob using the standardtwmap
 func prepareField(hasTower bool, hasMob bool, preRunBarracks bool) *Field {
-	field := NewField(0, TestGameConfig.Player(0), testBarracks(TestGameConfig), standardTWMap().GenerateMap())
+	field := NewField(0, "sr", TestGameConfig.Player(0), testBarracks(TestGameConfig), standardTWMap().GenerateMap())
 	if hasTower {
 		// add tower by handling an event
 		_, err := field.HandleEvent(BuildEvent{X: 5, Y: 5, TowerType: "FastBullet"}, []*Field{}, &TestGameConfig)
