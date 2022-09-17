@@ -35,10 +35,12 @@ type BuildPosition struct {
 
 func NewAgent(game *game.Game, playerID int, config *Config) *Agent {
 	return &Agent{
-		game:     game,
-		playerID: playerID,
-		config:   config,
-		state:    &State{},
+		game:       game,
+		playerID:   playerID,
+		config:     config,
+		state:      &State{},
+		race:       "facebook",
+		towerTypes: game.GetTowerTypes(playerID),
 	}
 }
 

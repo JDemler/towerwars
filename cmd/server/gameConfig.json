@@ -191,8 +191,8 @@
                             "range": 4,
                             "fireRate": 0.5,
                             "bulletSpeed": 13,
-                            "splashRadius": 0.5,
-                            "splashDamage": 0.5
+                            "splashRadius": 1,
+                            "splashDmg": 1
                         },
                         {
                             "level": 2,
@@ -200,7 +200,9 @@
                             "damage": 2,
                             "range": 4.5,
                             "fireRate": 0.4,
-                            "bulletSpeed": 13
+                            "bulletSpeed": 13,
+                            "splashRadius": 1,
+                            "splashDmg": 1
                         }
                     ]
                 },

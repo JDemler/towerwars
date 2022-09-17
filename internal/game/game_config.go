@@ -92,7 +92,7 @@ func (t *TowerType) Tower(x float64, y float64, level int, id int) *Tower {
 		Y: y, Level: level, Damage: towerLevel.Damage,
 		Range: towerLevel.Range, FireRate: towerLevel.FireRate,
 		BulletSpeed: towerLevel.BulletSpeed, Cooldown: 0,
-		SplashRange: towerLevel.SplashRadius, SplashDmg: towerLevel.SplashDmg,
+		SplashRadius: towerLevel.SplashRadius, SplashDmg: towerLevel.SplashDmg,
 		Effect: towerLevel.Effect, Type: t.Key}
 }
 

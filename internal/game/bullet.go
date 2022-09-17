@@ -6,17 +6,17 @@ import (
 
 // Bullet represents a bullet
 type Bullet struct {
-	ID          int     `json:"id"`
-	X           float64 `json:"x"`
-	Y           float64 `json:"y"`
-	Speed       float64 `json:"speed"`
-	Damage      int     `json:"damage"`
-	SplashRange float64 `json:"splash"`
-	SplashDmg   float64 `json:"splashDmg"`
-	Effect      *Effect `json:"-"`
-	Irrelevant  bool    `json:"-"`
-	Target      *Mob    `json:"-"`
-	TargetID    int     `json:"targetId"`
+	ID           int     `json:"id"`
+	X            float64 `json:"x"`
+	Y            float64 `json:"y"`
+	Speed        float64 `json:"speed"`
+	Damage       int     `json:"damage"`
+	SplashRadius float64 `json:"splash"`
+	SplashDmg    float64 `json:"splashDmg"`
+	Effect       *Effect `json:"-"`
+	Irrelevant   bool    `json:"-"`
+	Target       *Mob    `json:"-"`
+	TargetID     int     `json:"targetId"`
 }
 
 // Implement Crud interface
@@ -49,7 +49,7 @@ func (bullet *Bullet) update(delta float64, field *Field) bool {
 		bullet.Target.Health -= float64(bullet.Damage)
 		bullet.Irrelevant = true
 		// splash damage
-		if bullet.SplashRange > 0 {
+		if bullet.SplashRadius > 0 {
 			field.applySplashDamage(bullet)
 		}
 		if bullet.Effect != nil {
