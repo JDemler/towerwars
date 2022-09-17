@@ -22,15 +22,6 @@ client:
     type: ClusterIP
     port: 80
 
-altclient:
-  image:
-    repository: socialmaulwars.azurecr.io/socialmediawars-altclient
-    pullPolicy: Always    
-    tag: "latest"
-  service:
-    type: ClusterIP
-    port: 80         
-
 server:
   image:
     repository: socialmaulwars.azurecr.io/socialmediawars
