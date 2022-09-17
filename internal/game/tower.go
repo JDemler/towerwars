@@ -38,7 +38,7 @@ func (t *Tower) Upgrade(towerLevel *TowerLevel) {
 	t.FireRate = towerLevel.FireRate
 	t.Effect = towerLevel.Effect
 	t.BulletSpeed = towerLevel.BulletSpeed
-	t.SplashRange = towerLevel.SplashRange
+	t.SplashRange = towerLevel.SplashRadius
 	t.SplashDmg = towerLevel.SplashDmg
 	t.Level = towerLevel.Level
 }

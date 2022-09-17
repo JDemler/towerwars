@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"math/rand"
 	"net/http"
+	"os"
 	"strconv"
 	"time"
 
@@ -16,6 +17,7 @@ type Server struct {
 	runningGames map[string]*GameInstance
 	openGames    map[string]*GameInstance
 	agentsEnabld bool
+	races        []*game.RaceConfig
 }
 
 type ServerStatus struct {
@@ -26,10 +28,26 @@ type ServerStatus struct {
 
 // new server
 func NewServer(agentsEnabled bool) *Server {
+	// Try to read config. Get config path from env variable
+	var configPath string
+	if os.Getenv("CONFIG_PATH") == "" {
+		fmt.Println("No config path set. Using default config")
+		configPath = "gameConfig.json"
+	} else {
+		fmt.Println("Using config from: ", os.Getenv("CONFIG_PATH"))
+		configPath = os.Getenv("CONFIG_PATH")
+	}
+	config, err := game.ReadConfigFromFile(configPath)
+	if err != nil {
+		fmt.Println("Could not read config")
+		fmt.Println(err)
+		return nil
+	}
 	return &Server{
 		runningGames: make(map[string]*GameInstance),
 		openGames:    make(map[string]*GameInstance),
 		agentsEnabld: agentsEnabled,
+		races:        config.Races,
 	}
 }
 
@@ -211,6 +229,14 @@ func (s *Server) GetMobTypes(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func (s *Server) GetSocialMediaNetworks(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	err := json.NewEncoder(w).Encode(s.races)
+	if err != nil {
+		fmt.Println(err)
+	}
+}
+
 func (s *Server) GetStatus(w http.ResponseWriter, r *http.Request) {
 	gameStatus := ServerStatus{
 		OpenGames:    len(s.openGames),
@@ -266,6 +292,7 @@ func main() {
 	http.HandleFunc("/add_player", s.AddPlayer)
 	http.HandleFunc("/tower_types", s.GetTowerTypes)
 	http.HandleFunc("/mob_types", s.GetMobTypes)
+	http.HandleFunc("/social_media_networks", s.GetSocialMediaNetworks)
 	http.HandleFunc("/ws", s.WebSocket)
 	err := http.ListenAndServe(":8080", logAndAddCorsHeadersToRequest(http.DefaultServeMux))
 	if err != nil {

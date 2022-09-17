@@ -80,6 +80,10 @@ const beginGameLoop = (app: Application, viewport: Viewport, initialGameState: G
 
             dispatchUiState({ type: 'set-mobTypes', mobTypes: action.mobTypes });
         }
+        else if (action.type === 'socialMediaNetworks') {
+            // This is never called. But I cannot remove it because the else branch otherwise does not compile
+            dispatchUiState({ type: 'set-socialMediaNetworks', networks: action.networks });
+        }
         else if (action.type === 'barracks') {
             if (action.fieldId !== gameClient.player?.fieldId)
                 return;

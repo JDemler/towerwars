@@ -1,5 +1,5 @@
 import GameClient from "@game/GameClient";
-import { GamePhase, GameState, MobTypeModel, PlayerModel, TowerTypeModel, BarracksModel, TowerModel } from '@models';
+import { GamePhase, GameState, MobTypeModel, PlayerModel, TowerTypeModel, BarracksModel, TowerModel, SocialMediaNetworkModel } from '@models';
 
 export interface InitialUiState {
     gameClient?: GameClient;
@@ -11,6 +11,7 @@ export interface InitialUiState {
 
     mobTypes?: MobTypeModel[];
     towerTypes?: TowerTypeModel[];
+    socialMediaNetworks?: SocialMediaNetworkModel[];
     barracksModel?: BarracksModel;
 
     setSelectedTowerType?: (towerType: string) => void;

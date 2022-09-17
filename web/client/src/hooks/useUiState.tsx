@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useReducer, createContext } from 'react';
-import { GamePhase, GameState, PlayerModel, UiState, InitialUiState, MobTypeModel, TowerTypeModel, BarracksModel, TowerModel } from '@models';
+import { GamePhase, GameState, PlayerModel, UiState, InitialUiState, MobTypeModel, TowerTypeModel, BarracksModel, TowerModel, SocialMediaNetworkModel } from '@models';
 import GameClient from '@game/GameClient';
-    
+
 export type UiStateContextAction =
     | { type: "set-loading"; }
     | { type: "set-uiState"; uiState: UiState }
@@ -10,19 +10,20 @@ export type UiStateContextAction =
     | { type: "set-gameState"; gameState: GameState }
     | { type: "clear-gameState" }
     | { type: "set-gamePhase"; gamePhase: GamePhase }
-    
+
     | { type: "set-playerModel"; playerModel: PlayerModel }
 
+    | { type: "set-socialMediaNetworks"; networks: SocialMediaNetworkModel[] }
     | { type: "set-mobTypes"; mobTypes: MobTypeModel[] }
     | { type: "set-towerTypes"; towerTypes: TowerTypeModel[] }
     | { type: "set-barracksModel"; barracksModel: BarracksModel }
-    
+
     | { type: "set-selectedTowerTypeHandler"; selectedTowerTypeHandler: (towerType: string) => void }
     | { type: "set-selectedTowerType"; selectedTowerTypeKey: string }
-    
+
     | { type: "set-selectedTower"; selectedTower: TowerModel }
 
-function reducer (state: InitialUiState | undefined, action: UiStateContextAction): InitialUiState | undefined {
+function reducer(state: InitialUiState | undefined, action: UiStateContextAction): InitialUiState | undefined {
     if (action.type === 'set-uiState')
         return action.uiState;
 
@@ -61,6 +62,13 @@ function reducer (state: InitialUiState | undefined, action: UiStateContextActio
             return {
                 ...state,
                 playerModel: action.playerModel,
+            }
+        }
+        case 'set-socialMediaNetworks': {
+            console.log("set-socialMediaNetworks", action.networks);
+            return {
+                ...state,
+                socialMediaNetworks: action.networks,
             }
         }
         case 'set-mobTypes': {
@@ -118,7 +126,8 @@ export const UiStateProvider: React.FC<React.PropsWithChildren> = ({ children })
         const gameClient = new GameClient();
 
         gameClient.onDispatch((action) => {
-            switch(action.type) {
+            console.log("gameClient.onDispatch", action);
+            switch (action.type) {
                 case 'state': {
                     dispatch({ type: 'set-gamePhase', gamePhase: action.gameStatus });
                     break;
@@ -131,17 +140,22 @@ export const UiStateProvider: React.FC<React.PropsWithChildren> = ({ children })
                     }
                     break;
                 }
+                case 'socialMediaNetworks': {
+                    dispatch({ type: 'set-socialMediaNetworks', networks: action.networks });
+                    break;
+                }
                 default: {
                     return;
                 }
             }
         })
+        gameClient.loadSocialMediaNetworks();
 
         gameClient.start();
 
         dispatch({ type: 'set-gameClient', gameClient });
     }, []);
-    
+
     return (
         <UiStateContext.Provider value={[context, dispatch]}>
             {children}

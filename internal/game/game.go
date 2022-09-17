@@ -239,3 +239,7 @@ func (game *Game) GetMobTypes(fieldID int) []*MobType {
 	}
 	return nil
 }
+
+func (game *Game) GetSocialMediaNetworks() []*RaceConfig {
+	return game.Config.Races
+}

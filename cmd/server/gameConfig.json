@@ -87,7 +87,7 @@
                     "income": 90,
                     "cost": 5,
                     "respawn": 1.5,
-                    "delay": 25
+                    "delay": 15
                 },
                 {
                     "name": "Facebook Troll",
@@ -148,6 +148,156 @@
                     "cost": 100,
                     "respawn": 5,
                     "delay": 115
+                }
+            ]
+        },
+        {
+            "name": "Instagram",
+            "key": "instagram",
+            "description": "Midrange towers",
+            "towerTypes": [
+                {
+                    "name": "Bio",
+                    "description": "A short description of yourself. It's not very interesting.",
+                    "key": "bio",
+                    "levels": [
+                        {
+                            "level": 1,
+                            "cost": 10,
+                            "damage": 1,
+                            "range": 3,
+                            "fireRate": 0.25,
+                            "bulletSpeed": 15
+                        },
+                        {
+                            "level": 2,
+                            "cost": 30,
+                            "damage": 1,
+                            "range": 3.5,
+                            "fireRate": 0.2,
+                            "bulletSpeed": 17
+                        }
+                    ]
+                },
+                {
+                    "name": "Hashtag",
+                    "description": "A word or phrase that is used to describe a picture. It's not very useful. But it reaches a lot of people.",
+                    "key": "hashtag",
+                    "levels": [
+                        {
+                            "level": 1,
+                            "cost": 20,
+                            "damage": 1,
+                            "range": 4,
+                            "fireRate": 0.5,
+                            "bulletSpeed": 13,
+                            "splashRadius": 0.5,
+                            "splashDamage": 0.5
+                        },
+                        {
+                            "level": 2,
+                            "cost": 60,
+                            "damage": 2,
+                            "range": 4.5,
+                            "fireRate": 0.4,
+                            "bulletSpeed": 13
+                        }
+                    ]
+                },
+                {
+                    "name": "Story",
+                    "description": "A toxic picture or video that you post to your feed.",
+                    "key": "story",
+                    "levels": [
+                        {
+                            "level": 1,
+                            "cost": 50,
+                            "damage": 0,
+                            "range": 5,
+                            "fireRate": 1,
+                            "effect": {
+                                "type": "dot",
+                                "value": 0.5,
+                                "duration": 9
+                            },
+                            "bulletSpeed": 10
+                        },
+                        {
+                            "level": 2,
+                            "cost": 80,
+                            "damage": 1,
+                            "range": 5.5,
+                            "fireRate": 1,
+                            "effect": {
+                                "type": "dot",
+                                "value": 1,
+                                "duration": 9
+                            },
+                            "bulletSpeed": 15
+                        }
+                    ]
+                }
+            ],
+            "mobTypes": [
+                {
+                    "name": "Asipring AI Artist",
+                    "description": "They think they are artists. They are not.",
+                    "key": "aspiringAiArtist",
+                    "health": 20,
+                    "speed": 2,
+                    "reward": 100,
+                    "income": 90,
+                    "cost": 5,
+                    "respawn": 1.5,
+                    "delay": 15
+                },
+                {
+                    "name": "Wannabe Influencer",
+                    "description": "They act like they are important. They are not.",
+                    "key": "wannabeInfluencer",
+                    "health": 39,
+                    "speed": 2.2,
+                    "reward": 200,
+                    "income": 180,
+                    "cost": 10,
+                    "respawn": 2,
+                    "delay": 25
+                },
+                {
+                    "name": "Fitness Influencer",
+                    "description": "Lowest form of influencer. Not only do they base their entire life around fitness, they also think they are better than everyone else. At the same time they cheat. ALL OF THEM!",
+                    "key": "wannabeInfluencer",
+                    "health": 79,
+                    "speed": 2.3,
+                    "reward": 400,
+                    "income": 350,
+                    "cost": 20,
+                    "respawn": 2.5,
+                    "delay": 35
+                },
+                {
+                    "name": "Fashion Influencer",
+                    "description": "They are the reason you can't find a pair of jeans that fit you.",
+                    "key": "fashionInfluencer",
+                    "health": 120,
+                    "speed": 2.5,
+                    "reward": 600,
+                    "income": 450,
+                    "cost": 50,
+                    "respawn": 3.5,
+                    "delay": 45
+                },
+                {
+                    "name": "Food Influencer",
+                    "description": "They also are the reason you can't find a pair of jeans that fit you.",
+                    "key": "foodInfluencer",
+                    "health": 200,
+                    "speed": 2.7,
+                    "reward": 800,
+                    "income": 600,
+                    "cost": 100,
+                    "respawn": 4,
+                    "delay": 55
                 }
             ]
         }

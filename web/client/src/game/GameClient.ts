@@ -2,7 +2,7 @@ import ApiClient from '@clients/ApiClient';
 import WebSocketClient from '@clients/WebSocketClient';
 import { BuildTurretEvent, BuyMobEvent, SellTowerEvent, UpgradeTowerEvent } from '@lib/FieldEvent';
 import { GridCoordinate } from '@grid';
-import { AddedPlayerModel, BulletModel, FieldModel, GameState, MobModel, PlayerModel, TowerModel, GamePhase, TowerTypeModel, MobTypeModel, BarracksModel } from '@models';
+import { AddedPlayerModel, BulletModel, FieldModel, GameState, MobModel, PlayerModel, TowerModel, GamePhase, TowerTypeModel, MobTypeModel, BarracksModel, SocialMediaNetworkModel } from '@models';
 
 export type GameChangeActionChangeKind = 'create' | 'update';
 export type GameChangeActionDeleteKind = 'delete';
@@ -14,6 +14,8 @@ export type FieldChangeAction =
     // State
     | { type: "state"; gameStatus: GamePhase }
 
+    // SocialMediaNetworks actions
+    | { type: "socialMediaNetworks"; kind: GameChangeActionChangeKind; networks: SocialMediaNetworkModel[] }
     // TowerTypes actions
     | { type: "towerTypes"; kind: GameChangeActionChangeKind; towerTypes: TowerTypeModel[] }
     // MobTypes actions
@@ -63,6 +65,7 @@ export default class GameClient {
 
     private dispatch(action: FieldChangeAction) {
         for (const dispatcher of this.gameStateUpdateDispatches) {
+            console.log('Dispatching', action);
             dispatcher(action, this);
         }
     }
@@ -130,6 +133,14 @@ export default class GameClient {
         }
     }
 
+    public loadSocialMediaNetworks() {
+        ApiClient.getSocialMediaNetworks()
+            .then(networks => {
+                console.log('Social media networks', networks);
+                this.dispatch({ type: 'socialMediaNetworks', kind: 'create', networks });
+            })
+    }
+
     public loadTowerTypes(gameId: string, fieldId: number) {
         ApiClient.getTowerTypes(gameId, fieldId)
             .then(towerTypes => {
@@ -150,8 +161,8 @@ export default class GameClient {
         this.webSocketClient?.disconnect();
     }
 
-    public joinGame(playerName: string) {
-        ApiClient.joinGame(playerName)
+    public joinGame(playerName: string, socialMediaNetwork: string) {
+        ApiClient.joinGame(playerName, socialMediaNetwork)
             .then(addedPlayer => {
                 this.player = addedPlayer;
                 sessionStorage.setItem('addedPlayer', JSON.stringify(addedPlayer));

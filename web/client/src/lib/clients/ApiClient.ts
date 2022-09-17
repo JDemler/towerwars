@@ -1,4 +1,4 @@
-import { GameState, AddedPlayerModel, TowerTypeModel, MobTypeModel } from "@models";
+import { GameState, AddedPlayerModel, TowerTypeModel, MobTypeModel, SocialMediaNetworkModel } from "@models";
 import { isAbsoluteUrl } from '@helpers';
 
 const getApiRoot = () => {
@@ -13,11 +13,12 @@ const getApiRoot = () => {
     return url;
 }
 const getApiUrl = (path: string, gameId?: string, fieldId?: number) => {
+    console.log("getApiUrl", path, gameId, fieldId);
     let url = `${getApiRoot()}${path}`;
     if (gameId) {
         url += `?gameId=${gameId}`;
     }
-    if (fieldId) {
+    if (fieldId !== undefined) {
         url += `&fieldId=${fieldId}`;
     }
     return url;
@@ -31,6 +32,14 @@ export default class ApiClient {
         const responseJson = await response.json();
 
         return GameState.fromJSON(responseJson);
+    }
+
+    // Function that fetches the social media network types
+    static getSocialMediaNetworks = async () => {
+        const response = await fetch(getApiUrl('social_media_networks'));
+        const responseJson = await response.json() as any[];
+
+        return responseJson.map((socialMediaNetwork: any) => SocialMediaNetworkModel.fromJSON(socialMediaNetwork));
     }
 
     // Function that fetches the tower types
@@ -50,12 +59,12 @@ export default class ApiClient {
     }
 
     // Function that adds the player to the game
-    static joinGame = async (playerName: string) => {
+    static joinGame = async (playerName: string, socialMediaNetwork: string) => {
         const requestOptions = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             // @Niklas: RaceSelector result goes here
-            body: JSON.stringify({ name: playerName, race: "facebook" })
+            body: JSON.stringify({ name: playerName, race: socialMediaNetwork })
         }
         const response = await fetch(getApiUrl('add_player'), requestOptions)
         const responseJson = await response.json();

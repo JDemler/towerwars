@@ -70,15 +70,15 @@ type Effect struct {
 
 // TowerLevel represents a level of a tower type. Contains all information the tower instance needs
 type TowerLevel struct {
-	Level       int     `json:"level"`
-	Cost        int     `json:"cost"`
-	Damage      int     `json:"damage"`
-	Range       float64 `json:"range"`
-	SplashRange float64 `json:"splashRange"`
-	SplashDmg   float64 `json:"splashDmg"`
-	Effect      *Effect `json:"effect"`
-	FireRate    float64 `json:"fireRate"`
-	BulletSpeed float64 `json:"bulletSpeed"`
+	Level        int     `json:"level"`
+	Cost         int     `json:"cost"`
+	Damage       int     `json:"damage"`
+	Range        float64 `json:"range"`
+	SplashRadius float64 `json:"splashRadius"`
+	SplashDmg    float64 `json:"splashDmg"`
+	Effect       *Effect `json:"effect"`
+	FireRate     float64 `json:"fireRate"`
+	BulletSpeed  float64 `json:"bulletSpeed"`
 }
 
 // Tower creates a new tower instance from a tower type and a level
@@ -92,7 +92,7 @@ func (t *TowerType) Tower(x float64, y float64, level int, id int) *Tower {
 		Y: y, Level: level, Damage: towerLevel.Damage,
 		Range: towerLevel.Range, FireRate: towerLevel.FireRate,
 		BulletSpeed: towerLevel.BulletSpeed, Cooldown: 0,
-		SplashRange: towerLevel.SplashRange, SplashDmg: towerLevel.SplashDmg,
+		SplashRange: towerLevel.SplashRadius, SplashDmg: towerLevel.SplashDmg,
 		Effect: towerLevel.Effect, Type: t.Key}
 }
 
