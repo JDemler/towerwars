@@ -21,7 +21,7 @@ func prepareField(hasTower bool, hasMob bool, preRunBarracks bool) *Field {
 	if hasMob {
 		// add mob by handling an event
 		field.Barracks.update(1)
-		_, err := field.HandleEvent(BuyMobEvent{MobType: "SlowMob", TargetFieldID: 0}, []*Field{field}, &TestGameConfig)
+		_, err := field.HandleEvent(BuyMobEvent{MobType: "SlowMob"}, []*Field{field}, &TestGameConfig)
 		if err != nil {
 			panic("Failed to buy mob")
 		}
@@ -114,7 +114,7 @@ func TestBulletReachesEndOfTWMapAndAnotherMob(t *testing.T) {
 // Test that a BuyMobEvent reduces the money of the player and increases the income of the player
 func TestBuyMobEvent(t *testing.T) {
 	field := prepareField(false, false, true)
-	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "FastMob", TargetFieldID: 0}, []*Field{field}, &TestGameConfig)
+	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "FastMob"}, []*Field{field}, &TestGameConfig)
 	if field.Player.Money != 9500 {
 		t.Errorf("Expected 9500 money, got %d", field.Player.Money)
 	}
@@ -133,7 +133,7 @@ func TestBuyMobEventNotExecuted(t *testing.T) {
 	if len(targetField.Mobs) != 0 {
 		t.Errorf("Expected 0 mob, got %d", len(targetField.Mobs))
 	}
-	_, err := sourceField.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "FastMob", TargetFieldID: 1}, []*Field{targetField}, &TestGameConfig)
+	_, err := sourceField.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "FastMob"}, []*Field{targetField}, &TestGameConfig)
 	if err == nil {
 		t.Errorf("Expected BuyMobEvent to not be executed")
 	}
@@ -190,7 +190,7 @@ func TestMobKilled(t *testing.T) {
 func TestMobId(t *testing.T) {
 	field := prepareField(false, true, true)
 	// add mob by handling an event
-	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "FastMob", TargetFieldID: 0}, []*Field{field}, &TestGameConfig)
+	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "FastMob"}, []*Field{field}, &TestGameConfig)
 	// check mob ids
 	if field.Mobs[0].ID != 1 {
 		t.Errorf("Expected mob id to be 0, got %d", field.Mobs[0].ID)
@@ -206,7 +206,7 @@ func TestMobId(t *testing.T) {
 		field.Update(1)
 	}
 	// add mob by handling an event
-	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "FastMob", TargetFieldID: 0}, []*Field{field}, &TestGameConfig)
+	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "FastMob"}, []*Field{field}, &TestGameConfig)
 	if field.Mobs[0].ID != 3 {
 		t.Error("Expected mobs to have different but ascending ids")
 	}
@@ -249,7 +249,7 @@ func TestBulletId(t *testing.T) {
 		t.Errorf("Expected 0 mobs, got %d", len(field.Mobs))
 	}
 	// add mob by handling an event
-	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "StationaryMob", TargetFieldID: 0}, []*Field{field}, &TestGameConfig)
+	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "StationaryMob"}, []*Field{field}, &TestGameConfig)
 	// add bullet by updating field
 	field.Update(0.01)
 	// check to see there is 1 bullet
@@ -338,11 +338,11 @@ func TestSellTower(t *testing.T) {
 func TestSplashDamage(t *testing.T) {
 	field := prepareField(false, false, true)
 	// add mob by handling an event
-	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "StationaryMob", TargetFieldID: 0}, []*Field{field}, &TestGameConfig)
-	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "StationaryMob", TargetFieldID: 0}, []*Field{field}, &TestGameConfig)
-	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "StationaryMob", TargetFieldID: 0}, []*Field{field}, &TestGameConfig)
-	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "StationaryMob", TargetFieldID: 0}, []*Field{field}, &TestGameConfig)
-	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "StationaryMob", TargetFieldID: 0}, []*Field{field}, &TestGameConfig)
+	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "StationaryMob"}, []*Field{field}, &TestGameConfig)
+	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "StationaryMob"}, []*Field{field}, &TestGameConfig)
+	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "StationaryMob"}, []*Field{field}, &TestGameConfig)
+	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "StationaryMob"}, []*Field{field}, &TestGameConfig)
+	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "StationaryMob"}, []*Field{field}, &TestGameConfig)
 	// add tower by handling an event
 	field.HandleEvent(BuildEvent{X: 1, Y: 1, TowerType: "SplashBullet"}, []*Field{field}, &TestGameConfig)
 	// Firerate of 1 = 10DPS without splash = 50s to kill 5 mobs
@@ -363,8 +363,8 @@ func TestSplashDamage(t *testing.T) {
 func TestStunEffect(t *testing.T) {
 	field := prepareField(false, false, true)
 	// add mob by handling an event
-	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "FastMob", TargetFieldID: 0}, []*Field{field}, &TestGameConfig)
-	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "FastMob", TargetFieldID: 0}, []*Field{field}, &TestGameConfig)
+	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "FastMob"}, []*Field{field}, &TestGameConfig)
+	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "FastMob"}, []*Field{field}, &TestGameConfig)
 	// add tower by handling an event
 	field.HandleEvent(BuildEvent{X: 1, Y: 1, TowerType: "StunBullet"}, []*Field{field}, &TestGameConfig)
 	// Firerate of 0.9 and stun of 1. Mob does not ever reach the end of the field
@@ -380,9 +380,9 @@ func TestStunEffect(t *testing.T) {
 func TestStunSplash(t *testing.T) {
 	field := prepareField(false, false, true)
 	// add mob by handling an event
-	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "FastMob", TargetFieldID: 0}, []*Field{field}, &TestGameConfig)
-	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "FastMob", TargetFieldID: 0}, []*Field{field}, &TestGameConfig)
-	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "FastMob", TargetFieldID: 0}, []*Field{field}, &TestGameConfig)
+	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "FastMob"}, []*Field{field}, &TestGameConfig)
+	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "FastMob"}, []*Field{field}, &TestGameConfig)
+	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "FastMob"}, []*Field{field}, &TestGameConfig)
 	// add tower by handling an event
 	field.HandleEvent(BuildEvent{X: 1, Y: 1, TowerType: "SplashStunBullet"}, []*Field{field}, &TestGameConfig)
 	// Firerate of 0.9 and stun of 1. Mob does not ever reach the end of the field
@@ -398,8 +398,8 @@ func TestStunSplash(t *testing.T) {
 func TestSlowEffect(t *testing.T) {
 	field := prepareField(false, false, true)
 	// add two mobs by handling an event
-	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "FastMob", TargetFieldID: 0}, []*Field{field}, &TestGameConfig)
-	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "FastMob", TargetFieldID: 0}, []*Field{field}, &TestGameConfig)
+	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "FastMob"}, []*Field{field}, &TestGameConfig)
+	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "FastMob"}, []*Field{field}, &TestGameConfig)
 	// add tower by handling an event
 	field.HandleEvent(BuildEvent{X: 1, Y: 1, TowerType: "SlowingBullet"}, []*Field{field}, &TestGameConfig)
 	// Firerate of 0.9 and slow of 0.99. Mob does not ever reach the end of the field
@@ -415,9 +415,9 @@ func TestSlowEffect(t *testing.T) {
 func TestSlowEffectSplash(t *testing.T) {
 	field := prepareField(false, false, true)
 	// add mob by handling an event
-	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "FastMob", TargetFieldID: 0}, []*Field{field}, &TestGameConfig)
-	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "FastMob", TargetFieldID: 0}, []*Field{field}, &TestGameConfig)
-	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "FastMob", TargetFieldID: 0}, []*Field{field}, &TestGameConfig)
+	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "FastMob"}, []*Field{field}, &TestGameConfig)
+	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "FastMob"}, []*Field{field}, &TestGameConfig)
+	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "FastMob"}, []*Field{field}, &TestGameConfig)
 	// add tower by handling an event
 	field.HandleEvent(BuildEvent{X: 1, Y: 1, TowerType: "SplashSlowingBullet"}, []*Field{field}, &TestGameConfig)
 	// Firerate of 0.9 and slow of 0.99. Mob does not ever reach the end of the field
@@ -433,7 +433,7 @@ func TestSlowEffectSplash(t *testing.T) {
 func TestPoisonEffect(t *testing.T) {
 	field := prepareField(false, false, true)
 	// add mob by handling an event
-	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "StationaryMob", TargetFieldID: 0}, []*Field{field}, &TestGameConfig)
+	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "StationaryMob"}, []*Field{field}, &TestGameConfig)
 	// add tower by handling an event
 	field.HandleEvent(BuildEvent{X: 1, Y: 1, TowerType: "PoisonBullet"}, []*Field{field}, &TestGameConfig)
 	// Firerate of 0.9 and poison of 1. Mob does not ever reach the end of the field because it dies from poison
@@ -449,11 +449,11 @@ func TestPoisonEffect(t *testing.T) {
 func TestPoisonSplash(t *testing.T) {
 	field := prepareField(false, false, true)
 	// add mob by handling an event
-	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "StationaryMob", TargetFieldID: 0}, []*Field{field}, &TestGameConfig)
-	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "StationaryMob", TargetFieldID: 0}, []*Field{field}, &TestGameConfig)
-	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "StationaryMob", TargetFieldID: 0}, []*Field{field}, &TestGameConfig)
-	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "StationaryMob", TargetFieldID: 0}, []*Field{field}, &TestGameConfig)
-	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "StationaryMob", TargetFieldID: 0}, []*Field{field}, &TestGameConfig)
+	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "StationaryMob"}, []*Field{field}, &TestGameConfig)
+	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "StationaryMob"}, []*Field{field}, &TestGameConfig)
+	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "StationaryMob"}, []*Field{field}, &TestGameConfig)
+	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "StationaryMob"}, []*Field{field}, &TestGameConfig)
+	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "StationaryMob"}, []*Field{field}, &TestGameConfig)
 	// add tower by handling an event
 	field.HandleEvent(BuildEvent{X: 1, Y: 1, TowerType: "SplashPoisonBullet"}, []*Field{field}, &TestGameConfig)
 	// Firerate of 0.9 and poison of 1. Mob does not ever reach the end of the field because it dies from poison

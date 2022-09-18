@@ -47,13 +47,7 @@ export default class GameClient {
 
     public player?: AddedPlayerModel;
 
-    private gameStateUpdateDispatches: FieldUpdateDispatch[] = [];
-
-    public get enemyPlayerFieldId() {
-        return this.player !== undefined
-            ? 1 - this.player.fieldId
-            : undefined
-    }
+    private gameStateUpdateDispatches: FieldUpdateDispatch[] = [];    
 
     public start() {
         this.initializeApi();
@@ -218,11 +212,11 @@ export default class GameClient {
         if (this.webSocketClient === undefined) {
             return console.error('Websocket not initialised');
         }
-        if (this.player === undefined || this.enemyPlayerFieldId === undefined) {
+        if (this.player === undefined) {
             return console.error('Not a player');
         }
 
-        this.webSocketClient.dispatchFieldEvent(new BuyMobEvent(this.player, this.enemyPlayerFieldId, mobKey));
+        this.webSocketClient.dispatchFieldEvent(new BuyMobEvent(this.player, mobKey));
     }
 
     public buildTurret(coordinate: GridCoordinate, towerType: string) {

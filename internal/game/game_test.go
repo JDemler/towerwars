@@ -112,7 +112,7 @@ func TestGameState(t *testing.T) {
 	// Update Barracks
 	game.Update(1)
 	// Send mob to field 0 by executing an event
-	_, err := game.HandleEvent(FieldEvent{FieldID: 1, Type: "buyMob", Payload: BuyMobEvent{MobType: "FastMob", TargetFieldID: 0}})
+	_, err := game.HandleEvent(FieldEvent{FieldID: 1, Type: "buyMob", Payload: BuyMobEvent{MobType: "FastMob"}})
 	if err != nil {
 		t.Errorf("Expected no error, got %s", err)
 	}
@@ -152,7 +152,7 @@ func TestBuyMob(t *testing.T) {
 	// Update for Barracks
 	game.Update(1)
 	// Buy mob on field 0
-	_, err := game.HandleEvent(FieldEvent{FieldID: 1, Type: "buyMob", Payload: BuyMobEvent{MobType: "FastMob", TargetFieldID: 0}})
+	_, err := game.HandleEvent(FieldEvent{FieldID: 1, Type: "buyMob", Payload: BuyMobEvent{MobType: "FastMob"}})
 	if err != nil {
 		t.Errorf("Expected no error, got %s", err)
 	}
@@ -201,7 +201,7 @@ func TestMobReachesEndOfMap(t *testing.T) {
 	// Update for Barracks
 	game.Update(1)
 	// Add mob to field 1 by firing event
-	_, err := game.HandleEvent(FieldEvent{FieldID: 1, Type: "buyMob", Payload: BuyMobEvent{MobType: "FastMob", TargetFieldID: 0}})
+	_, err := game.HandleEvent(FieldEvent{FieldID: 1, Type: "buyMob", Payload: BuyMobEvent{MobType: "FastMob"}})
 	if err != nil {
 		t.Errorf("Expected no error, got %s", err)
 	}

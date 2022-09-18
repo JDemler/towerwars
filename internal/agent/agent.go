@@ -98,7 +98,7 @@ func (a *Agent) Act(events []*game.ServerEvent) []game.FieldEvent {
 	if a.barracks != nil {
 		mobType := a.mostSensibleMobType(mobMoney)
 		if mobType != nil {
-			buyMobEvent := game.BuyMobEvent{TargetFieldID: 1 - a.playerID, MobType: mobType.Key}
+			buyMobEvent := game.BuyMobEvent{MobType: mobType.Key}
 			outEvents = append(outEvents, game.FieldEvent{FieldID: a.playerID, Type: "buyMob", Payload: buyMobEvent})
 		}
 	}

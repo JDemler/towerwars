@@ -108,18 +108,19 @@ func (f *Field) applyEffect(bullet *Bullet) {
 	}
 }
 
-// HandleEvent for field
-func (f *Field) HandleEvent(event Event, otherFields []*Field, gameConfig *Config) ([]*ServerEvent, error) {
-	// Iterate over event targetfieldids and get targetfields
-	targetFields := []*Field{}
-	for _, targetFieldID := range event.TargetFieldIds() {
-		for _, otherField := range otherFields {
-			if otherField.ID == targetFieldID {
-				targetFields = append(targetFields, otherField)
-			}
+func findNextField(id int, fs []*Field) *Field {
+	for i, field := range fs {
+		if field.ID == id {
+			return fs[(i+1)%len(fs)]
 		}
 	}
-	events, err := event.TryExecute(f, targetFields, gameConfig)
+	return nil
+}
+
+// HandleEvent for field
+func (f *Field) HandleEvent(event Event, otherFields []*Field, gameConfig *Config) ([]*ServerEvent, error) {
+
+	events, err := event.TryExecute(f, findNextField(f.ID, otherFields), gameConfig)
 	if err != nil {
 		//Log failure to execute event
 		fmt.Printf("Failed to execute event: %+v\n", event)

@@ -58,8 +58,7 @@ func (e *FieldEvent) UnmarshalJSON(data []byte) error {
 
 // Event is a generic event that will be sent from the client to the server
 type Event interface {
-	TryExecute(sourceField *Field, targetFields []*Field, gc *Config) ([]*ServerEvent, error)
-	TargetFieldIds() []int
+	TryExecute(sourceField *Field, targetFields *Field, gc *Config) ([]*ServerEvent, error)
 }
 
 // BuildEvent is sent from the client to the server when a player wants to build a tower
@@ -70,7 +69,7 @@ type BuildEvent struct {
 }
 
 // TryExecute a BuildEvent to build a tower
-func (e BuildEvent) TryExecute(sourceField *Field, targetFields []*Field, gc *Config) ([]*ServerEvent, error) {
+func (e BuildEvent) TryExecute(sourceField *Field, targetField *Field, gc *Config) ([]*ServerEvent, error) {
 	// Check if position is within twmap bounds
 	if e.X < 0 || e.X >= sourceField.TWMap.Width || e.Y < 0 || e.Y >= sourceField.TWMap.Height {
 		return nil, fmt.Errorf("Position out of bounds")
@@ -100,18 +99,13 @@ func (e BuildEvent) TryExecute(sourceField *Field, targetFields []*Field, gc *Co
 	return []*ServerEvent{createEvent(tower, sourceField.ID), updateEvent(sourceField.Player, sourceField.ID)}, nil
 }
 
-// TargetFieldIds is empty for BuildEvent
-func (e BuildEvent) TargetFieldIds() []int {
-	return []int{}
-}
-
 // SellEvent is sent from the client to the server when a player wants to sell a tower
 type SellEvent struct {
 	TowerID int `json:"towerId"`
 }
 
 // TryExecute a SellEvent to sell a tower
-func (e SellEvent) TryExecute(sourceField *Field, targetFields []*Field, gc *Config) ([]*ServerEvent, error) {
+func (e SellEvent) TryExecute(sourceField *Field, targetField *Field, gc *Config) ([]*ServerEvent, error) {
 	// Check if tower exists
 	tower := sourceField.GetTowerByID(e.TowerID)
 	if tower == nil {
@@ -127,18 +121,13 @@ func (e SellEvent) TryExecute(sourceField *Field, targetFields []*Field, gc *Con
 	return []*ServerEvent{deleteEvent(tower, sourceField.ID), updateEvent(sourceField.Player, sourceField.ID)}, nil
 }
 
-// TargetFieldIds is empty for SellEvent
-func (e SellEvent) TargetFieldIds() []int {
-	return []int{}
-}
-
 // UpgradeEvent is sent from the client to the server when a player wants to upgrade a tower
 type UpgradeEvent struct {
 	TowerID int `json:"towerId"`
 }
 
 // TryExecute UpgradeEvent to upgrade a tower
-func (e UpgradeEvent) TryExecute(sourceField *Field, targetFields []*Field, gc *Config) ([]*ServerEvent, error) {
+func (e UpgradeEvent) TryExecute(sourceField *Field, targetField *Field, gc *Config) ([]*ServerEvent, error) {
 	// Check if tower exists
 	tower := sourceField.GetTowerByID(e.TowerID)
 	if tower == nil {
@@ -170,9 +159,8 @@ func (e UpgradeEvent) TargetFieldIds() []int {
 
 // BuyMobEvent is sent from the client to the server when a player wants to buy a mob
 type BuyMobEvent struct {
-	fieldID       int
-	TargetFieldID int    `json:"targetFieldId"`
-	MobType       string `json:"mobType"`
+	fieldID int
+	MobType string `json:"mobType"`
 }
 
 // NewBuyMobEvent creates a new BuyMobEvent
@@ -181,7 +169,7 @@ func NewBuyMobEvent(fieldID int) BuyMobEvent {
 }
 
 // TryExecute BuyMobEvent to buy a mob
-func (e BuyMobEvent) TryExecute(sourceField *Field, targetFields []*Field, config *Config) ([]*ServerEvent, error) {
+func (e BuyMobEvent) TryExecute(sourceField *Field, targetField *Field, config *Config) ([]*ServerEvent, error) {
 	// Check if player can afford mob
 	mobType := config.GetMobTypeByKey(sourceField.SocialNetwork, e.MobType)
 	if mobType == nil {
@@ -205,22 +193,16 @@ func (e BuyMobEvent) TryExecute(sourceField *Field, targetFields []*Field, confi
 	// Increase player income
 	sourceField.Player.Income += mobType.Income
 	gameEvents := []*ServerEvent{}
-	// range over targetFields and add mob to all of them
-	for _, targetField := range targetFields {
-		//Get startposition
-		startX, startY := targetField.TWMap.startPosition()
-		mobID := targetField.getNextMobID()
-		mob := mobType.MakeMob(float64(startX)+0.5, float64(startY)+0.5, mobID)
-		mob.SentFromFieldID = sourceField.ID
-		targetField.Mobs = append(targetField.Mobs, mob)
-		gameEvents = append(gameEvents, createEvent(mob, targetField.ID))
-	}
+
+	//Get startposition
+	startX, startY := targetField.TWMap.startPosition()
+	mobID := targetField.getNextMobID()
+	mob := mobType.MakeMob(float64(startX)+0.5, float64(startY)+0.5, mobID)
+	mob.SentFromFieldID = sourceField.ID
+	targetField.Mobs = append(targetField.Mobs, mob)
+	gameEvents = append(gameEvents, createEvent(mob, targetField.ID))
+
 	// Send playerUpdated event
 	gameEvents = append(gameEvents, updateEvent(sourceField.Player, sourceField.ID))
 	return gameEvents, nil
-}
-
-// TargetFieldIds returns the targetFieldIds for the mob to be sent
-func (e BuyMobEvent) TargetFieldIds() []int {
-	return []int{e.TargetFieldID}
 }
