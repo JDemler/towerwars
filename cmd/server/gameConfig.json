@@ -1,6 +1,6 @@
 {
     "incomeCooldown": 20,
-    "races": [
+    "socialNetworks": [
         {
             "name": "Facebook",
             "key": "facebook",

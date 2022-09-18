@@ -11,7 +11,7 @@ import (
 type Field struct {
 	ID            int       `json:"id"`
 	Key           string    `json:"-"`
-	Race          string    `json:"race"`
+	SocialNetwork string    `json:"socialNetwork"`
 	Player        *Player   `json:"player"`
 	TWMap         *TWMap    `json:"twmap"`
 	Mobs          []*Mob    `json:"mobs"`
@@ -21,6 +21,15 @@ type Field struct {
 	mobCounter    int       `json:"-"` // counter for mob ids
 	bulletCounter int       `json:"-"` // counter for bullet ids
 	towerCounter  int       `json:"-"` // counter for tower ids
+}
+
+// Implement Crud interface for Player
+func (f *Field) getID() int {
+	return f.ID
+}
+
+func (f *Field) getType() string {
+	return "field"
 }
 
 func randomString(length int) string {
@@ -37,7 +46,7 @@ func NewField(id int, race string, player *Player, barracks *Barracks, twmap *TW
 	return &Field{
 		ID:            id,
 		Key:           key,
-		Race:          race,
+		SocialNetwork: race,
 		Player:        player,
 		TWMap:         twmap,
 		Mobs:          []*Mob{},

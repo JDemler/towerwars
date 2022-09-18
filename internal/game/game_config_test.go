@@ -21,7 +21,7 @@ func standardTWMap() *MapConfig {
 }
 
 var TestGameConfig = Config{
-	Races: []*RaceConfig{
+	SocialNetworks: []*SocialNetworkConfig{
 		{Name: "StandardRace",
 			Key:         "sr",
 			Description: "-",

@@ -67,6 +67,17 @@ func NewGameInstance(id string) *GameInstance {
 	}
 }
 
+func (gi *GameInstance) AddPlayer(playerName string, socialNetwork string) string {
+	key, event := gi.game.AddPlayer(playerName, socialNetwork)
+	//Send event to all other clients
+	for _, c := range gi.writeChannels {
+		if c.open {
+			c.Channel <- *event
+		}
+	}
+	return key
+}
+
 // Update the game
 func (gi *GameInstance) Update(delta float64) []*game.ServerEvent {
 	return gi.game.Update(delta)

@@ -60,7 +60,7 @@ func (game *Game) GetDuration() float64 {
 }
 
 // AddPlayer to Game. Return its key
-func (game *Game) AddPlayer(playerName string, race string) string {
+func (game *Game) AddPlayer(playerName string, race string) (string, *ServerEvent) {
 	id := len(game.Fields)
 	player := &Player{
 		ID:     id,
@@ -72,8 +72,7 @@ func (game *Game) AddPlayer(playerName string, race string) string {
 	barracks := newBarracks(id, race, game.Config)
 	field := NewField(id, race, player, barracks, game.Config.Map.GenerateMap())
 	game.Fields = append(game.Fields, field)
-	game.events = append(game.events, createEvent(player, id))
-	return field.Key
+	return field.Key, createEvent(field, id)
 }
 
 // PlayerIDFromKey returns the player id from a key
@@ -226,7 +225,7 @@ func (game *Game) Update(delta float64) []*ServerEvent {
 func (game *Game) GetTowerTypes(fieldID int) []*TowerType {
 	field := game.getFieldAt(fieldID)
 	if field != nil {
-		return game.Config.getRaceConfigByKey(field.Race).TowerTypes
+		return game.Config.getRaceConfigByKey(field.SocialNetwork).TowerTypes
 	}
 	return nil
 }
@@ -235,11 +234,11 @@ func (game *Game) GetTowerTypes(fieldID int) []*TowerType {
 func (game *Game) GetMobTypes(fieldID int) []*MobType {
 	field := game.getFieldAt(fieldID)
 	if field != nil {
-		return game.Config.getRaceConfigByKey(field.Race).MobTypes
+		return game.Config.getRaceConfigByKey(field.SocialNetwork).MobTypes
 	}
 	return nil
 }
 
-func (game *Game) GetSocialMediaNetworks() []*RaceConfig {
-	return game.Config.Races
+func (game *Game) GetSocialMediaNetworks() []*SocialNetworkConfig {
+	return game.Config.SocialNetworks
 }

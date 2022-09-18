@@ -18,7 +18,15 @@ const MatchmakingPage: React.FC = () => {
             <div className="w-full content-center flex flex-col items-center bg-smw-blue-700">
             <div className="max-w-xl flex flex-col items-center space-y-4">
             <div className="text-3xl font-bold pt-10 text-smw-orange-500"><h1>Waiting for players</h1></div>            
-            <div className="text-xl pb-12 text-smw-yellow-500"><h2>{gameState?.fields.length} players joined ...</h2></div>        
+            <div className="text-xl pb-12 text-smw-yellow-500"><h2>{gameState?.fields.length} players joined ...</h2></div>      
+            <div className="flex flex-col items-center space-y-4">
+                {gameState?.fields.map((field, index) => (
+                    <div key={index} className="flex flex-row items-center space-x-4 justify-between w-full">
+                        <img src={`assets/network/${field.network}.jpg`} className="w-10 h-10" />
+                        <div className="text-xl text-smw-yellow-500"><h2>{field.player.name}</h2></div>
+                    </div>
+                ))}
+            </div>
             {gameClient?.player?.fieldId == 0 &&
                 <div className="rounded-md shadow">              
                     <input type="button" className="flex w-full items-center justify-center rounded-md border border-transparent bg-smw-yellow-500 px-8 py-3 text-base font-medium text-white hover:bg-smw-orange-700 md:py-4 md:px-10 md:text-lg" value="Start Game" onClick={() => uiState.gameClient.startGame()} />
@@ -71,12 +79,3 @@ const MatchmakingPage: React.FC = () => {
 }
 
 export default MatchmakingPage;
-
-{/* <input
-                        type="button"
-                        key={network.key}
-                        value={`${network.name}`}
-                        title={`${network.description}`}
-                        onClick={() => setSocialMediaNetwork?.(network.key)}
-                        style={{ margin: '0 2px', padding: '4px', backgroundColor: socialMediaNetwork === network.key ? 'lightblue' : undefined }}
-                    /> */}

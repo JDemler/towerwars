@@ -114,7 +114,7 @@ export default class GameClient {
                         console.log("Found game is already over.");
                         return;
                     }
-
+                    
                     this.dispatch({ type: "gameState", kind: 'create', gameState });
                     this.dispatch({ type: 'state', gameStatus: gameState.state });
 
@@ -172,7 +172,9 @@ export default class GameClient {
     public joinGame(playerName: string, socialMediaNetwork: string) {
         ApiClient.joinGame(playerName, socialMediaNetwork)
             .then(addedPlayer => {
+                console.log('Old player', this.player);
                 this.player = addedPlayer;
+                console.log('New player', this.player);
                 sessionStorage.setItem('addedPlayer', JSON.stringify(addedPlayer));
                 console.log('Joined', addedPlayer);
 
@@ -247,7 +249,7 @@ export default class GameClient {
     }
 
     private handleWebSocketEvent(event: any) {
-        const eventType: 'gameStateChanged' | 'player' | 'tower' | 'mob' | 'bullet' | 'barracks' = event.type;
+        const eventType: 'gameStateChanged' | 'field' | 'player' | 'tower' | 'mob' | 'bullet' | 'barracks' = event.type;
         const eventKind: 'create' | 'update' | 'delete' | undefined = event.kind;
         const eventPayload = event.payload;
         const fieldId = event.fieldId;
@@ -274,6 +276,11 @@ export default class GameClient {
                 if (eventPayload.gameState === "GameOver") {
                     sessionStorage.removeItem('addedPlayer');
                 }
+                break;
+            case "field":
+                if (eventKind === 'create') {
+                    this.dispatch({ type: "field", kind: 'create', fieldId, field: FieldModel.fromJSON(eventPayload) });
+                } 
                 break;
             case "player":
                 if (eventKind === "create" || eventKind === "update")

@@ -3,6 +3,7 @@ import { BulletModel, TowerModel, MobModel, PlayerModel, MapModel, BarracksModel
 interface FieldModel {
     id: number;
     player: PlayerModel;
+    network: string;
     map: MapModel;
     mobs: MobModel[];
     bullets: BulletModel[];
@@ -15,6 +16,7 @@ namespace FieldModel {
         return {
             id: json.id,
             player: PlayerModel.fromJSON(json.player),
+            network: json.socialNetwork,
             map: MapModel.fromJSON(json.twmap),
             mobs: json.mobs.map((jsonMob: any) => MobModel.fromJSON(jsonMob)),
             bullets: json.bullets.map((jsonBullet: any) => BulletModel.fromJSON(jsonBullet)),

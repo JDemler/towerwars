@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useReducer, createContext } from 'react';
-import { GamePhase, GameState, PlayerModel, UiState, InitialUiState, MobTypeModel, TowerTypeModel, BarracksModel, TowerModel, SocialMediaNetworkModel } from '@models';
+import { GamePhase, GameState, PlayerModel, UiState, InitialUiState, MobTypeModel, TowerTypeModel, BarracksModel, TowerModel, SocialMediaNetworkModel, FieldModel } from '@models';
 import GameClient from '@game/GameClient';
 
 export type UiStateContextAction =
@@ -22,6 +22,8 @@ export type UiStateContextAction =
     | { type: "set-selectedTowerType"; selectedTowerTypeKey: string }
 
     | { type: "set-selectedTower"; selectedTower: TowerModel }
+
+    | { type: "set-field"; field: FieldModel }
 
 function reducer(state: InitialUiState | undefined, action: UiStateContextAction): InitialUiState | undefined {
     if (action.type === 'set-uiState')
@@ -107,6 +109,23 @@ function reducer(state: InitialUiState | undefined, action: UiStateContextAction
                 selectedTower: action.selectedTower,
             }
         }
+        case 'set-field': {
+            console.log("set-field", action.field);
+            if (state.gameState === undefined) {
+                return state;
+            }
+            // only add field if it is not already in the list
+            if (state.gameState.fields.find(f => f.id === action.field.id) === undefined) {
+                return {
+                    ...state,
+                    gameState: {
+                        ...state.gameState,
+                        fields: [...state.gameState.fields, action.field]
+                    }
+                }
+            }
+            return state;            
+        }            
         default:
             return state;
     }
@@ -143,8 +162,14 @@ export const UiStateProvider: React.FC<React.PropsWithChildren> = ({ children })
                 case 'socialMediaNetworks': {
                     dispatch({ type: 'set-socialMediaNetworks', networks: action.networks });
                     break;
+                }      
+                case 'field': {
+                    if (action.kind === 'create' || action.kind === 'update') {
+                        dispatch({ type: 'set-field', field: action.field });
+                    }
+                    break;
                 }
-                default: {
+                default: {                    
                     return;
                 }
             }

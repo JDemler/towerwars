@@ -17,7 +17,7 @@ type Server struct {
 	runningGames map[string]*GameInstance
 	openGames    map[string]*GameInstance
 	agentsEnabld bool
-	races        []*game.RaceConfig
+	races        []*game.SocialNetworkConfig
 }
 
 type ServerStatus struct {
@@ -47,7 +47,7 @@ func NewServer(agentsEnabled bool) *Server {
 		runningGames: make(map[string]*GameInstance),
 		openGames:    make(map[string]*GameInstance),
 		agentsEnabld: agentsEnabled,
-		races:        config.Races,
+		races:        config.SocialNetworks,
 	}
 }
 
@@ -154,7 +154,7 @@ func (s *Server) AddPlayer(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// add player to game and get its playerKey
-	playerKey := gameInstance.game.AddPlayer(joinPlayer.Name, joinPlayer.Race)
+	playerKey := gameInstance.AddPlayer(joinPlayer.Name, joinPlayer.Race)
 	fieldID := len(gameInstance.game.Fields) - 1
 	//log player joined
 	fmt.Println("Player joined")

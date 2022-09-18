@@ -8,13 +8,13 @@ import (
 
 // Config contains all configuration for the game. TowerTypes, MobTypes, Map and so on. One config defines the whole content of the game
 type Config struct {
-	Races          []*RaceConfig `json:"races"`
-	Map            *MapConfig    `json:"map"`
-	StartStats     *Player       `json:"startStats"`
-	IncomeCooldown int           `json:"incomeCooldown"`
+	SocialNetworks []*SocialNetworkConfig `json:"socialNetworks"`
+	Map            *MapConfig             `json:"map"`
+	StartStats     *Player                `json:"startStats"`
+	IncomeCooldown int                    `json:"incomeCooldown"`
 }
 
-type RaceConfig struct {
+type SocialNetworkConfig struct {
 	Key         string       `json:"key"`
 	Name        string       `json:"name"`
 	Description string       `json:"description"`
@@ -130,8 +130,8 @@ func ReadConfigFromFile(filename string) (*Config, error) {
 	return &config, nil
 }
 
-func (c *Config) getRaceConfigByKey(key string) *RaceConfig {
-	for _, rc := range c.Races {
+func (c *Config) getRaceConfigByKey(key string) *SocialNetworkConfig {
+	for _, rc := range c.SocialNetworks {
 		if rc.Key == key {
 			return rc
 		}
