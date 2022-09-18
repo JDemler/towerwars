@@ -119,7 +119,6 @@ func findNextField(id int, fs []*Field) *Field {
 
 // HandleEvent for field
 func (f *Field) HandleEvent(event Event, otherFields []*Field, gameConfig *Config) ([]*ServerEvent, error) {
-
 	events, err := event.TryExecute(f, findNextField(f.ID, otherFields), gameConfig)
 	if err != nil {
 		//Log failure to execute event
