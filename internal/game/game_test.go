@@ -43,17 +43,8 @@ func TestMakeTiles(t *testing.T) {
 // When two players join the game, the game should start and send appropriate events
 func TestGameStartsWhenTwoPlayersJoin(t *testing.T) {
 	game := prepareGame()
-	playerJoinedEvents := game.Update(0) //Gets player joined events
-	if len(playerJoinedEvents) != 2 {
-		t.Errorf("Expected 2 player joined events, got %d", len(playerJoinedEvents))
-	}
-	// check event type
-	if playerJoinedEvents[0].Type != "player" && playerJoinedEvents[1].Kind != "update" {
-		t.Errorf("Expected event type to be playerJoined, got %s", playerJoinedEvents[0].Type)
-	}
-	if playerJoinedEvents[1].Type != "player" && playerJoinedEvents[1].Kind != "update" {
-		t.Errorf("Expected event type to be playerJoined, got %s", playerJoinedEvents[1].Type)
-	}
+	game.Update(0) //Gets player joined events
+
 	if game.State != WaitingState {
 		t.Errorf("Expected game to be in waiting state, got %s", game.State)
 	}
