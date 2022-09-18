@@ -15,7 +15,7 @@ const MatchmakingPage: React.FC = () => {
     if (uiState.gamePhase === 'WaitingForPlayers') {
         return (
             <div>
-                <h1>Waiting for players</h1>
+                <h1 className="text-3xl font-bold underline">Waiting for players</h1>
                 <p>Waiting for other players to join the game.</p>
             </div>
         )
