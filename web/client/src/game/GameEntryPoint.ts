@@ -54,12 +54,10 @@ const beginGameLoop = (app: Application, viewport: Viewport, initialGameState: G
                         dispatchUiState({ type: 'set-barracksModel', barracksModel: fieldModel.barracks });
                     }
                 }
-
-                const player = gameClient.player;
-
-                if (player) {
-                    gameClient.loadTowerTypes(player.gameId, player.fieldId);
-                    gameClient.loadMobTypes(player.gameId, player.fieldId);
+                
+                if (gameClient.player) {
+                    gameClient.loadTowerTypes();
+                    gameClient.loadMobTypes();
                 }
             }
         }

@@ -118,8 +118,8 @@ export default class GameClient {
                     this.dispatch({ type: "gameState", kind: 'create', gameState });
                     this.dispatch({ type: 'state', gameStatus: gameState.state });
 
-                    this.loadTowerTypes(addedPlayer.gameId, addedPlayer.fieldId);
-                    this.loadMobTypes(addedPlayer.gameId, addedPlayer.fieldId);
+                    this.loadTowerTypes();
+                    this.loadMobTypes();
                 }).catch(error => {
                     console.error(error);
 
@@ -141,16 +141,24 @@ export default class GameClient {
             })
     }
 
-    public loadTowerTypes(gameId: string, fieldId: number) {
-        ApiClient.getTowerTypes(gameId, fieldId)
+    public loadTowerTypes() {
+        if (this.player === undefined) {
+            console.error('Cannot load tower types without player');
+            return;
+        }
+        ApiClient.getTowerTypes(this.player.gameId, this.player.fieldId)
             .then(towerTypes => {
                 console.log('Tower types', towerTypes);
                 this.dispatch({ type: 'towerTypes', kind: 'create', towerTypes });
             })
     }
 
-    public loadMobTypes(gameId: string, fieldId: number) {
-        ApiClient.getMobTypes(gameId, fieldId)
+    public loadMobTypes() {
+        if (this.player === undefined) {
+            console.error('Cannot load tower types without player');
+            return;
+        }
+        ApiClient.getMobTypes(this.player.gameId, this.player.fieldId)
             .then(mobTypes => {
                 console.log('Mob types', mobTypes);
                 this.dispatch({ type: 'mobTypes', kind: 'create', mobTypes });
