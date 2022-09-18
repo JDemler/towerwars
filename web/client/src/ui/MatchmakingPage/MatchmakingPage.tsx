@@ -12,6 +12,14 @@ const MatchmakingPage: React.FC = () => {
     if (!uiState) {
         return <div>Loading...</div>;
     }
+    if (uiState.gamePhase === 'WaitingForPlayers') {
+        return (
+            <div>
+                <h1>Waiting for players</h1>
+                <p>Waiting for other players to join the game.</p>
+            </div>
+        )
+    }
 
     return (
         <div style={{ padding: '16px' }}>

@@ -123,13 +123,13 @@ export default class GameClient {
                 }).catch(error => {
                     console.error(error);
 
-                    this.dispatch({ type: 'state', gameStatus: 'WaitingForPlayers' });
+                    this.dispatch({ type: 'state', gameStatus: 'NotJoined' });
                 })
 
         } else {
             console.log("No added player in session storage.");
 
-            this.dispatch({ type: 'state', gameStatus: 'WaitingForPlayers' });
+            this.dispatch({ type: 'state', gameStatus: 'NotJoined' });
         }
     }
 

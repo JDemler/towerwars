@@ -63,16 +63,14 @@ func (s *Server) gameOver(gameID string) {
 // Http Handler returning the game state
 func (s *Server) GetGameState(w http.ResponseWriter, r *http.Request) {
 	// Get game id from url
-	gameID := r.URL.Query().Get("gameId")
-	// Get game instance
-	gameInstance := s.runningGames[gameID]
-	if gameInstance == nil {
+	gi, err := s.getGameInstanceFromRequest(r)
+	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
 	// Return game state
 	w.WriteHeader(http.StatusOK)
-	err := json.NewEncoder(w).Encode(gameInstance.game)
+	err = json.NewEncoder(w).Encode(gi.game)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -165,16 +163,6 @@ func (s *Server) AddPlayer(w http.ResponseWriter, r *http.Request) {
 		gameInstance.AddAgent()
 	}
 
-	// Check if game is full and start if so
-	if gameInstance.game.CanStart() {
-		// Remove game from open games
-		delete(s.openGames, gameID)
-		// Add game to running games
-		s.runningGames[gameID] = gameInstance
-		// Start game
-		fmt.Println("Game ", gameID, " started")
-		go gameInstance.Start(s)
-	}
 	// return success
 	w.WriteHeader(http.StatusOK)
 	// return player id
@@ -237,6 +225,28 @@ func (s *Server) GetSocialMediaNetworks(w http.ResponseWriter, r *http.Request) 
 	}
 }
 
+func (s *Server) StartGame(w http.ResponseWriter, r *http.Request) {
+	gi, err := s.getGameInstanceFromRequest(r)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	// Check if game is full and start if so
+	if gi.game.CanStart() {
+		// Remove game from open games
+		delete(s.openGames, gi.id)
+		// Add game to running games
+		s.runningGames[gi.id] = gi
+		// Start game
+		fmt.Println("Game ", gi.id, " started")
+		go gi.Start(s)
+	} else {
+		w.WriteHeader(http.StatusBadRequest)
+	}
+	w.WriteHeader(http.StatusOK)
+}
+
 func (s *Server) GetStatus(w http.ResponseWriter, r *http.Request) {
 	gameStatus := ServerStatus{
 		OpenGames:    len(s.openGames),
@@ -292,6 +302,7 @@ func main() {
 	http.HandleFunc("/add_player", s.AddPlayer)
 	http.HandleFunc("/tower_types", s.GetTowerTypes)
 	http.HandleFunc("/mob_types", s.GetMobTypes)
+	http.HandleFunc("/start_game", s.StartGame)
 	http.HandleFunc("/social_media_networks", s.GetSocialMediaNetworks)
 	http.HandleFunc("/ws", s.WebSocket)
 	err := http.ListenAndServe(":8080", logAndAddCorsHeadersToRequest(http.DefaultServeMux))

@@ -278,11 +278,6 @@ func (gi *GameInstance) gameLoop() {
 	for {
 		delta := float64(time.Since(last).Milliseconds()) / 1000.0
 		last = time.Now()
-		if gi.game.State == game.WaitingState && len(gi.game.Fields) > 1 {
-			gi.game.Start()
-			// log that game started
-			fmt.Println("Game started")
-		}
 		events := gi.Update(delta)
 		if gi.agent != nil && len(events) > 0 {
 			outEvents := gi.agent.Act(events)

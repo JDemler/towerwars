@@ -1,3 +1,3 @@
-type GamePhase = "WaitingForPlayers" | "Playing" | "GameOver";
+type GamePhase = "NotJoined" | "WaitingForPlayers" | "Playing" | "GameOver";
 
 export default GamePhase;
