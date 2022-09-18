@@ -54,21 +54,7 @@ export default class Tower extends GameObject {
 
     get TowerSprite() {
         let imgName: string;
-        switch (this.towerModel.type) {
-            case 'likeButton':
-                imgName = 'like_button';
-                break;
-            case 'comment':
-                imgName = 'comment';
-                break;
-            case 'profilePicture':
-                imgName = 'profile_picture';
-                break;
-            default:
-                imgName = 'likeButton';
-                break;
-        }
-        return Sprite.from(`assets/towerSprites/${imgName}.jpg`);
+        return Sprite.from(`assets/towerSprites/${this.towerModel.type}.jpg`);
     }
 
     onUpdate(delta: number, deltaMs: number): void {
