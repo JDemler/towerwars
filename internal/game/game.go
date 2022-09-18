@@ -179,12 +179,31 @@ func (game *Game) Update(delta float64) []*ServerEvent {
 		// Check all fieldEvents for liveStolen and execute them and take them out of the events
 		for j := len(fieldEvents) - 1; j >= 0; j-- {
 			if fieldEvents[j].Type == "liveStolen" {
+				liveStolenEvent := fieldEvents[j].Payload.(liveStolenEvent)
 				// Get the field where the live was stolen from
-				originField := game.getFieldAt(fieldEvents[j].Payload.(liveStolenEvent).FieldID)
+				originField := game.getFieldAt(liveStolenEvent.FieldID)
 				// Get the field where the live was stolen to
-				targetField := game.getFieldAt(fieldEvents[j].Payload.(liveStolenEvent).SentFromFieldID)
+				targetField := game.getFieldAt(liveStolenEvent.mob.SentFromFieldID)
+
 				// Check if both fields exist
 				if originField != nil && targetField != nil {
+					// Mob now starts in next field
+					nextField := findNextField(originField.ID, game.Fields)
+					if nextField.ID == targetField.ID {
+						nextField = findNextField(targetField.ID, game.Fields)
+					}
+					// Get startposition
+					startX, startY := nextField.TWMap.startPosition()
+					mobID := targetField.getNextMobID()
+					mob := liveStolenEvent.mob
+					mob.ID = mobID
+					mob.X = float64(startX) + 0.5
+					mob.Y = float64(startY) + 0.5
+					mob.TargetX = mob.X
+					mob.TargetY = mob.Y
+					mob.Reached = false
+					nextField.Mobs = append(nextField.Mobs, &mob)
+					events = append(events, createEvent(&mob, nextField.ID))
 					// Check if the player has enough lives to steal
 					if originField.Player.Lives >= 1 {
 						// Steal lives

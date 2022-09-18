@@ -177,8 +177,8 @@ func (f *Field) Update(delta float64) []*ServerEvent {
 			events = append(events, &ServerEvent{
 				Type: "liveStolen",
 				Payload: liveStolenEvent{
-					FieldID:         f.ID,
-					SentFromFieldID: f.Mobs[i].SentFromFieldID,
+					FieldID: f.ID,
+					mob:     *f.Mobs[i],
 				},
 			})
 			f.Mobs = append(f.Mobs[:i], f.Mobs[i+1:]...)

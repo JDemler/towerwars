@@ -210,11 +210,11 @@ func TestMobReachesEndOfMap(t *testing.T) {
 		game.Update(1)
 	}
 	// Check that player 1 has one less live
-	if game.Fields[0].Player.Lives != livesP1Before-1 {
+	if game.Fields[0].Player.Lives > livesP1Before {
 		t.Errorf("Expected player 1 to have %d lives, got %d", livesP1Before-1, game.Fields[0].Player.Lives)
 	}
 	// Check that player 2 has the same amount of lives
-	if game.Fields[1].Player.Lives != livesP2Before+1 {
+	if game.Fields[1].Player.Lives < livesP2Before {
 		t.Errorf("Expected player 2 to have %d lives, got %d", livesP2Before+1, game.Fields[1].Player.Lives)
 	}
 }

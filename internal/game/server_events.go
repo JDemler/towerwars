@@ -50,6 +50,6 @@ type StateChangedEvent struct {
 
 // liveStolenEvent is only used internally to bubble up the liveStolen event to the game loop
 type liveStolenEvent struct {
-	FieldID         int `json:"fieldId"`
-	SentFromFieldID int `json:"sentFromFieldId"`
+	FieldID int `json:"fieldId"`
+	mob     Mob `json:"-"`
 }

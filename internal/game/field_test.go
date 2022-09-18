@@ -59,8 +59,8 @@ func TestMobReachesEndOfTWMap(t *testing.T) {
 	if liveStolenEventFound.FieldID != 0 {
 		t.Errorf("Expected FieldId 0, got %d", liveStolenEventFound.FieldID)
 	}
-	if liveStolenEventFound.SentFromFieldID != 0 {
-		t.Errorf("Expected SentFromFieldId 1, got %d", liveStolenEventFound.SentFromFieldID)
+	if liveStolenEventFound.mob.SentFromFieldID != 0 {
+		t.Errorf("Expected SentFromFieldId 1, got %d", liveStolenEventFound.mob.SentFromFieldID)
 	}
 	if len(field.Mobs) != 0 {
 		t.Errorf("Expected 0 mob, got %d", len(field.Mobs))
