@@ -54,7 +54,7 @@ export default class Tower extends GameObject {
 
     get TowerSprite() {
         let imgName: string;
-        return Sprite.from(`assets/towerSprites/${this.towerModel.type}.jpg`);
+        return Sprite.from(`assets/towerSprites/${this.towerModel.type}.png`);
     }
 
     onUpdate(delta: number, deltaMs: number): void {
