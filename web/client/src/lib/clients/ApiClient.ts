@@ -62,13 +62,19 @@ export default class ApiClient {
     static joinGame = async (playerName: string, socialMediaNetwork: string) => {
         const requestOptions = {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            // @Niklas: RaceSelector result goes here
+            headers: { 'Content-Type': 'application/json' },            
             body: JSON.stringify({ name: playerName, race: socialMediaNetwork })
         }
         const response = await fetch(getApiUrl('add_player'), requestOptions)
         const responseJson = await response.json();
 
         return AddedPlayerModel.fromJSON(responseJson);
+    }
+
+    static startGame = async (gameId: string) => {        
+        const response = await fetch(getApiUrl('start_game', gameId));
+        const responseJson = await response.json();
+
+        return responseJson;
     }
 }

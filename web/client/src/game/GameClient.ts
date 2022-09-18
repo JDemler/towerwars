@@ -182,6 +182,17 @@ export default class GameClient {
             })
     }
 
+    public startGame() {
+        if (this.player === undefined) {
+            console.error('Cannot start game without player');
+            return;
+        }
+        ApiClient.startGame(this.player.gameId)
+        .catch(err => {
+            console.error('Error while starting game', err);
+        })
+    }
+
     // Game Functions
     public buyMob(mobKey: string) {
         if (this.webSocketClient === undefined) {
