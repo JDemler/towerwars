@@ -18,7 +18,7 @@ type GameInstance struct {
 	id            string
 	writeChannels []*WsChannel
 	channelCount  int
-	agent         *agent.Agent
+	agents        []*agent.Agent
 }
 
 type GameStatus struct {
@@ -65,6 +65,18 @@ func NewGameInstance(id string) *GameInstance {
 		game: game.NewGame(config),
 		id:   id,
 	}
+}
+
+func (gi *GameInstance) AddAgent() {
+	_, event := gi.game.AddPlayer("agent", "facebook")
+	for _, c := range gi.writeChannels {
+		if c.open {
+			c.Channel <- *event
+		}
+	}
+	fieldID := len(gi.game.Fields) - 1
+	agent := agent.NewAgent(gi.game, fieldID, agent.NaiveAgentConfig())
+	gi.agents = append(gi.agents, agent)
 }
 
 func (gi *GameInstance) AddPlayer(playerName string, socialNetwork string) string {
@@ -136,8 +148,11 @@ func (gi *GameInstance) readFromWS(ws *WsChannel) {
 				}
 			}
 		}
-		if gi.agent != nil && len(events) > 0 {
-			gi.agent.HandleEvents(events)
+		// loop over all agents and update them
+		if len(events) > 0 {
+			for _, agent := range gi.agents {
+				agent.HandleEvents(events)
+			}
 		}
 	}
 }
@@ -268,12 +283,6 @@ func (gi *GameInstance) WebSocket(w http.ResponseWriter, r *http.Request) {
 	go wsChannel.pingLoop()
 }
 
-func (gi *GameInstance) AddAgent() {
-	gi.game.AddPlayer("agent", "facebook")
-	fieldID := len(gi.game.Fields) - 1
-	gi.agent = agent.NewAgent(gi.game, fieldID, agent.NaiveAgentConfig())
-}
-
 func (gi *GameInstance) Start(s *Server) {
 	// sleep 1 seconds for all clients to connect
 	time.Sleep(1 * time.Second)
@@ -290,16 +299,18 @@ func (gi *GameInstance) gameLoop() {
 		delta := float64(time.Since(last).Milliseconds()) / 1000.0
 		last = time.Now()
 		events := gi.Update(delta)
-		if gi.agent != nil && len(events) > 0 {
-			outEvents := gi.agent.Act(events)
-			for _, event := range outEvents {
-				serverEvents, err := gi.game.HandleEvent(event)
-				if err != nil {
-					fmt.Println("Error handling event from agent!")
-					fmt.Println(err)
-				} else {
-					events = append(events, serverEvents...)
-					gi.agent.HandleEvents(serverEvents)
+		if len(events) > 0 {
+			for _, agent := range gi.agents {
+				outEvents := agent.Act(events)
+				for _, event := range outEvents {
+					serverEvents, err := gi.game.HandleEvent(event)
+					if err != nil {
+						fmt.Println("Error handling event from agent!")
+						fmt.Println(err)
+					} else {
+						events = append(events, serverEvents...)
+						agent.HandleEvents(serverEvents)
+					}
 				}
 			}
 		}

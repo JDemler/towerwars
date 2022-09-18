@@ -36,7 +36,7 @@ export default class ApiClient {
 
     // Function that fetches the social media network types
     static getSocialMediaNetworks = async () => {
-        const response = await fetch(getApiUrl('social_media_networks'));
+        const response = await fetch(getApiUrl('social_networks'));
         const responseJson = await response.json() as any[];
 
         return responseJson.map((socialMediaNetwork: any) => SocialMediaNetworkModel.fromJSON(socialMediaNetwork));
@@ -69,6 +69,13 @@ export default class ApiClient {
         const responseJson = await response.json();
 
         return AddedPlayerModel.fromJSON(responseJson);
+    }
+
+    static addAgent = async (gameId: string) => {
+        const response = await fetch(getApiUrl('add_agent', gameId));
+        const responseJson = await response.json();
+
+        return responseJson;
     }
 
     static startGame = async (gameId: string) => {        

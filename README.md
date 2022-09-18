@@ -22,9 +22,11 @@ go run . agent
 
 For example `{"key":"b326447090e3a58d","fieldId":0,"gameId":"0ac475f17632fcc1"}` 
 
-`/game?gameId=<gameid>` :: Gets Game State
+`/social_networks`:: Gets all playable SocialNetworks
 
-~~`/register_event` :: Register an Event (BuyMob, BuildTower) to the server. 200 OK if successfull~~ (DEPRECATED)
+`/add_agent?gameId=<gameId>` :: Adds a computer player
+
+`/game?gameId=<gameid>` :: Gets Game State
 
 `/tower_types?gameId=<gameid>` :: Gets all Tower Types from gameconfig
 
@@ -37,7 +39,7 @@ For example `{"key":"b326447090e3a58d","fieldId":0,"gameId":"0ac475f17632fcc1"}`
 
 These events are very general and always have following fields
 
-`type` :: Object Type ('player', 'tower', 'mob', 'bullet', 'barracks')
+`type` :: Object Type ('field', 'player', 'tower', 'mob', 'bullet', 'barracks')
 
 `kind` :: Kind of Event ('create', 'update', 'delete')
 

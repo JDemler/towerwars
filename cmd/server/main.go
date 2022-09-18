@@ -159,10 +159,6 @@ func (s *Server) AddPlayer(w http.ResponseWriter, r *http.Request) {
 	//log player joined
 	fmt.Println("Player joined")
 
-	if s.agentsEnabld {
-		gameInstance.AddAgent()
-	}
-
 	// return success
 	w.WriteHeader(http.StatusOK)
 	// return player id
@@ -170,6 +166,16 @@ func (s *Server) AddPlayer(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println(err)
 	}
+}
+
+func (s *Server) AddAgent(w http.ResponseWriter, r *http.Request) {
+	gi, err := s.getGameInstanceFromRequest(r)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	gi.AddAgent()
+	w.WriteHeader(http.StatusOK)
 }
 
 func (s *Server) WebSocket(w http.ResponseWriter, r *http.Request) {
@@ -217,7 +223,7 @@ func (s *Server) GetMobTypes(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (s *Server) GetSocialMediaNetworks(w http.ResponseWriter, r *http.Request) {
+func (s *Server) GetSocialNetworks(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	err := json.NewEncoder(w).Encode(s.races)
 	if err != nil {
@@ -300,10 +306,11 @@ func main() {
 	http.HandleFunc("/status", s.GetStatus)
 	http.HandleFunc("/game", s.GetGameState)
 	http.HandleFunc("/add_player", s.AddPlayer)
+	http.HandleFunc("/add_agent", s.AddAgent)
 	http.HandleFunc("/tower_types", s.GetTowerTypes)
 	http.HandleFunc("/mob_types", s.GetMobTypes)
 	http.HandleFunc("/start_game", s.StartGame)
-	http.HandleFunc("/social_media_networks", s.GetSocialMediaNetworks)
+	http.HandleFunc("/social_networks", s.GetSocialNetworks)
 	http.HandleFunc("/ws", s.WebSocket)
 	err := http.ListenAndServe(":8080", logAndAddCorsHeadersToRequest(http.DefaultServeMux))
 	if err != nil {

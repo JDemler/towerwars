@@ -169,6 +169,16 @@ export default class GameClient {
         this.webSocketClient?.disconnect();
     }
 
+    public addAgent() {
+        if (this.player === undefined) {
+            console.error('Cannot start game without player');
+            return;
+        }
+        ApiClient.addAgent(this.player?.gameId).catch(error => {
+            console.error(error);
+        })
+    }
+
     public joinGame(playerName: string, socialMediaNetwork: string) {
         ApiClient.joinGame(playerName, socialMediaNetwork)
             .then(addedPlayer => {

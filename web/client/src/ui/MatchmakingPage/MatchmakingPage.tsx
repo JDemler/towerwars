@@ -32,7 +32,11 @@ const MatchmakingPage: React.FC = () => {
                     <input type="button" className="flex w-full items-center justify-center rounded-md border border-transparent bg-smw-yellow-500 px-8 py-3 text-base font-medium text-white hover:bg-smw-orange-700 md:py-4 md:px-10 md:text-lg" value="Start Game" onClick={() => uiState.gameClient.startGame()} />
                 </div>
             }
-             
+            {gameClient?.player?.fieldId == 0 &&
+                <div className="rounded-md shadow">              
+                    <input type="button" className="flex w-full items-center justify-center rounded-md border border-transparent bg-smw-yellow-500 px-8 py-3 text-base font-medium text-white hover:bg-smw-orange-700 md:py-4 md:px-10 md:text-lg" value="Add Computer Player" onClick={() => uiState.gameClient.addAgent()} />
+                </div>
+            }             
             </div>
             </div>            
         )
