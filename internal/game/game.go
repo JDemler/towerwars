@@ -206,7 +206,7 @@ func (game *Game) Update(delta float64) []*ServerEvent {
 					}
 					// Get startposition
 					startX, startY := nextField.TWMap.startPosition()
-					mobID := targetField.getNextMobID()
+					mobID := nextField.getNextMobID()
 					mob := liveStolenEvent.mob
 					mob.ID = mobID
 					mob.X = float64(startX) + 0.5

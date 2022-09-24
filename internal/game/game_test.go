@@ -218,3 +218,43 @@ func TestMobReachesEndOfMap(t *testing.T) {
 		t.Errorf("Expected player 2 to have %d lives, got %d", livesP2Before+1, game.Fields[1].Player.Lives)
 	}
 }
+
+// Test that when a mob reaches the end of the map it is respawned with a new id
+func TestMobReachesEndOfMapRespawn(t *testing.T) {
+	game := prepareGame()
+	game.Start()
+	// Update for Barracks
+	game.Update(1)
+	// Add mob to field 1 by firing event
+	_, err := game.HandleEvent(FieldEvent{FieldID: 1, Type: "buyMob", Payload: BuyMobEvent{MobType: "FastMob"}})
+	if err != nil {
+		t.Errorf("Expected no error, got %s", err)
+	}
+	origMobId := game.Fields[0].Mobs[0].ID
+	// Run the game
+	for i := 0; i < 31; i++ {
+		game.Update(1)
+	}
+	// Check that mob is respawned
+	if len(game.Fields[0].Mobs) != 1 {
+		t.Errorf("Expected mob to be respawned, got %d", len(game.Fields[0].Mobs))
+	}
+	// Check that mob has new id
+	if game.Fields[0].Mobs[0].ID == origMobId {
+		t.Errorf("Expected mob to have new id, got %d", game.Fields[0].Mobs[0].ID)
+	}
+	// Run the game
+	for i := 0; i < 31; i++ {
+		game.Update(1)
+	}
+	origMobId = game.Fields[0].Mobs[0].ID
+	// Add mob to field 1 by firing event
+	_, err = game.HandleEvent(FieldEvent{FieldID: 1, Type: "buyMob", Payload: BuyMobEvent{MobType: "FastMob"}})
+	if err != nil {
+		t.Errorf("Expected no error, got %s", err)
+	}
+
+	if game.Fields[0].Mobs[1].ID == origMobId {
+		t.Errorf("Expected mob to have new id, got %d", game.Fields[0].Mobs[1].ID)
+	}
+}
