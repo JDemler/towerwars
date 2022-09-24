@@ -13,7 +13,7 @@ type Agent struct {
 	config     *Config
 	state      *State
 	barracks   *game.Barracks
-	race       string
+	network    string
 	towerTypes []*game.TowerType
 }
 
@@ -33,13 +33,13 @@ type BuildPosition struct {
 	y int
 }
 
-func NewAgent(game *game.Game, playerID int, config *Config) *Agent {
+func NewAgent(game *game.Game, playerID int, config *Config, network string) *Agent {
 	return &Agent{
 		game:       game,
 		playerID:   playerID,
 		config:     config,
 		state:      &State{},
-		race:       "facebook",
+		network:    network,
 		towerTypes: game.GetTowerTypes(playerID),
 	}
 }
@@ -136,7 +136,7 @@ func (a *Agent) mostSensibleMobType(mobMoney float64) *game.MobType {
 	winningMobType := ""
 	for _, mobSlot := range a.barracks.Mobs {
 		if mobSlot.Count > 0 {
-			mobType := a.game.Config.GetMobTypeByKey(a.race, mobSlot.MobType)
+			mobType := a.game.Config.GetMobTypeByKey(a.network, mobSlot.MobType)
 			roi := float64(mobType.Income) / float64(mobType.Cost)
 			if float64(mobType.Cost) < mobMoney && roi > winningRoi {
 				winningRoi = roi
@@ -144,5 +144,5 @@ func (a *Agent) mostSensibleMobType(mobMoney float64) *game.MobType {
 			}
 		}
 	}
-	return a.game.Config.GetMobTypeByKey(a.race, winningMobType)
+	return a.game.Config.GetMobTypeByKey(a.network, winningMobType)
 }

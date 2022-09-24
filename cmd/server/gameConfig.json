@@ -15,16 +15,16 @@
                             "level": 1,
                             "cost": 10,
                             "damage": 1,
-                            "range": 5,
-                            "fireRate": 0.5,
+                            "range": 4,
+                            "fireRate": 0.7,
                             "bulletSpeed": 11
                         },
                         {
                             "level": 2,
                             "cost": 30,
                             "damage": 2,
-                            "range": 6,
-                            "fireRate": 0.4,
+                            "range": 5,
+                            "fireRate": 0.6,
                             "bulletSpeed": 11
                         }
                     ]
@@ -38,7 +38,7 @@
                             "level": 1,
                             "cost": 20,
                             "damage": 5,
-                            "range": 6,
+                            "range": 5,
                             "fireRate": 1.5,
                             "bulletSpeed": 8
                         },
@@ -46,7 +46,7 @@
                             "level": 2,
                             "cost": 60,
                             "damage": 10,
-                            "range": 7,
+                            "range": 6,
                             "fireRate": 1.5,
                             "bulletSpeed": 10
                         }
@@ -61,16 +61,16 @@
                             "level": 1,
                             "cost": 120,
                             "damage": 5,
-                            "range": 8,
-                            "fireRate": 0.5,
+                            "range": 6,
+                            "fireRate": 0.7,
                             "bulletSpeed": 14
                         },
                         {
                             "level": 2,
                             "cost": 230,
                             "damage": 7,
-                            "range": 9,
-                            "fireRate": 0.4,
+                            "range": 7,
+                            "fireRate": 0.5,
                             "bulletSpeed": 15
                         }
                     ]
@@ -81,7 +81,7 @@
                     "name": "Confused Kid",
                     "description": "Not really sure what they are supposed to do on Facebook. But their grandparents forced them to join.",
                     "key": "confusedKid",
-                    "health": 30,
+                    "health": 70,
                     "speed": 1.5,
                     "reward": 100,
                     "income": 90,
@@ -93,7 +93,7 @@
                     "name": "Facebook Troll",
                     "description": "They are the reason you don't have a profile picture.",
                     "key": "facebookTroll",
-                    "health": 50,
+                    "health": 110,
                     "speed": 1.8,
                     "reward": 200,
                     "income": 180,
@@ -105,7 +105,7 @@
                     "name": "Facebook Mom",
                     "description": "She's always posting pictures of her kids. You don't care.",
                     "key": "facebookMom",
-                    "health": 80,
+                    "health": 150,
                     "speed": 2,
                     "reward": 400,
                     "income": 360,
@@ -117,7 +117,7 @@
                     "name": "Nice Guy",
                     "description": "He's always trying to be your friend. He's really creepy.",
                     "key": "niceGuy",
-                    "health": 100,
+                    "health": 210,
                     "speed": 2.8,
                     "reward": 600,
                     "income": 450,
@@ -129,7 +129,7 @@
                     "name": "Facebook Addict",
                     "description": "They can't go more than 5 minutes without checking their feed.",
                     "key": "facebookAddict",
-                    "health": 120,
+                    "health": 260,
                     "speed": 3,
                     "reward": 800,
                     "income": 600,
@@ -141,14 +141,14 @@
                     "name": "Karen",
                     "description": "She's always complaining about something. She's a real buzzkill.",
                     "key": "karen",
-                    "health": 150,
+                    "health": 370,
                     "speed": 3.2,
                     "reward": 1000,
                     "income": 750,
                     "cost": 100,
                     "respawn": 5,
                     "delay": 115
-                }
+                }                
             ]
         },
         {

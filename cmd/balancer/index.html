@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>E-Charts</title>
+    <meta charset="utf-8" />
+
+    <script src="echarts.js"></script>
+    <script src="papaparse.js"></script>
+
+    <style media="screen">
+      /* Add space between Vega-Embed links  */
+      .vega-actions a {
+        margin-right: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Template for Embedding Vega-Lite Visualization</h1>
+    <input type="file" id="input" multiple />
+    <!-- Container for the visualization -->
+ <!-- Prepare a DOM with a defined width and height for ECharts -->
+ <div id="main" style="width: 1000px;height:800px;"></div>
+ <script type="text/javascript">
+    // Event listener on the input element to load the file
+    document.getElementById('input').addEventListener('change', function(e) {
+      var file = e.target.files[0];
+      var data = Papa.parse(file, 
+        {         
+            header: true,
+            complete: function(results) {
+                console.log(results);
+                drawChart(results);
+        }
+        });
+    });
+
+    function drawChart(data) {
+      // Initialize the chart
+      var myChart = echarts.init(document.getElementById('main'));
+
+
+      // Specify the configuration
+      var option = {
+        title: {
+          text: ''
+        },
+        toolbox: {
+    left: 'center',
+    itemSize: 25,
+    top: 55,
+    feature: {
+      dataZoom: {
+        yAxisIndex: 'none'
+      },
+      restore: {}
+    }
+  },        legend: {
+          data: data.meta.fields
+        },
+        xAxis: {
+            //list from 0 to 1000
+          data: [...Array(1000).keys()]
+        },
+        yAxis: {},
+        series: columnsToSeries(data.meta.fields, data.data)
+      };
+
+      // Use configuration item and data specified to show chart
+      myChart.setOption(option);
+    }
+
+    function columnsToSeries(fields, data) {
+        //series is a map of series name to series data
+        var series = {};        
+        // iterate fields, create series
+        for (var i = 1; i < fields.length; i++) {
+            var field = fields[i];
+            series[field] = {
+                name: field,
+                type: 'line',
+                data: []
+            };
+        }
+
+        for (var i = 1; i < data.length; i++) {
+            for (var j = 1; j < fields.length; j++) {
+                var field = fields[j];
+                series[field].data.push(data[i][field]);
+            }            
+        }
+        // Return series as an array
+        var seriesArray = [];
+        for (var key in series) {
+            seriesArray.push(series[key]);
+        }
+        return seriesArray;
+    }
+  
+ 
+ </script>    
+    <!-- file:///home/jdemler/Documents/programmieren/go/towerwars/cmd/balancer/data.csv -->
+  </body>
+</html>

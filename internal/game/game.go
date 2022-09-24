@@ -114,6 +114,18 @@ func (game *Game) getFieldAt(id int) *Field {
 	return nil
 }
 
+func (game *Game) HandleEvents(fieldEvents []FieldEvent) ([]*ServerEvent, error) {
+	events := []*ServerEvent{}
+	for _, fieldEvent := range fieldEvents {
+		event, err := game.HandleEvent(fieldEvent)
+		if err != nil {
+			return nil, err
+		}
+		events = append(events, event...)
+	}
+	return events, nil
+}
+
 // HandleEvent handles an event from a player, returns a list of events to send to all players or nil if the event was invalid
 func (game *Game) HandleEvent(fieldEvent FieldEvent) ([]*ServerEvent, error) {
 	targetField := game.getFieldAt(fieldEvent.FieldID)

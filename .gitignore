@@ -27,3 +27,5 @@ web/client/node_modules
 web/client/dist
 
 /todo.md
+
+cmd/balancer/data

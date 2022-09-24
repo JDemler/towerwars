@@ -75,7 +75,7 @@ func (gi *GameInstance) AddAgent() {
 		}
 	}
 	fieldID := len(gi.game.Fields) - 1
-	agent := agent.NewAgent(gi.game, fieldID, agent.NaiveAgentConfig())
+	agent := agent.NewAgent(gi.game, fieldID, agent.NaiveAgentConfig(), "facebook")
 	gi.agents = append(gi.agents, agent)
 }
 
