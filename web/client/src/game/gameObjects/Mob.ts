@@ -100,7 +100,7 @@ export default class Mob extends GameObject {
         const textures = this.MobSpritePaths.map(path => Texture.from(path));
 
         const sprite = new AnimatedSprite(textures);
-        sprite.animationSpeed = 0.1;
+        sprite.animationSpeed = 0.2;
         sprite.play()
 
         return sprite;
@@ -113,8 +113,8 @@ export default class Mob extends GameObject {
 
         this.mobContainer.position.set(newPosition.tileCenterX, newPosition.tileCenterY);
 
-        
-       this.mobCircle.update(delta);
+        this.mobCircle.width = GridSettings.tileSize * 0.7;
+        this.mobCircle.height = GridSettings.tileSize * 0.7;
     }
 
     onDestroy(): void {
