@@ -34,9 +34,9 @@ export default class Mob extends GameObject {
 
         this.mobCircle.anchor.set(0.5, 0.5);
 
-        this.mobCircle.width = GridSettings.tileSize * 0.7;
-        this.mobCircle.height = GridSettings.tileSize * 0.7;
+        // Mob size is defined in update loop to prevent animation issues.
 
+        
         this.mobContainer.addChild(this.mobCircle);
 
         // Healthbar
