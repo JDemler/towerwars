@@ -50,7 +50,7 @@ export default class Mob extends GameObject {
         field.container.addChild(this.mobContainer);
     }
 
-    get MobSpritePaths() {
+    get RandomMobSpritePaths() {
         // Get a random integer between 1 and 4
         let animationMobIndex = Math.floor(Math.random() * 4) + 1;
         // Replace sprites with 1 because Jakob forgot them
@@ -96,14 +96,30 @@ export default class Mob extends GameObject {
         // }
         // console.log(`assets/mobSprites/${imgName}.jpg`);
         // return Sprite.from(`assets/mobSprites/${imgName}.jpg`);
+        
+        const isFacebookFraction = ['Confused Kid', 'Facebook Troll', 'Facebook Mom', 'Nice Guy', 'Facebook Addict', 'Karen'].includes(this.mobModel.type);
 
-        const textures = this.MobSpritePaths.map(path => Texture.from(path));
+        if (isFacebookFraction) {
+            const textures = Array.from({ length: 4 }, (_, i) => 
+                Texture.from(`assets/mobs/karen/Karen-Walking-Down-${i}.png`)
+            );
 
-        const sprite = new AnimatedSprite(textures);
-        sprite.animationSpeed = 0.2;
-        sprite.play()
-
-        return sprite;
+            console.log(textures)
+    
+            const sprite = new AnimatedSprite(textures);
+            sprite.animationSpeed = 0.1;
+            sprite.play()
+    
+            return sprite;
+        } else {
+            const textures = this.RandomMobSpritePaths.map(path => Texture.from(path));
+    
+            const sprite = new AnimatedSprite(textures);
+            sprite.animationSpeed = 0.1;
+            sprite.play()
+    
+            return sprite;
+        }
     }
 
     onUpdate(delta: number, deltaMs: number): void {
