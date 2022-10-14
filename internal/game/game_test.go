@@ -258,3 +258,63 @@ func TestMobReachesEndOfMapRespawn(t *testing.T) {
 		t.Errorf("Expected mob to have new id, got %d", game.Fields[0].Mobs[1].ID)
 	}
 }
+
+// Test that even with multiple mobs on the map ids are unique
+func TestMobIdsAreUnique(t *testing.T) {
+	game := prepareGame()
+	game.Start()
+	// Update for Barracks
+	for i := 0; i < 20; i++ {
+		game.Update(0.1)
+	}
+	game.Update(1)
+	game.Update(1)
+	game.Fields[1].Player.Money = 100000
+	game.Fields[0].Player.Lives = 1000
+	// Add 20 mobs to field 0 by firing event
+	for i := 0; i < 20; i++ {
+		_, err := game.HandleEvent(FieldEvent{FieldID: 1, Type: "buyMob", Payload: BuyMobEvent{MobType: "FastMob"}})
+		if err != nil {
+			t.Errorf("Expected no error, got %s", err)
+		}
+	}
+	// Check that mobs are spawned
+	if len(game.Fields[0].Mobs) != 20 {
+		t.Errorf("Expected mob to be respawned, got %d", len(game.Fields[0].Mobs))
+	}
+
+	// Run the game
+	for i := 0; i < 31; i++ {
+		_, err := game.HandleEvent(FieldEvent{FieldID: 1, Type: "buyMob", Payload: BuyMobEvent{MobType: "FastMob"}})
+		if err != nil {
+			t.Errorf("Expected no error, got %s", err)
+		}
+		game.Update(1)
+	}
+	// Add mob to field 1 by firing event
+	_, err := game.HandleEvent(FieldEvent{FieldID: 1, Type: "buyMob", Payload: BuyMobEvent{MobType: "FastMob"}})
+	if err != nil {
+		t.Errorf("Expected no error, got %s", err)
+	}
+	// Run the game
+	for i := 0; i < 31; i++ {
+		_, err := game.HandleEvent(FieldEvent{FieldID: 1, Type: "buyMob", Payload: BuyMobEvent{MobType: "FastMob"}})
+		if err != nil {
+			t.Errorf("Expected no error, got %s", err)
+		}
+		game.Update(1)
+	}
+	// Check that mob is respawned
+	if len(game.Fields[0].Mobs) < 41 {
+		t.Errorf("Expected mob to be respawned, got %d", len(game.Fields[0].Mobs))
+	}
+	// Check mobs have unique ids
+	ids := make(map[int]bool)
+	for _, mob := range game.Fields[0].Mobs {
+		if ids[mob.ID] {
+			t.Errorf("Expected mob to have unique ids, got %d", mob.ID)
+		}
+		ids[mob.ID] = true
+	}
+
+}
