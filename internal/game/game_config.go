@@ -108,6 +108,7 @@ type MobType struct {
 	Cost        int     `json:"cost"`
 	Respawn     float64 `json:"respawn"`
 	Delay       float64 `json:"delay"`
+	MaxStock    int     `json:"maxStock"`
 }
 
 // MakeMob from MobType
@@ -123,6 +124,20 @@ func ReadConfigFromFile(filename string) (*Config, error) {
 		return nil, err
 	}
 	var config Config
+	err = json.Unmarshal(data, &config)
+	if err != nil {
+		return nil, err
+	}
+	return &config, nil
+}
+
+func ReadSocialNetworkConfigFromFile(filename string) (*SocialNetworkConfig, error) {
+	// Read file and try to unmarshall it as GameConfig
+	data, err := os.ReadFile(filename)
+	if err != nil {
+		return nil, err
+	}
+	var config SocialNetworkConfig
 	err = json.Unmarshal(data, &config)
 	if err != nil {
 		return nil, err

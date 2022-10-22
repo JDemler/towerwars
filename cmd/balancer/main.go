@@ -26,6 +26,25 @@ func readConfig() *game.Config {
 	return config
 }
 
+func readNetworkConfig() *game.SocialNetworkConfig {
+	//Try to read config. Get config path from env variable
+	var configPath string
+	if os.Getenv("NETWORK_PATH") == "" {
+		fmt.Println("No network config path set. Using default config")
+		configPath = "network.json"
+	} else {
+		fmt.Println("Using network config from: ", os.Getenv("NETWORK_PATH"))
+		configPath = os.Getenv("NETWORK_PATH")
+	}
+	config, err := game.ReadSocialNetworkConfigFromFile(configPath)
+	if err != nil {
+		fmt.Println("Could not read network config")
+		fmt.Println(err)
+		return nil
+	}
+	return config
+}
+
 func getHpOnField(field *game.Field) int {
 	hp := 0
 	for _, mob := range field.Mobs {
@@ -48,17 +67,24 @@ func main() {
 		return
 	}
 
+	// read network config from network.json
+	networkConfig := readNetworkConfig()
+	if networkConfig == nil {
+		return
+	}
+	config.SocialNetworks = append(config.SocialNetworks, networkConfig)
+
 	// Start g with 1 player and 1 god player
 	g := game.NewGame(config)
-	g.AddPlayer("agent1", "facebook")
-	g.AddPlayer("agent2", "facebook")
+	g.AddPlayer("agent1", "socialnetwork")
+	g.AddPlayer("agent2", "socialnetwork")
 
 	// Add 2 agents
-	agent1 := agent.NewAgent(g, 0, agent.NaiveAgentConfig(), "facebook")
-	agent2 := agent.NewAgent(g, 1, agent.NaiveAgentConfig(), "facebook")
+	agent1 := agent.NewAgent(g, 0, agent.NaiveAgentConfig(), "socialnetwork")
+	agent2 := agent.NewAgent(g, 1, agent.NaiveAgentConfig(), "socialnetwork")
 
 	// give player1  a headstart
-	g.Fields[0].Player.Income = 5000
+	//g.Fields[0].Player.Income = 5000
 
 	g.Start()
 	// Data to put in csv later for plotting and analysis

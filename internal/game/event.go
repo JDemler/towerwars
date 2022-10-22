@@ -191,7 +191,7 @@ func (e BuyMobEvent) TryExecute(sourceField *Field, targetField *Field, config *
 	// Reduce player money
 	sourceField.Player.Money -= mobType.Cost * 100
 	// Increase player income
-	sourceField.Player.Income += mobType.Income
+	sourceField.Player.Income += mobType.Income * 100
 	gameEvents := []*ServerEvent{}
 
 	//Get startposition

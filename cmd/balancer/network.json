@@ -1,0 +1,309 @@
+{
+  "key": "socialnetwork",
+  "name": "Social Network",
+  "description": "Social Network",
+  "towerTypes": [
+    {
+      "name": "Tower1",
+      "description": "Tower1",
+      "key": "tower1",
+      "levels": [
+        {
+          "level": 1,
+          "cost": 100,
+          "damage": 20,
+          "range": 1.5,
+          "splashRadius": 0,
+          "splashDmg": 0,
+          "effect": null,
+          "fireRate": 1,
+          "bulletSpeed": 1
+        }
+      ]
+    },
+    {
+      "name": "Tower2",
+      "description": "Tower2",
+      "key": "tower2",
+      "levels": [
+        {
+          "level": 1,
+          "cost": 100,
+          "damage": 30,
+          "range": 1.5,
+          "splashRadius": 0,
+          "splashDmg": 0,
+          "effect": null,
+          "fireRate": 1,
+          "bulletSpeed": 1
+        }
+      ]
+    },
+    {
+      "name": "Tower3",
+      "description": "Tower3",
+      "key": "tower3",
+      "levels": [
+        {
+          "level": 1,
+          "cost": 100,
+          "damage": 40,
+          "range": 1.5,
+          "splashRadius": 0,
+          "splashDmg": 0,
+          "effect": null,
+          "fireRate": 1,
+          "bulletSpeed": 1
+        }
+      ]
+    },
+    {
+      "name": "Tower4",
+      "description": "Tower4",
+      "key": "tower4",
+      "levels": [
+        {
+          "level": 1,
+          "cost": 100,
+          "damage": 50,
+          "range": 1.5,
+          "splashRadius": 0,
+          "splashDmg": 0,
+          "effect": null,
+          "fireRate": 1,
+          "bulletSpeed": 1
+        }
+      ]
+    },
+    {
+      "name": "Tower5",
+      "description": "Tower5",
+      "key": "tower5",
+      "levels": [
+        {
+          "level": 1,
+          "cost": 100,
+          "damage": 60,
+          "range": 1.5,
+          "splashRadius": 0,
+          "splashDmg": 0,
+          "effect": null,
+          "fireRate": 1,
+          "bulletSpeed": 1
+        }
+      ]
+    },
+    {
+      "name": "Tower6",
+      "description": "Tower6",
+      "key": "tower6",
+      "levels": [
+        {
+          "level": 1,
+          "cost": 100,
+          "damage": 70,
+          "range": 1.5,
+          "splashRadius": 0,
+          "splashDmg": 0,
+          "effect": null,
+          "fireRate": 1,
+          "bulletSpeed": 1
+        }
+      ]
+    },
+    {
+      "name": "Tower7",
+      "description": "Tower7",
+      "key": "tower7",
+      "levels": [
+        {
+          "level": 1,
+          "cost": 100,
+          "damage": 80,
+          "range": 1.5,
+          "splashRadius": 0,
+          "splashDmg": 0,
+          "effect": null,
+          "fireRate": 1,
+          "bulletSpeed": 1
+        }
+      ]
+    },
+    {
+      "name": "Tower8",
+      "description": "Tower8",
+      "key": "tower8",
+      "levels": [
+        {
+          "level": 1,
+          "cost": 100,
+          "damage": 90,
+          "range": 1.5,
+          "splashRadius": 0,
+          "splashDmg": 0,
+          "effect": null,
+          "fireRate": 1,
+          "bulletSpeed": 1
+        }
+      ]
+    },
+    {
+      "name": "Tower9",
+      "description": "Tower9",
+      "key": "tower9",
+      "levels": [
+        {
+          "level": 1,
+          "cost": 100,
+          "damage": 100,
+          "range": 1.5,
+          "splashRadius": 0,
+          "splashDmg": 0,
+          "effect": null,
+          "fireRate": 1,
+          "bulletSpeed": 1
+        }
+      ]
+    },
+    {
+      "name": "Tower10",
+      "description": "Tower10",
+      "key": "tower10",
+      "levels": [
+        {
+          "level": 1,
+          "cost": 100,
+          "damage": 110,
+          "range": 1.5,
+          "splashRadius": 0,
+          "splashDmg": 0,
+          "effect": null,
+          "fireRate": 1,
+          "bulletSpeed": 1
+        }
+      ]
+    }
+  ],
+  "mobTypes": [
+    {
+      "name": "Mob1",
+      "description": "Mob1",
+      "key": "mob1",
+      "health": 200,
+      "speed": 1,
+      "reward": 10,
+      "income": 10,
+      "cost": 10,
+      "respawn": 0.1,
+      "delay": 0
+    },
+    {
+      "name": "Mob2",
+      "description": "Mob2",
+      "key": "mob2",
+      "health": 300,
+      "speed": 1,
+      "reward": 10,
+      "income": 10,
+      "cost": 10,
+      "respawn": 0.1,
+      "delay": 0
+    },
+    {
+      "name": "Mob3",
+      "description": "Mob3",
+      "key": "mob3",
+      "health": 400,
+      "speed": 1,
+      "reward": 10,
+      "income": 10,
+      "cost": 10,
+      "respawn": 0.1,
+      "delay": 0
+    },
+    {
+      "name": "Mob4",
+      "description": "Mob4",
+      "key": "mob4",
+      "health": 500,
+      "speed": 1,
+      "reward": 10,
+      "income": 10,
+      "cost": 10,
+      "respawn": 0.1,
+      "delay": 0
+    },
+    {
+      "name": "Mob5",
+      "description": "Mob5",
+      "key": "mob5",
+      "health": 600,
+      "speed": 1,
+      "reward": 10,
+      "income": 10,
+      "cost": 10,
+      "respawn": 0.1,
+      "delay": 0
+    },
+    {
+      "name": "Mob6",
+      "description": "Mob6",
+      "key": "mob6",
+      "health": 700,
+      "speed": 1,
+      "reward": 10,
+      "income": 10,
+      "cost": 10,
+      "respawn": 0.1,
+      "delay": 0
+    },
+    {
+      "name": "Mob7",
+      "description": "Mob7",
+      "key": "mob7",
+      "health": 800,
+      "speed": 1,
+      "reward": 10,
+      "income": 10,
+      "cost": 10,
+      "respawn": 0.1,
+      "delay": 0
+    },
+    {
+      "name": "Mob8",
+      "description": "Mob8",
+      "key": "mob8",
+      "health": 900,
+      "speed": 1,
+      "reward": 10,
+      "income": 10,
+      "cost": 10,
+      "respawn": 0.1,
+      "delay": 0
+    },
+    {
+      "name": "Mob9",
+      "description": "Mob9",
+      "key": "mob9",
+      "health": 1000,
+      "speed": 1,
+      "reward": 10,
+      "income": 10,
+      "cost": 10,
+      "respawn": 0.1,
+      "delay": 0
+    },
+    {
+      "name": "Mob10",
+      "description": "Mob10",
+      "key": "mob10",
+      "health": 1100,
+      "speed": 1,
+      "reward": 10,
+      "income": 10,
+      "cost": 10,
+      "respawn": 0.1,
+      "delay": 0
+    }
+  ]
+}

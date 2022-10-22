@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"strconv"
@@ -61,6 +62,24 @@ func NewGameInstance(id string) *GameInstance {
 		fmt.Println(err)
 		return nil
 	}
+	// read all yamls in networkconfigs folder as SocialNetworkConfig and add to config
+
+	//iterate files in networkconfigs folder
+	files, err := ioutil.ReadDir("networkconfigs")
+	if err != nil {
+		fmt.Println(err)
+		return nil
+	}
+	for _, f := range files {
+		//read file
+		networkConfig, err := game.ReadSocialNetworkConfigFromFile("networkconfigs/" + f.Name())
+		if err != nil {
+			fmt.Println(err)
+			return nil
+		}
+		//add to config
+		config.SocialNetworks = append(config.SocialNetworks, networkConfig)
+	}
 	return &GameInstance{
 		game: game.NewGame(config),
 		id:   id,
@@ -68,14 +87,14 @@ func NewGameInstance(id string) *GameInstance {
 }
 
 func (gi *GameInstance) AddAgent() {
-	_, event := gi.game.AddPlayer("agent", "facebook")
+	_, event := gi.game.AddPlayer("agent", "wintermaulwars")
 	for _, c := range gi.writeChannels {
 		if c.open {
 			c.Channel <- *event
 		}
 	}
 	fieldID := len(gi.game.Fields) - 1
-	agent := agent.NewAgent(gi.game, fieldID, agent.NaiveAgentConfig(), "facebook")
+	agent := agent.NewAgent(gi.game, fieldID, agent.NaiveAgentConfig(), "wintermaulwars")
 	gi.agents = append(gi.agents, agent)
 }
 

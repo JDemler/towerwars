@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"math/rand"
 	"net/http"
 	"os"
@@ -43,6 +44,25 @@ func NewServer(agentsEnabled bool) *Server {
 		fmt.Println(err)
 		return nil
 	}
+	// read all yamls in networkconfigs folder as SocialNetworkConfig and add to config
+
+	//iterate files in networkconfigs folder
+	files, err := ioutil.ReadDir("networkconfigs")
+	if err != nil {
+		fmt.Println(err)
+		return nil
+	}
+	for _, f := range files {
+		//read file
+		networkConfig, err := game.ReadSocialNetworkConfigFromFile("networkconfigs/" + f.Name())
+		if err != nil {
+			fmt.Println(err)
+			return nil
+		}
+		//add to config
+		config.SocialNetworks = append(config.SocialNetworks, networkConfig)
+	}
+
 	return &Server{
 		runningGames: make(map[string]*GameInstance),
 		openGames:    make(map[string]*GameInstance),

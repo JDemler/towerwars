@@ -5,6 +5,7 @@ import "fmt"
 type MobSlot struct {
 	MobType string  `json:"mob"`
 	Count   int     `json:"count"`
+	Max     int     `json:"max"`
 	Respawn float64 `json:"respawn"`
 }
 
@@ -25,22 +26,28 @@ func (b *Barracks) getType() string {
 
 // New MobSlot
 func newMobSlot(mob *MobType) *MobSlot {
-	return &MobSlot{MobType: mob.Key, Count: 0, Respawn: float64(mob.Delay)}
+	return &MobSlot{MobType: mob.Key, Count: 0, Max: mob.MaxStock, Respawn: float64(mob.Delay)}
 }
 
 // New Barracks
-func newBarracks(id int, race string, gameConfig *Config) *Barracks {
+func newBarracks(id int, network string, gameConfig *Config) *Barracks {
 	mobs := []*MobSlot{}
-	for _, m := range gameConfig.getRaceConfigByKey(race).MobTypes {
-		mobs = append(mobs, newMobSlot(m))
+	// get mobTypes
+	config := gameConfig.getRaceConfigByKey(network)
+	if config != nil {
+		for _, mob := range config.MobTypes {
+			mobs = append(mobs, newMobSlot(mob))
+		}
+	} else {
+		fmt.Printf("Error: RaceConfig %s not found\n", network)
 	}
-	return &Barracks{ID: id, Mobs: mobs, race: race, Config: gameConfig}
+	return &Barracks{ID: id, Mobs: mobs, race: network, Config: gameConfig}
 }
 
 // Update function for MobSlot
 func (m *MobSlot) update(delta float64, race string, gameConfig *Config) bool {
 	changed := false
-	if m.Count > 29 {
+	if m.Count >= m.Max {
 		return false
 	}
 	m.Respawn -= delta
