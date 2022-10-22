@@ -36,8 +36,8 @@ export default class GridCoordinate {
         }
     
         return new GridCoordinate(
-            this.x + distanceX / distance * moveDistance,
-            this.y + distanceY / distance * moveDistance,
+            this.x + (distanceX / distance) * moveDistance,
+            this.y + (distanceY / distance) * moveDistance,
         );
     }
 
