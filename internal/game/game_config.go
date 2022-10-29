@@ -48,7 +48,6 @@ func (mc *MetaConfig) Apply(config *Config) *Config {
 				l.Range *= mc.TowerRangeFactor
 				l.Cost *= mc.TowerCostFactor
 			}
-
 		}
 		for _, m := range rc.MobTypes {
 			m.Health *= mc.MobHpFactor
@@ -57,7 +56,6 @@ func (mc *MetaConfig) Apply(config *Config) *Config {
 			m.Delay *= mc.BarracksFactor
 			m.Respawn *= mc.BarracksFactor
 			m.Cost *= mc.MobCostFactor
-
 		}
 	}
 	return config

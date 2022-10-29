@@ -105,8 +105,8 @@ func main() {
 		agent1.HandleEvents(sevents)
 		agent2.HandleEvents(sevents)
 
-		data = append(data, []int{g.GetMobsSent(), g.GetTowersBuilt(), g.Fields[0].Player.Income / 100, g.Fields[0].Player.Money / 100,
-			g.Fields[0].Player.Lives, getHpOnField(g.Fields[0]), getDpsOnField(g.Fields[0]), g.Fields[1].Player.Income / 100, g.Fields[1].Player.Money / 100,
+		data = append(data, []int{g.GetMobsSent(), g.GetTowersBuilt(), int(g.Fields[0].Player.Income), int(g.Fields[0].Player.Money),
+			g.Fields[0].Player.Lives, getHpOnField(g.Fields[0]), getDpsOnField(g.Fields[0]), int(g.Fields[1].Player.Income), int(g.Fields[1].Player.Money),
 			g.Fields[1].Player.Lives, getHpOnField(g.Fields[1]), getDpsOnField(g.Fields[1])})
 	}
 

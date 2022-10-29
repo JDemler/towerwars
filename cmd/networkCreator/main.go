@@ -25,10 +25,10 @@ func towerFromStep(step int) *game.TowerType {
 		Descritpion: fmt.Sprintf("Tower%d", step),
 		Key:         fmt.Sprintf("tower%d", step),
 		Levels: []*game.TowerLevel{
-			&game.TowerLevel{
+			{
 				Level:        1,
 				Cost:         100,
-				Damage:       towerDps(step),
+				Damage:       float64(towerDps(step)),
 				Range:        1.5,
 				SplashRadius: 0,
 				SplashDmg:    0,
@@ -40,10 +40,12 @@ func towerFromStep(step int) *game.TowerType {
 	}
 }
 
+// nolint:deadcode,unused
 func towerValueFunction(step int) float64 {
 	return 1.0
 }
 
+// nolint:deadcode,unused
 func towerLevelToValue(level game.TowerLevel) float64 {
 	return float64(level.Damage) * level.FireRate * math.Log(level.Range+1)
 }
@@ -53,7 +55,7 @@ func mobFromStep(step int) *game.MobType {
 		Name:        fmt.Sprintf("Mob%d", step),
 		Description: fmt.Sprintf("Mob%d", step),
 		Key:         fmt.Sprintf("mob%d", step),
-		Health:      mobHp(step),
+		Health:      float64(mobHp(step)),
 		Speed:       1,
 		Reward:      10,
 		Income:      10,
@@ -91,5 +93,4 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
 }

@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"os"
+
 	"strconv"
 	"sync"
 	"time"
@@ -65,7 +65,7 @@ func NewGameInstance(id string) *GameInstance {
 	// read all yamls in networkconfigs folder as SocialNetworkConfig and add to config
 
 	//iterate files in networkconfigs folder
-	files, err := ioutil.ReadDir("networkconfigs")
+	files, err := os.ReadDir("networkconfigs")
 	if err != nil {
 		fmt.Println(err)
 		return nil
