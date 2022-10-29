@@ -80,21 +80,38 @@ func NewGameInstance(id string) *GameInstance {
 		//add to config
 		config.SocialNetworks = append(config.SocialNetworks, networkConfig)
 	}
+	// apply metaconfig
+	config = metaConfig().Apply(config)
+
 	return &GameInstance{
 		game: game.NewGame(config),
 		id:   id,
 	}
 }
 
+// Constant metaconfig
+func metaConfig() *game.MetaConfig {
+	return &game.MetaConfig{
+		TowerDmgFactor:   1,
+		TowerCostFactor:  1,
+		TowerRangeFactor: 1,
+		MobHpFactor:      1,
+		MobSpeedFactor:   1,
+		MobIncomeFactor:  1,
+		MobCostFactor:    1,
+		BarracksFactor:   1,
+	}
+}
+
 func (gi *GameInstance) AddAgent() {
-	_, event := gi.game.AddPlayer("agent", "wintermaulwars")
+	_, event := gi.game.AddPlayer("agent", "facebook")
 	for _, c := range gi.writeChannels {
 		if c.open {
 			c.Channel <- *event
 		}
 	}
 	fieldID := len(gi.game.Fields) - 1
-	agent := agent.NewAgent(gi.game, fieldID, agent.NaiveAgentConfig(), "wintermaulwars")
+	agent := agent.NewAgent(gi.game, fieldID, agent.NaiveAgentConfig(), "facebook")
 	gi.agents = append(gi.agents, agent)
 }
 

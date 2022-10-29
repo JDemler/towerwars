@@ -88,14 +88,14 @@ func (e BuildEvent) TryExecute(sourceField *Field, targetField *Field, gc *Confi
 		return nil, fmt.Errorf("Invalid tower level %d", 1)
 	}
 	// Check if player can affort tower
-	if sourceField.Player.Money < towerLevel.Cost*100 {
+	if sourceField.Player.Money < towerLevel.Cost {
 		return nil, fmt.Errorf("Player cannot afford tower")
 	}
 	tower := towerType.Tower(float64(e.X)+0.5, float64(e.Y)+0.5, 1, sourceField.getNextTowerID())
 	//Occupy tower position in twmap
 	sourceField.TWMap.occupy(e.X, e.Y)
 	sourceField.Towers = append(sourceField.Towers, tower)
-	sourceField.Player.Money -= towerLevel.Cost * 100
+	sourceField.Player.Money -= towerLevel.Cost
 	return []*ServerEvent{createEvent(tower, sourceField.ID), updateEvent(sourceField.Player, sourceField.ID)}, nil
 }
 
@@ -117,7 +117,7 @@ func (e SellEvent) TryExecute(sourceField *Field, targetField *Field, gc *Config
 	}
 	sourceField.TWMap.free(int((tower.X - 0.5)), int((tower.Y - 0.5)))
 	sourceField.removeTowerByID(e.TowerID)
-	sourceField.Player.Money += towerType.GetLevel(tower.Level).Cost * 80
+	sourceField.Player.Money += towerType.GetLevel(tower.Level).Cost * 0.8
 	return []*ServerEvent{deleteEvent(tower, sourceField.ID), updateEvent(sourceField.Player, sourceField.ID)}, nil
 }
 
@@ -143,12 +143,12 @@ func (e UpgradeEvent) TryExecute(sourceField *Field, targetField *Field, gc *Con
 		return nil, fmt.Errorf("Invalid tower level %d", tower.Level+1)
 	}
 	// Check if player can affort tower
-	if sourceField.Player.Money < towerLevel.Cost*100 {
+	if sourceField.Player.Money < towerLevel.Cost {
 		return nil, fmt.Errorf("Player cannot afford tower")
 	}
 	// Upgrade tower
 	tower.Upgrade(towerLevel)
-	sourceField.Player.Money -= towerLevel.Cost * 100
+	sourceField.Player.Money -= towerLevel.Cost
 	return []*ServerEvent{updateEvent(tower, sourceField.ID), updateEvent(sourceField.Player, sourceField.ID)}, nil
 }
 
@@ -177,7 +177,7 @@ func (e BuyMobEvent) TryExecute(sourceField *Field, targetField *Field, config *
 		fmt.Println("Invalid mob type")
 		return nil, fmt.Errorf("Invalid mob type")
 	}
-	if sourceField.Player.Money < mobType.Cost*100 {
+	if sourceField.Player.Money < mobType.Cost {
 		// Player cannot afford mob
 		fmt.Println("Player cannot afford mob")
 		return nil, fmt.Errorf("Player cannot afford mob")
@@ -189,9 +189,9 @@ func (e BuyMobEvent) TryExecute(sourceField *Field, targetField *Field, config *
 		return nil, fmt.Errorf("Barracks do not have mob to send")
 	}
 	// Reduce player money
-	sourceField.Player.Money -= mobType.Cost * 100
+	sourceField.Player.Money -= mobType.Cost
 	// Increase player income
-	sourceField.Player.Income += mobType.Income * 100
+	sourceField.Player.Income += mobType.Income
 	gameEvents := []*ServerEvent{}
 
 	//Get startposition
@@ -201,6 +201,7 @@ func (e BuyMobEvent) TryExecute(sourceField *Field, targetField *Field, config *
 	mob.SentFromFieldID = sourceField.ID
 	targetField.Mobs = append(targetField.Mobs, mob)
 	gameEvents = append(gameEvents, createEvent(mob, targetField.ID))
+	gameEvents = append(gameEvents, updateEvent(sourceField.Barracks, sourceField.ID))
 
 	// Send playerUpdated event
 	gameEvents = append(gameEvents, updateEvent(sourceField.Player, sourceField.ID))

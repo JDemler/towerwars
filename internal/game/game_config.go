@@ -14,6 +14,55 @@ type Config struct {
 	IncomeCooldown int                    `json:"incomeCooldown"`
 }
 
+type MetaConfig struct {
+	TowerDmgFactor   float64 `json:"towerDmgFactor"`
+	TowerRangeFactor float64 `json:"towerRangeFactor"`
+	TowerCostFactor  float64 `json:"towerCostFactor"`
+	MobHpFactor      float64 `json:"mobHpFactor"`
+	MobSpeedFactor   float64 `json:"mobSpeedFactor"`
+	MobIncomeFactor  float64 `json:"mobIncomeFactor"`
+	MobCostFactor    float64 `json:"mobCostFactor"`
+	BarracksFactor   float64 `json:"barracksFactor"`
+}
+
+func ReadMetaConfigFromFile(filename string) (*MetaConfig, error) {
+	// Read file and try to unmarshall it as GameConfig
+	data, err := os.ReadFile(filename)
+	if err != nil {
+		return nil, err
+	}
+	var config MetaConfig
+	err = json.Unmarshal(data, &config)
+	if err != nil {
+		return nil, err
+	}
+	return &config, nil
+}
+
+func (mc *MetaConfig) Apply(config *Config) *Config {
+	// apply all factor from metaconfig to config
+	for _, rc := range config.SocialNetworks {
+		for _, t := range rc.TowerTypes {
+			for _, l := range t.Levels {
+				l.Damage *= mc.TowerDmgFactor
+				l.Range *= mc.TowerRangeFactor
+				l.Cost *= mc.TowerCostFactor
+			}
+
+		}
+		for _, m := range rc.MobTypes {
+			m.Health *= mc.MobHpFactor
+			m.Speed *= mc.MobSpeedFactor
+			m.Reward *= mc.MobIncomeFactor
+			m.Delay *= mc.BarracksFactor
+			m.Respawn *= mc.BarracksFactor
+			m.Cost *= mc.MobCostFactor
+
+		}
+	}
+	return config
+}
+
 type SocialNetworkConfig struct {
 	Key         string       `json:"key"`
 	Name        string       `json:"name"`
@@ -71,8 +120,8 @@ type Effect struct {
 // TowerLevel represents a level of a tower type. Contains all information the tower instance needs
 type TowerLevel struct {
 	Level        int     `json:"level"`
-	Cost         int     `json:"cost"`
-	Damage       int     `json:"damage"`
+	Cost         float64 `json:"cost"`
+	Damage       float64 `json:"damage"`
 	Range        float64 `json:"range"`
 	SplashRadius float64 `json:"splashRadius"`
 	SplashDmg    float64 `json:"splashDmg"`
@@ -101,11 +150,11 @@ type MobType struct {
 	Name        string  `json:"name"`
 	Description string  `json:"description"`
 	Key         string  `json:"key"`
-	Health      int     `json:"health"`
+	Health      float64 `json:"health"`
 	Speed       float64 `json:"speed"`
-	Reward      int     `json:"reward"`
-	Income      int     `json:"income"`
-	Cost        int     `json:"cost"`
+	Reward      float64 `json:"reward"`
+	Income      float64 `json:"income"`
+	Cost        float64 `json:"cost"`
 	Respawn     float64 `json:"respawn"`
 	Delay       float64 `json:"delay"`
 	MaxStock    int     `json:"maxStock"`

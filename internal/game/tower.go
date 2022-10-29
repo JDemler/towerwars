@@ -9,7 +9,7 @@ type Tower struct {
 	ID           int     `json:"id"`
 	X            float64 `json:"x"`
 	Y            float64 `json:"y"`
-	Damage       int     `json:"damage"`
+	Damage       float64 `json:"damage"`
 	SplashRadius float64 `json:"splash"`
 	SplashDmg    float64 `json:"splashDmg"`
 	Range        float64 `json:"range"`

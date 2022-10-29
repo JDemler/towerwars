@@ -32,8 +32,8 @@ const GameOverlay: React.FC = () => {
             {playerModel !== undefined && (
             <div style={{ position: 'fixed', top: '16px', left: '16px', pointerEvents: 'none' }}>
                 <h4>{playerModel?.name}</h4>
-                <p>Money: {playerModel?.money / 100}</p>
-                <p>Income: {playerModel?.income / 100}</p>
+                <p>Money: {playerModel?.money}</p>
+                <p>Income: {playerModel?.income}</p>
                 <p>HP: {playerModel?.lives}</p>
             </div>
             )}
@@ -51,7 +51,7 @@ const GameOverlay: React.FC = () => {
                                 }
                                 onClick={() => gameClient.upgradeTurret(selectedTower)}
                                 style={{ margin: '0 2px', padding: '4px' }}
-                                disabled={selectedTowerNextLevel === undefined || playerModel.money < selectedTowerNextLevel.cost * 100}
+                                disabled={selectedTowerNextLevel === undefined || playerModel.money < selectedTowerNextLevel.cost}
                             />
                             <input 
                                 type="button"
@@ -74,7 +74,7 @@ const GameOverlay: React.FC = () => {
                             title={`${towerType.description} (${towerType.levels[0].damage} damage, Fire Rate: ${towerType.levels[0].fireRate})`}
                             onClick={() => uiState.setSelectedTowerType?.(towerType.key)} 
                             style={{ margin: '0 2px', padding: '4px', backgroundColor: selectedTowerTypeKey === towerType.key ? 'lightblue' : undefined }}
-                            disabled={playerModel.money < towerType.levels[0].cost * 100}
+                            disabled={playerModel.money < towerType.levels[0].cost}
                         />
                     ))}
                 </div>
@@ -90,7 +90,7 @@ const GameOverlay: React.FC = () => {
                             title={`${mobType.description} (${mobType.health} HP, Delay: ${mobType.delay})`}
                             onClick={() => gameClient.buyMob(mobType.key)} 
                             style={{ margin: '0 2px', padding: '4px' }}
-                            disabled={mobSlot.count === 0 || playerModel.money < mobType.cost * 100}
+                            disabled={mobSlot.count === 0 || playerModel.money < mobType.cost}
                         />
                     ))}
                 </div>

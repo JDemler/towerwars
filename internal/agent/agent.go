@@ -59,7 +59,7 @@ func (a *Agent) HandleEvents(events []*game.ServerEvent) {
 				crudObject := event.Payload.(*game.CrudObject)
 				player := (*crudObject).(*game.Player)
 				a.state.lives = (*player).Lives
-				a.state.money = float64((*player).Money / 100)
+				a.state.money = float64((*player).Money)
 				a.state.income = float64((*player).Income)
 			}
 		case "barracks":

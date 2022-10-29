@@ -23,7 +23,7 @@ func prepareField(hasTower bool, hasMob bool, preRunBarracks bool) *Field {
 		field.Barracks.update(1)
 		_, err := field.HandleEvent(BuyMobEvent{MobType: "SlowMob"}, []*Field{field}, &TestGameConfig)
 		if err != nil {
-			panic("Failed to buy mob")
+			panic("Failed to buy mob. " + err.Error())
 		}
 	}
 	if preRunBarracks {
@@ -115,11 +115,11 @@ func TestBulletReachesEndOfTWMapAndAnotherMob(t *testing.T) {
 func TestBuyMobEvent(t *testing.T) {
 	field := prepareField(false, false, true)
 	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "FastMob"}, []*Field{field}, &TestGameConfig)
-	if field.Player.Money != 9500 {
-		t.Errorf("Expected 9500 money, got %d", field.Player.Money)
+	if field.Player.Money != 95 {
+		t.Errorf("Expected 95 money, got %f", field.Player.Money)
 	}
 	if field.Player.Income != 11 {
-		t.Errorf("Expected 11 income, got %d", field.Player.Income)
+		t.Errorf("Expected 11 income, got %f", field.Player.Income)
 	}
 }
 
@@ -182,7 +182,7 @@ func TestMobKilled(t *testing.T) {
 		t.Errorf("Expected 0 mob, got %d", len(field.Mobs))
 	}
 	if field.Player.Money != 110 {
-		t.Errorf("Expected 110 money, got %d", field.Player.Money)
+		t.Errorf("Expected 110 money, got %f", field.Player.Money)
 	}
 }
 
@@ -287,7 +287,7 @@ func TestUpgradeTower(t *testing.T) {
 		t.Errorf("Expected tower to be upgraded but got %s", err)
 	}
 	if field.Towers[0].Damage != 10 {
-		t.Errorf("Expected tower damage to be 10, got %d", field.Towers[0].Damage)
+		t.Errorf("Expected tower damage to be 10, got %f", field.Towers[0].Damage)
 	}
 	// Upgrade tower
 	_, err = field.HandleEvent(UpgradeEvent{TowerID: 1}, []*Field{}, &TestGameConfig)
@@ -295,7 +295,7 @@ func TestUpgradeTower(t *testing.T) {
 		t.Errorf("Expected tower to be upgraded but got %s", err)
 	}
 	if field.Towers[0].Damage != 15 {
-		t.Errorf("Expected tower damage to be 15, got %d", field.Towers[0].Damage)
+		t.Errorf("Expected tower damage to be 15, got %f", field.Towers[0].Damage)
 	}
 }
 
@@ -329,8 +329,8 @@ func TestSellTower(t *testing.T) {
 		t.Error("Expected TWMap is not occupied at 1, 1")
 	}
 	// 100 - 15 + (15 * 0.8) = 97
-	if field.Player.Money != 9700 {
-		t.Errorf("Expected 97 money, got %d", field.Player.Money)
+	if field.Player.Money != 97 {
+		t.Errorf("Expected 97 money, got %f", field.Player.Money)
 	}
 }
 

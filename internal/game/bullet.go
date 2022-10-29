@@ -10,7 +10,7 @@ type Bullet struct {
 	X            float64 `json:"x"`
 	Y            float64 `json:"y"`
 	Speed        float64 `json:"speed"`
-	Damage       int     `json:"damage"`
+	Damage       float64 `json:"damage"`
 	SplashRadius float64 `json:"splash"`
 	SplashDmg    float64 `json:"splashDmg"`
 	Effect       *Effect `json:"-"`

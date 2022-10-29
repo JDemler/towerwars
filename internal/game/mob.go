@@ -14,8 +14,8 @@ type Mob struct {
 	TargetX         float64  `json:"targetX"`
 	TargetY         float64  `json:"targetY"`
 	Health          float64  `json:"health"`
-	MaxHealth       int      `json:"maxHealth"`
-	Reward          int      `json:"reward"`
+	MaxHealth       float64  `json:"maxHealth"`
+	Reward          float64  `json:"reward"`
 	Effects         []Effect `json:"effects"`
 	SentFromFieldID int      `json:"-"`
 	Reached         bool     `json:"-"`
