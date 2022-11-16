@@ -52,6 +52,12 @@ func (e *FieldEvent) UnmarshalJSON(data []byte) error {
 			return err
 		}
 		e.Payload = &payload
+	case "upgradeMobType":
+		var payload UpgradeMobTypeEvent
+		if err := json.Unmarshal(f.Payload, &payload); err != nil {
+			return err
+		}
+		e.Payload = &payload
 	}
 	return nil
 }
@@ -163,15 +169,17 @@ type BuyMobEvent struct {
 	MobType string `json:"mobType"`
 }
 
-// NewBuyMobEvent creates a new BuyMobEvent
-func NewBuyMobEvent(fieldID int) BuyMobEvent {
-	return BuyMobEvent{fieldID: fieldID}
-}
-
 // TryExecute BuyMobEvent to buy a mob
 func (e BuyMobEvent) TryExecute(sourceField *Field, targetField *Field, config *Config) ([]*ServerEvent, error) {
+	// Check if barracks have mob to send
+	canSend, mobLevel := sourceField.Barracks.TrySend(e.MobType)
+	if !canSend {
+		// Barracks do not have mob to send
+		fmt.Println("Barracks do not have mob to send")
+		return nil, fmt.Errorf("Barracks do not have mob to send")
+	}
 	// Check if player can afford mob
-	mobType := config.GetMobTypeByKey(sourceField.SocialNetwork, e.MobType)
+	mobType := config.GetMobTypeByKey(sourceField.SocialNetwork, e.MobType, mobLevel)
 	if mobType == nil {
 		// Invalid mob type
 		fmt.Println("Invalid mob type")
@@ -182,12 +190,7 @@ func (e BuyMobEvent) TryExecute(sourceField *Field, targetField *Field, config *
 		fmt.Println("Player cannot afford mob")
 		return nil, fmt.Errorf("Player cannot afford mob")
 	}
-	// Check if barracks have mob to send
-	if !sourceField.Barracks.TrySend(mobType) {
-		// Barracks do not have mob to send
-		fmt.Println("Barracks do not have mob to send")
-		return nil, fmt.Errorf("Barracks do not have mob to send")
-	}
+
 	// Reduce player money
 	sourceField.Player.Money -= mobType.Cost
 	// Increase player income
@@ -206,4 +209,29 @@ func (e BuyMobEvent) TryExecute(sourceField *Field, targetField *Field, config *
 	// Send playerUpdated event
 	gameEvents = append(gameEvents, updateEvent(sourceField.Player, sourceField.ID))
 	return gameEvents, nil
+}
+
+type UpgradeMobTypeEvent struct {
+	fieldID int
+	MobType string `json:"mobType"`
+}
+
+// TargetFieldIds is empty for UpgradeEvent
+func (e UpgradeMobTypeEvent) TargetFieldIds() []int {
+	return []int{}
+}
+
+func (e UpgradeMobTypeEvent) TryExecute(sourceField *Field, targetField *Field, config *Config) ([]*ServerEvent, error) {
+	mobLevel := sourceField.Barracks.GetMobTypeLevel(e.MobType)
+	mobType := config.GetMobTypeByKey(sourceField.SocialNetwork, e.MobType, mobLevel)
+	if mobType == nil {
+		return nil, fmt.Errorf("Invalid mob type")
+	}
+	if sourceField.Player.Money < mobType.LevelUpCost(config) {
+		return nil, fmt.Errorf("Player cannot afford to level up mob")
+	}
+	sourceField.Player.Money -= mobType.LevelUpCost(config)
+	mobType = config.GetMobTypeByKey(sourceField.SocialNetwork, e.MobType, mobLevel+1)
+	sourceField.Barracks.LevelUpMobType(*mobType)
+	return []*ServerEvent{updateEvent(sourceField.Barracks, sourceField.ID), updateEvent(sourceField.Player, sourceField.ID)}, nil
 }

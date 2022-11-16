@@ -316,5 +316,32 @@ func TestMobIdsAreUnique(t *testing.T) {
 		}
 		ids[mob.ID] = true
 	}
+}
+
+// Test that upgrading mob type for player 1 does not affect player 2
+func TestUpgradeMobType(t *testing.T) {
+	game := prepareGame()
+	game.Start()
+	// Update for Barracks
+	game.Update(1)
+	// Upgrade mob type for player 2
+	_, err := game.HandleEvent(FieldEvent{FieldID: 1, Type: "upgradeMobType", Payload: UpgradeMobTypeEvent{MobType: "FastMob"}})
+	if err != nil {
+		t.Errorf("Expected no error, got %s", err)
+	}
+	game.Update(1)
+	// Build mob for player 2 and player 1
+	_, err = game.HandleEvent(FieldEvent{FieldID: 1, Type: "buyMob", Payload: BuyMobEvent{MobType: "FastMob"}})
+	if err != nil {
+		t.Errorf("Expected no error, got %s", err)
+	}
+	_, err = game.HandleEvent(FieldEvent{FieldID: 0, Type: "buyMob", Payload: BuyMobEvent{MobType: "FastMob"}})
+	if err != nil {
+		t.Errorf("Expected no error, got %s", err)
+	}
+	// Check that mob type for player 1 is not upgraded. It should have less health than player 2s mob
+	if game.Fields[1].Mobs[0].Health >= game.Fields[0].Mobs[0].Health {
+		t.Errorf("Expected mob to have less health, got %f", game.Fields[0].Mobs[0].Health)
+	}
 
 }

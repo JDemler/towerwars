@@ -6,6 +6,7 @@ type MobSlot struct {
 	MobType string  `json:"mob"`
 	Count   int     `json:"count"`
 	Max     int     `json:"max"`
+	Level   int     `json:"level"`
 	Respawn float64 `json:"respawn"`
 }
 
@@ -26,7 +27,7 @@ func (b *Barracks) getType() string {
 
 // New MobSlot
 func newMobSlot(mob *MobType) *MobSlot {
-	return &MobSlot{MobType: mob.Key, Count: 0, Max: mob.MaxStock, Respawn: float64(mob.Delay)}
+	return &MobSlot{MobType: mob.Key, Count: 0, Max: mob.MaxStock, Respawn: float64(mob.Delay), Level: 0}
 }
 
 // New Barracks
@@ -53,7 +54,7 @@ func (m *MobSlot) update(delta float64, race string, gameConfig *Config) bool {
 	m.Respawn -= delta
 	if m.Respawn <= 0 {
 		m.Count++
-		MobType := gameConfig.GetMobTypeByKey(race, m.MobType)
+		MobType := gameConfig.GetMobTypeByKey(race, m.MobType, m.Level)
 		if MobType != nil {
 			m.Respawn = float64(MobType.Respawn)
 			changed = true
@@ -75,15 +76,36 @@ func (b *Barracks) update(delta float64) bool {
 	return changed
 }
 
+func (b *Barracks) LevelUpMobType(mobType MobType) {
+	//Debug log
+	fmt.Printf("Barracks %d: LevelUpMobType %s\n", b.ID, mobType.Key)
+	for _, m := range b.Mobs {
+		if m.MobType == mobType.Key {
+			m.Level++
+			m.Count = 0
+			m.Respawn = float64(mobType.Delay)
+		}
+	}
+}
+
 // TrySend from MobType
-func (b *Barracks) TrySend(m *MobType) bool {
+func (b *Barracks) TrySend(mTypeKey string) (bool, int) {
 	for _, ms := range b.Mobs {
-		if ms.MobType == m.Key {
+		if ms.MobType == mTypeKey {
 			if ms.Count > 0 {
 				ms.Count--
-				return true
+				return true, ms.Level
 			}
 		}
 	}
-	return false
+	return false, 0
+}
+
+func (b *Barracks) GetMobTypeLevel(mTypeKey string) int {
+	for _, ms := range b.Mobs {
+		if ms.MobType == mTypeKey {
+			return ms.Level
+		}
+	}
+	return 0
 }

@@ -47,6 +47,16 @@ var TestGameConfig = Config{
 			},
 		},
 	},
+	MobLevelUpConfig: &UpgradeMobTypeConfig{
+		UpgradeCostFactor: 10,
+		HealthFactor:      10,
+		SpeedFactor:       1,
+		RewardFactor:      10,
+		IncomeFactor:      10,
+		CostFactor:        10,
+		RespawnFactor:     1,
+		DelayFactor:       1,
+	},
 	Map: standardTWMap(),
 	StartStats: &Player{
 		Money:  100,

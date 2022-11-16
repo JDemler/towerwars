@@ -1,5 +1,16 @@
 {
-    "incomeCooldown": 20,
+    "incomeCooldown": 1,
+    "upgradeMobTypeConfig": 
+    {
+        "upgradeCostFactor": 100,
+        "healthFactor": 100,
+        "speedFactor": 1.1,
+        "rewardFactor": 100,
+        "incomeFactor": 80,
+        "costFactor": 100,
+        "respawnFactor": 0.9,
+        "delayFactor": 0.9
+    },
     "socialNetworks": [       
         {
             "name": "Instagram",

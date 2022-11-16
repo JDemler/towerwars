@@ -32,6 +32,14 @@ export class BuyMobEvent extends FieldEvent {
     }
 }
 
+export class UpgradeMobTypeEvent extends FieldEvent {
+    constructor(player: AddedPlayerModel, mobType: string) {
+        super(player, "upgradeMobType", {
+            mobType: mobType,
+        });
+    }
+}
+
 export class UpgradeTowerEvent extends FieldEvent {
     constructor(player: AddedPlayerModel, towerId: number) {
         super(player, "upgradeTower", {

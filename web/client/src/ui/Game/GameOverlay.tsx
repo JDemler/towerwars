@@ -83,6 +83,15 @@ const GameOverlay: React.FC = () => {
                     { mobSlotsWithMobTypes === undefined || playerModel === undefined ? (
                         <p>Loading Mob types...</p>
                     ) : Object.values(mobSlotsWithMobTypes).map(([mobType, mobSlot]) => (
+                        <div>
+                        <input 
+                            type="button"
+                            key={`${mobType.key}_upgrade`}
+                            value={`Upgrade ${mobType.cost * 100}€`}                            
+                            onClick={() => gameClient.upgradeMobType(mobType.key)} 
+                            style={{ margin: '0 2px', padding: '4px' }}
+                            disabled={playerModel.money < mobType.cost * 100}
+                        />
                         <input 
                             type="button"
                             key={mobType.key}
@@ -92,6 +101,7 @@ const GameOverlay: React.FC = () => {
                             style={{ margin: '0 2px', padding: '4px' }}
                             disabled={mobSlot.count === 0 || playerModel.money < mobType.cost}
                         />
+                        </div>
                     ))}
                 </div>
             </div>

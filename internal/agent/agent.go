@@ -136,7 +136,7 @@ func (a *Agent) mostSensibleMobType(mobMoney float64) *game.MobType {
 	winningMobType := ""
 	for _, mobSlot := range a.barracks.Mobs {
 		if mobSlot.Count > 0 {
-			mobType := a.game.Config.GetMobTypeByKey(a.network, mobSlot.MobType)
+			mobType := a.game.Config.GetMobTypeByKey(a.network, mobSlot.MobType, 1)
 			roi := float64(mobType.Income) / float64(mobType.Cost)
 			if float64(mobType.Cost) < mobMoney && roi > winningRoi {
 				winningRoi = roi
@@ -144,5 +144,5 @@ func (a *Agent) mostSensibleMobType(mobMoney float64) *game.MobType {
 			}
 		}
 	}
-	return a.game.Config.GetMobTypeByKey(a.network, winningMobType)
+	return a.game.Config.GetMobTypeByKey(a.network, winningMobType, 1)
 }

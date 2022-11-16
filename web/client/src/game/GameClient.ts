@@ -1,6 +1,6 @@
 import ApiClient from '@clients/ApiClient';
 import WebSocketClient from '@clients/WebSocketClient';
-import { BuildTurretEvent, BuyMobEvent, SellTowerEvent, UpgradeTowerEvent } from '@lib/FieldEvent';
+import { BuildTurretEvent, BuyMobEvent, SellTowerEvent, UpgradeTowerEvent, UpgradeMobTypeEvent } from '@lib/FieldEvent';
 import { GridCoordinate } from '@grid';
 import { AddedPlayerModel, BulletModel, FieldModel, GameState, MobModel, PlayerModel, TowerModel, GamePhase, TowerTypeModel, MobTypeModel, BarracksModel, SocialMediaNetworkModel } from '@models';
 
@@ -217,6 +217,17 @@ export default class GameClient {
         }
 
         this.webSocketClient.dispatchFieldEvent(new BuyMobEvent(this.player, mobKey));
+    }
+
+    public upgradeMobType(mobKey: string) {
+        if (this.webSocketClient === undefined) {
+            return console.error('Websocket not initialised');
+        }
+        if (this.player === undefined) {
+            return console.error('Not a player');
+        }
+
+        this.webSocketClient.dispatchFieldEvent(new UpgradeMobTypeEvent(this.player, mobKey));
     }
 
     public buildTurret(coordinate: GridCoordinate, towerType: string) {

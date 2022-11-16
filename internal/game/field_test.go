@@ -464,3 +464,67 @@ func TestPoisonSplash(t *testing.T) {
 		t.Errorf("Expected 0 mob, got %d", len(field.Mobs))
 	}
 }
+
+// Test that mobtypeUpgrade works
+func TestMobTypeUpgrade(t *testing.T) {
+	field := prepareField(false, false, true)
+	if len(field.Mobs) != 0 {
+		t.Errorf("Expected 0 mob, got %d", len(field.Mobs))
+	}
+	// give player enough money to upgrade mobtype
+	field.Player.Money = 1000
+	// Upgrade mobtype
+	field.HandleEvent(UpgradeMobTypeEvent{fieldID: 0, MobType: "FastMob"}, []*Field{field}, &TestGameConfig)
+	// Tick time for barracks
+	field.Update(0.1)
+	// Check that upgrade costed money
+	if field.Player.Money != 950 {
+		t.Errorf("Expected 950 money, got %f", field.Player.Money)
+	}
+	// add mob by handling an event
+	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "FastMob"}, []*Field{field}, &TestGameConfig)
+	// Check that mobtype is upgraded by checking that it has more health and costs more
+	if field.Mobs[0].Health != 500 {
+		t.Errorf("Expected 500 health, got %f", field.Mobs[0].Health)
+	}
+	if field.Player.Money != 900 {
+		t.Errorf("Expected 900 money, got %f", field.Player.Money)
+	}
+	if len(field.Mobs) != 1 {
+		t.Errorf("Expected 1 mob, got %d", len(field.Mobs))
+	}
+	for i := 0; i < 350; i++ {
+		field.Update(0.1)
+	}
+	if len(field.Mobs) != 0 {
+		t.Errorf("Expected 0 mob, got %d", len(field.Mobs))
+	}
+	// Upgrade mobtype again and check that it has even more health and costs even more
+	// give player enough money to upgrade mobtype
+	field.Player.Money = 1000
+	field.HandleEvent(UpgradeMobTypeEvent{fieldID: 0, MobType: "FastMob"}, []*Field{field}, &TestGameConfig)
+	// check barracks mobslot level
+	if field.Barracks.GetMobTypeLevel("FastMob") != 2 {
+		t.Errorf("Expected level 2, got %d", field.Barracks.GetMobTypeLevel("FastMob"))
+	}
+	field.Update(0.1)
+	if field.Player.Money != 500 {
+		t.Errorf("Expected 500 money, got %f", field.Player.Money)
+	}
+	field.HandleEvent(BuyMobEvent{fieldID: 0, MobType: "FastMob"}, []*Field{field}, &TestGameConfig)
+	if field.Mobs[0].Health != 5000 {
+		t.Errorf("Expected 5000 health, got %f", field.Mobs[0].Health)
+	}
+	if field.Player.Money != 0 {
+		t.Errorf("Expected 0 money, got %f", field.Player.Money)
+	}
+	if len(field.Mobs) != 1 {
+		t.Errorf("Expected 1 mob, got %d", len(field.Mobs))
+	}
+	for i := 0; i < 350; i++ {
+		field.Update(0.1)
+	}
+	if len(field.Mobs) != 0 {
+		t.Errorf("Expected 0 mob, got %d", len(field.Mobs))
+	}
+}

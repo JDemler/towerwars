@@ -3,15 +3,17 @@ package game
 import (
 	"encoding/json"
 	"fmt"
+	"math"
 	"os"
 )
 
 // Config contains all configuration for the game. TowerTypes, MobTypes, Map and so on. One config defines the whole content of the game
 type Config struct {
-	SocialNetworks []*SocialNetworkConfig `json:"socialNetworks"`
-	Map            *MapConfig             `json:"map"`
-	StartStats     *Player                `json:"startStats"`
-	IncomeCooldown int                    `json:"incomeCooldown"`
+	SocialNetworks   []*SocialNetworkConfig `json:"socialNetworks"`
+	MobLevelUpConfig *UpgradeMobTypeConfig  `json:"upgradeMobTypeConfig"`
+	Map              *MapConfig             `json:"map"`
+	StartStats       *Player                `json:"startStats"`
+	IncomeCooldown   int                    `json:"incomeCooldown"`
 }
 
 type MetaConfig struct {
@@ -158,6 +160,33 @@ type MobType struct {
 	MaxStock    int     `json:"maxStock"`
 }
 
+type UpgradeMobTypeConfig struct {
+	UpgradeCostFactor float64 `json:"upgradeCostFactor"`
+	HealthFactor      float64 `json:"healthFactor"`
+	SpeedFactor       float64 `json:"speedFactor"`
+	RewardFactor      float64 `json:"rewardFactor"`
+	IncomeFactor      float64 `json:"incomeFactor"`
+	CostFactor        float64 `json:"costFactor"`
+	RespawnFactor     float64 `json:"respawnFactor"`
+	DelayFactor       float64 `json:"delayFactor"`
+}
+
+func (m *MobType) LevelUpCost(config *Config) float64 {
+	return m.Cost * config.MobLevelUpConfig.UpgradeCostFactor
+}
+
+func (m *MobType) LevelUp(config *UpgradeMobTypeConfig, level int) MobType {
+	leveledUp := *m
+	leveledUp.Health *= math.Pow(config.HealthFactor, float64(level))
+	leveledUp.Speed *= math.Pow(config.SpeedFactor, float64(level))
+	leveledUp.Reward *= math.Pow(config.RewardFactor, float64(level))
+	leveledUp.Income *= math.Pow(config.IncomeFactor, float64(level))
+	leveledUp.Cost *= math.Pow(config.CostFactor, float64(level))
+	leveledUp.Respawn *= math.Pow(config.RespawnFactor, float64(level))
+	leveledUp.Delay *= math.Pow(config.DelayFactor, float64(level))
+	return leveledUp
+}
+
 // MakeMob from MobType
 func (m *MobType) MakeMob(x float64, y float64, id int) *Mob {
 	return &Mob{ID: id, X: x, Y: y, TargetX: x, TargetY: y, Health: float64(m.Health), MaxHealth: m.Health, Speed: m.Speed, Reward: m.Reward, Type: m.Name}
@@ -216,14 +245,15 @@ func (c *Config) GetTowerTypeByKey(race string, key string) *TowerType {
 }
 
 // GetMobType looks up MobType by key
-func (c *Config) GetMobTypeByKey(race string, key string) *MobType {
+func (c *Config) GetMobTypeByKey(race string, key string, level int) *MobType {
 	rc := c.getRaceConfigByKey(race)
 	if rc == nil {
 		return nil
 	}
 	for _, t := range rc.MobTypes {
 		if t.Key == key {
-			return t
+			leveledUp := t.LevelUp(c.MobLevelUpConfig, level)
+			return &leveledUp
 		}
 	}
 	return nil
