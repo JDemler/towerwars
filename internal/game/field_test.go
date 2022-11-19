@@ -527,4 +527,32 @@ func TestMobTypeUpgrade(t *testing.T) {
 	if len(field.Mobs) != 0 {
 		t.Errorf("Expected 0 mob, got %d", len(field.Mobs))
 	}
+	// Upgrade mobtype again and check that it has even more health and costs even more
+	// give player enough money to upgrade mobtype
+	field.Player.Money = 10000
+	field.HandleEvent(UpgradeMobTypeEvent{MobType: "FastMob"}, []*Field{field}, &TestGameConfig)
+	// check barracks mobslot level
+	if field.Barracks.GetMobTypeLevel("FastMob") != 3 {
+		t.Errorf("Expected level 3, got %d", field.Barracks.GetMobTypeLevel("FastMob"))
+	}
+	field.Update(0.1)
+	if field.Player.Money != 5000 {
+		t.Errorf("Expected 5000 money, got %f", field.Player.Money)
+	}
+	field.HandleEvent(BuyMobEvent{MobType: "FastMob"}, []*Field{field}, &TestGameConfig)
+	if field.Mobs[0].Health != 50000 {
+		t.Errorf("Expected 50000 health, got %f", field.Mobs[0].Health)
+	}
+	if field.Player.Money != 0 {
+		t.Errorf("Expected 0 money, got %f", field.Player.Money)
+	}
+	if len(field.Mobs) != 1 {
+		t.Errorf("Expected 1 mob, got %d", len(field.Mobs))
+	}
+	for i := 0; i < 350; i++ {
+		field.Update(0.1)
+	}
+	if len(field.Mobs) != 0 {
+		t.Errorf("Expected 0 mob, got %d", len(field.Mobs))
+	}
 }
