@@ -17,6 +17,7 @@ WORKDIR /
 
 COPY --from=build /towerwars-server /towerwars-server
 COPY --from=build /app/cmd/server/gameConfig.json /gameConfig.json
+COPY --from=build /app/cmd/server/networkconfigs /networkconfigs
 
 EXPOSE 8080
 

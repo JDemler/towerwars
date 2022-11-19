@@ -2,9 +2,13 @@ package game
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"math"
 	"os"
+	"strings"
+
+	"gopkg.in/yaml.v2"
 )
 
 // Config contains all configuration for the game. TowerTypes, MobTypes, Map and so on. One config defines the whole content of the game
@@ -214,7 +218,16 @@ func ReadSocialNetworkConfigFromFile(filename string) (*SocialNetworkConfig, err
 		return nil, err
 	}
 	var config SocialNetworkConfig
-	err = json.Unmarshal(data, &config)
+	// check if file is json or yaml
+	if strings.HasSuffix(filename, ".json") {
+		//unmarshal json
+		err = json.Unmarshal(data, &config)
+	} else if strings.HasSuffix(filename, ".yaml") || strings.HasSuffix(filename, ".yml") {
+		//unmarshal yaml
+		err = yaml.Unmarshal(data, &config)
+	} else {
+		return nil, errors.New("invalid file format")
+	}
 	if err != nil {
 		return nil, err
 	}
