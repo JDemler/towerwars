@@ -165,7 +165,6 @@ func (e UpgradeEvent) TargetFieldIds() []int {
 
 // BuyMobEvent is sent from the client to the server when a player wants to buy a mob
 type BuyMobEvent struct {
-	fieldID int
 	MobType string `json:"mobType"`
 }
 
@@ -212,7 +211,6 @@ func (e BuyMobEvent) TryExecute(sourceField *Field, targetField *Field, config *
 }
 
 type UpgradeMobTypeEvent struct {
-	fieldID int
 	MobType string `json:"mobType"`
 }
 
