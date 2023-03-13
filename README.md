@@ -1,5 +1,24 @@
 # Multiplayer Towerwars
 
+## Run locally
+Requirements:
+1. [Go](https://go.dev/doc/install)
+2. [NodeJs](https://nodejs.org/en/download/)
+
+First run the server:
+``` bash
+cd cmd/server
+go run .
+```
+
+In a seperate command line run the web frontend:
+```
+cd web/client
+npm install
+npm start
+```
+
+To play against yourself, you need to open the website twice.
 
 ## HTTP Server
 Run server with
