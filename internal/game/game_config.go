@@ -13,22 +13,22 @@ import (
 
 // Config contains all configuration for the game. TowerTypes, MobTypes, Map and so on. One config defines the whole content of the game
 type Config struct {
-	SocialNetworks   []*SocialNetworkConfig `json:"socialNetworks"`
-	MobLevelUpConfig *UpgradeMobTypeConfig  `json:"upgradeMobTypeConfig"`
-	Map              *MapConfig             `json:"map"`
-	StartStats       *Player                `json:"startStats"`
-	IncomeCooldown   int                    `json:"incomeCooldown"`
+	SocialNetworks   []*SocialNetworkConfig `json:"socialNetworks" yaml:"socialNetworks"`
+	MobLevelUpConfig *UpgradeMobTypeConfig  `json:"upgradeMobTypeConfig" yaml:"upgradeMobTypeConfig"`
+	Map              *MapConfig             `json:"map" yaml:"map"`
+	StartStats       *Player                `json:"startStats" yaml:"startStats"`
+	IncomeCooldown   int                    `json:"incomeCooldown" yaml:"incomeCooldown"`
 }
 
 type MetaConfig struct {
-	TowerDmgFactor   float64 `json:"towerDmgFactor"`
-	TowerRangeFactor float64 `json:"towerRangeFactor"`
-	TowerCostFactor  float64 `json:"towerCostFactor"`
-	MobHpFactor      float64 `json:"mobHpFactor"`
-	MobSpeedFactor   float64 `json:"mobSpeedFactor"`
-	MobIncomeFactor  float64 `json:"mobIncomeFactor"`
-	MobCostFactor    float64 `json:"mobCostFactor"`
-	BarracksFactor   float64 `json:"barracksFactor"`
+	TowerDmgFactor   float64 `json:"towerDmgFactor" yaml:"towerDmgFactor"`
+	TowerRangeFactor float64 `json:"towerRangeFactor" yaml:"towerRangeFactor"`
+	TowerCostFactor  float64 `json:"towerCostFactor" yaml:"towerCostFactor"`
+	MobHpFactor      float64 `json:"mobHpFactor" yaml:"mobHpFactor"`
+	MobSpeedFactor   float64 `json:"mobSpeedFactor" yaml:"mobSpeedFactor"`
+	MobIncomeFactor  float64 `json:"mobIncomeFactor" yaml:"mobIncomeFactor"`
+	MobCostFactor    float64 `json:"mobCostFactor" yaml:"mobCostFactor"`
+	BarracksFactor   float64 `json:"barracksFactor" yaml:"barracksFactor"`
 }
 
 func ReadMetaConfigFromFile(filename string) (*MetaConfig, error) {
@@ -68,21 +68,21 @@ func (mc *MetaConfig) Apply(config *Config) *Config {
 }
 
 type SocialNetworkConfig struct {
-	Key         string       `json:"key"`
-	Name        string       `json:"name"`
-	Description string       `json:"description"`
-	TowerTypes  []*TowerType `json:"towerTypes"`
-	MobTypes    []*MobType   `json:"mobTypes"`
+	Key         string       `json:"key" yaml:"key"`
+	Name        string       `json:"name" yaml:"name"`
+	Description string       `json:"description" yaml:"description"`
+	TowerTypes  []*TowerType `json:"towerTypes" yaml:"towerTypes"`
+	MobTypes    []*MobType   `json:"mobTypes" yaml:"mobTypes"`
 }
 
 // MapConfig contains all information about the map
 type MapConfig struct {
-	Width  int `json:"width"`
-	Height int `json:"height"`
-	StartX int `json:"startX"`
-	StartY int `json:"startY"`
-	EndX   int `json:"endX"`
-	EndY   int `json:"endY"`
+	Width  int `json:"width" yaml:"width"`
+	Height int `json:"height" yaml:"height"`
+	StartX int `json:"startX" yaml:"startX"`
+	StartY int `json:"startY" yaml:"startY"`
+	EndX   int `json:"endX" yaml:"endX"`
+	EndY   int `json:"endY" yaml:"endY"`
 }
 
 // GenerateMap a map instance for the game
@@ -101,10 +101,10 @@ func (mc *MapConfig) GenerateMap() *TWMap {
 
 // TowerType represents a tower type with all levels
 type TowerType struct {
-	Name        string        `json:"name"`
-	Descritpion string        `json:"description"`
-	Key         string        `json:"key"`
-	Levels      []*TowerLevel `json:"levels"`
+	Name        string        `json:"name" yaml:"name"`
+	Description string        `json:"description" yaml:"description"`
+	Key         string        `json:"key" yaml:"key"`
+	Levels      []*TowerLevel `json:"levels" yaml:"levels"`
 }
 
 // GetLevel the tower level for a given level
@@ -116,22 +116,22 @@ func (t *TowerType) GetLevel(level int) *TowerLevel {
 }
 
 type Effect struct {
-	Type     string  `json:"type"` // slow, stun, dot (damage over time), hot (heal over time)
-	Value    float64 `json:"value"`
-	Duration float64 `json:"duration"`
+	Type     string  `json:"type" yaml:"type"` // slow, stun, dot (damage over time), hot (heal over time)
+	Value    float64 `json:"value" yaml:"value"`
+	Duration float64 `json:"duration" yaml:"duration"`
 }
 
 // TowerLevel represents a level of a tower type. Contains all information the tower instance needs
 type TowerLevel struct {
-	Level        int     `json:"level"`
-	Cost         float64 `json:"cost"`
-	Damage       float64 `json:"damage"`
-	Range        float64 `json:"range"`
-	SplashRadius float64 `json:"splashRadius"`
-	SplashDmg    float64 `json:"splashDmg"`
-	Effect       *Effect `json:"effect"`
-	FireRate     float64 `json:"fireRate"`
-	BulletSpeed  float64 `json:"bulletSpeed"`
+	Level        int     `json:"level" yaml:"level"`
+	Cost         float64 `json:"cost" yaml:"cost"`
+	Damage       float64 `json:"damage" yaml:"damage"`
+	Range        float64 `json:"range" yaml:"range"`
+	SplashRadius float64 `json:"splashRadius" yaml:"splashRadius"`
+	SplashDmg    float64 `json:"splashDmg" yaml:"splashDmg"`
+	Effect       *Effect `json:"effect" yaml:"effect"`
+	FireRate     float64 `json:"fireRate" yaml:"fireRate"`
+	BulletSpeed  float64 `json:"bulletSpeed" yaml:"bulletSpeed"`
 }
 
 // Tower creates a new tower instance from a tower type and a level
@@ -151,28 +151,28 @@ func (t *TowerType) Tower(x float64, y float64, level int, id int) *Tower {
 
 // MobType represents a mob type with necessaray information
 type MobType struct {
-	Name        string  `json:"name"`
-	Description string  `json:"description"`
-	Key         string  `json:"key"`
-	Health      float64 `json:"health"`
-	Speed       float64 `json:"speed"`
-	Reward      float64 `json:"reward"`
-	Income      float64 `json:"income"`
-	Cost        float64 `json:"cost"`
-	Respawn     float64 `json:"respawn"`
-	Delay       float64 `json:"delay"`
-	MaxStock    int     `json:"maxStock"`
+	Name        string  `json:"name" yaml:"name"`
+	Description string  `json:"description" yaml:"description"`
+	Key         string  `json:"key" yaml:"key"`
+	Health      float64 `json:"health" yaml:"health"`
+	Speed       float64 `json:"speed" yaml:"speed"`
+	Reward      float64 `json:"reward" yaml:"reward"`
+	Income      float64 `json:"income" yaml:"income"`
+	Cost        float64 `json:"cost" yaml:"cost"`
+	Respawn     float64 `json:"respawn" yaml:"respawn"`
+	Delay       float64 `json:"delay" yaml:"delay"`
+	MaxStock    int     `json:"maxStock" yaml:"maxStock"`
 }
 
 type UpgradeMobTypeConfig struct {
-	UpgradeCostFactor float64 `json:"upgradeCostFactor"`
-	HealthFactor      float64 `json:"healthFactor"`
-	SpeedFactor       float64 `json:"speedFactor"`
-	RewardFactor      float64 `json:"rewardFactor"`
-	IncomeFactor      float64 `json:"incomeFactor"`
-	CostFactor        float64 `json:"costFactor"`
-	RespawnFactor     float64 `json:"respawnFactor"`
-	DelayFactor       float64 `json:"delayFactor"`
+	UpgradeCostFactor float64 `json:"upgradeCostFactor" yaml:"upgradeCostFactor"`
+	HealthFactor      float64 `json:"healthFactor" yaml:"healthFactor"`
+	SpeedFactor       float64 `json:"speedFactor" yaml:"speedFactor"`
+	RewardFactor      float64 `json:"rewardFactor" yaml:"rewardFactor"`
+	IncomeFactor      float64 `json:"incomeFactor" yaml:"incomeFactor"`
+	CostFactor        float64 `json:"costFactor" yaml:"costFactor"`
+	RespawnFactor     float64 `json:"respawnFactor" yaml:"respawnFactor"`
+	DelayFactor       float64 `json:"delayFactor" yaml:"delayFactor"`
 }
 
 func (m *MobType) LevelUpCost(config *Config) float64 {
@@ -223,8 +223,8 @@ func ReadSocialNetworkConfigFromFile(filename string) (*SocialNetworkConfig, err
 		//unmarshal json
 		err = json.Unmarshal(data, &config)
 	} else if strings.HasSuffix(filename, ".yaml") || strings.HasSuffix(filename, ".yml") {
-		//unmarshal yaml
-		err = yaml.Unmarshal(data, &config)
+		//unmarshal yaml disallowing unknown fields
+		err = yaml.UnmarshalStrict(data, &config)
 	} else {
 		return nil, errors.New("invalid file format")
 	}

@@ -22,7 +22,7 @@ func mobHp(step int) int {
 func towerFromStep(step int) *game.TowerType {
 	return &game.TowerType{
 		Name:        fmt.Sprintf("Tower%d", step),
-		Descritpion: fmt.Sprintf("Tower%d", step),
+		Description: fmt.Sprintf("Tower%d", step),
 		Key:         fmt.Sprintf("tower%d", step),
 		Levels: []*game.TowerLevel{
 			{

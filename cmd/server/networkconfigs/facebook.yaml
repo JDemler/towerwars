@@ -1,6 +1,6 @@
 key: "facebook"
 name: "Facebook (yml)"
-description: "Slow but huge and powerful ful"
+description: "Slow but huge and powerful"
 towerTypes:
   - name: "Like Button"
     description: "Like Button"
@@ -132,4 +132,3 @@ mobTypes:
     delay: 285
     respawn: 36
     maxStock: 10
- 

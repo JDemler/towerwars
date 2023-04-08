@@ -83,6 +83,11 @@ func NewGameInstance(id string) *GameInstance {
 	// apply metaconfig
 	config = metaConfig().Apply(config)
 
+	//Debug log all social networks
+	for _, sn := range config.SocialNetworks {
+		fmt.Println(sn)
+	}
+
 	return &GameInstance{
 		game: game.NewGame(config),
 		id:   id,

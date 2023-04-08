@@ -1,5 +1,9 @@
 package game
 
+import (
+	"testing"
+)
+
 func (g *Config) Player(id int) *Player {
 	return &Player{
 		ID:     id,
@@ -75,4 +79,29 @@ var slowEffect = &Effect{
 
 var poisonEffect = &Effect{
 	Type: "dot", Value: 1, Duration: 1,
+}
+
+func TestReadSocialNetworkConfigFromFile(t *testing.T) {
+	// Test reading YAML config file
+	config, err := ReadSocialNetworkConfigFromFile("../../cmd/server/networkconfigs/facebook.yaml")
+
+	// check that there are no errors
+	if err != nil {
+		t.Errorf("Expected no errors, got %v", err)
+	}
+
+	// check that network description is not empty
+	if config.Description == "" {
+		t.Errorf("Expected non-empty description, got %s", config.Description)
+	}
+
+	// check that there are more than 0 mob types in config
+	if len(config.MobTypes) == 0 {
+		t.Errorf("Expected more than 0 mob types, got %d", len(config.MobTypes))
+	}
+
+	// check that there are more than 0 tower types in config
+	if len(config.TowerTypes) == 0 {
+		t.Errorf("Expected more than 0 tower types, got %d", len(config.TowerTypes))
+	}
 }
