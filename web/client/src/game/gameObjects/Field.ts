@@ -3,6 +3,7 @@ import { FieldModel, MapModel, PlayerModel } from "@models";
 import { GameObject, Tower, Mob, Bullet, Map, IGameObjectProps } from "@gameObjects";
 import { FieldChangeAction } from '@game/GameClient';
 import { GridCoordinate } from "@grid";
+import Player from "./Player";
 
 export default class Field extends GameObject {
     id: number;
@@ -45,6 +46,7 @@ export default class Field extends GameObject {
         this.viewport.addChild(this.container);
 
         this.createChild(new Map(this.props, this, this.mapModel, this.isCurrentPlayer));
+        this.createChild(new Player(this.props, this, this.mapModel, this.player, this.isCurrentPlayer));
 
         for (const towerModel of fieldModel.towers) {
             this.createChild(new Tower(this.props, this, towerModel));
@@ -53,6 +55,8 @@ export default class Field extends GameObject {
         for (const mobModel of fieldModel.mobs) {
             this.createChild(new Mob(this.props, this, mobModel));
         }
+
+
 
         for (const bulletModel of fieldModel.bullets) {
             const mob = this.mobs.find(mob => mob.id === bulletModel.targetId);

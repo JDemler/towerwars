@@ -21,11 +21,12 @@ export default class Map extends GameObject {
         const tileSize = GridSettings.tileSize;
 
         if (isCurrentPlayer) {
-            const borderSize = tileSize / 4;
+            const borderSize = 2;
 
             const currentPlayerBackground = new PIXI.Graphics()
-                .beginFill(0x3b6644)
-                .drawRect(-borderSize, -borderSize, this.mapModel.size.width * tileSize + borderSize * 2, this.mapModel.size.height * tileSize + borderSize * 2)
+                .beginFill(0xFFFFFF)
+                .drawRect(-borderSize, -borderSize, this.mapModel.size.width * tileSize + borderSize * 2, 
+                    this.mapModel.size.height * tileSize + borderSize * 2)
                 .endFill();
 
             this.mapContainer.addChild(currentPlayerBackground)

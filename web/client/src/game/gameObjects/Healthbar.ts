@@ -18,7 +18,7 @@ export default class Healthbar extends GameObject {
     innerHealthbarHeight = this.healthBarHeight - this.healthBarPadding * 2;
 
     get currentInnerHealthBarWidth() {
-        return this.innerHealthbarWidth * (this.currentHealth / this.maxHealth);
+        return this.innerHealthbarWidth * Math.min(this.currentHealth / this.maxHealth, 1);
     }
 
     constructor(props: IGameObjectProps, currentHealth: number, maxHealth: number) {

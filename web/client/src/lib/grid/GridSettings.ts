@@ -1,5 +1,5 @@
 const GridSettings = {
-    tileSize: 48,
+    tileSize: 36,
 }
 
 export default GridSettings;
