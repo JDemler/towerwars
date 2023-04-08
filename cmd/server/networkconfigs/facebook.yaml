@@ -1,5 +1,5 @@
 key: "facebook"
-name: "Facebook (yml)"
+name: "Facebook"
 description: "Slow but huge and powerful"
 towerTypes:
   - name: "Like Button"

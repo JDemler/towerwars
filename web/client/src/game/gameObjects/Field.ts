@@ -9,7 +9,7 @@ export default class Field extends GameObject {
     id: number;
 
     mapModel: MapModel;
-    player: PlayerModel;
+    playerModel: PlayerModel;
 
     container: Container;
 
@@ -29,6 +29,10 @@ export default class Field extends GameObject {
         return this.getChild(Map)!;
     }
 
+    get player(): Player {
+        return this.getChild(Player)!;
+    }
+
     get isCurrentPlayer(): boolean {
         return this.gameClient.player?.fieldId === this.id;
     }
@@ -38,7 +42,7 @@ export default class Field extends GameObject {
         this.id = fieldModel.id;
 
         this.mapModel = fieldModel.map;
-        this.player = fieldModel.player;
+        this.playerModel = fieldModel.player;
 
         this.container = new Container();
         this.container.sortableChildren = true;
@@ -46,7 +50,7 @@ export default class Field extends GameObject {
         this.viewport.addChild(this.container);
 
         this.createChild(new Map(this.props, this, this.mapModel, this.isCurrentPlayer));
-        this.createChild(new Player(this.props, this, this.mapModel, this.player, this.isCurrentPlayer));
+        this.createChild(new Player(this.props, this, this.mapModel, this.playerModel, this.isCurrentPlayer));
 
         for (const towerModel of fieldModel.towers) {
             this.createChild(new Tower(this.props, this, towerModel));
@@ -105,8 +109,9 @@ export default class Field extends GameObject {
                     this.dispatchUiState({ type: 'set-playerModel', playerModel: action.player });
                 }
 
-                if (action.kind === 'update') {
-                    this.player = action.player;
+                if (action.kind === 'update') {                    
+                    this.playerModel = action.player;
+                    this.player.updateFromModel(action.player);                     
                     break;
                 }
                 break;

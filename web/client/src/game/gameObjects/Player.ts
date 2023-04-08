@@ -63,7 +63,7 @@ export default class Player extends GameObject {
 
   onUpdate() {
     const healthBarWidth = this.mapModel.size.width * GridSettings.tileSize;
-    const greenFillWidth = (this.playerModel.lives / 30) * healthBarWidth;
+    const greenFillWidth = Math.min(this.playerModel.lives / 30, 1) * healthBarWidth;
 
     this.healthBarFill
       .clear()
@@ -71,6 +71,10 @@ export default class Player extends GameObject {
       .drawRect(this.healthBarX, this.healthBarY, greenFillWidth, 10)
       .endFill();
   }
+
+  updateFromModel(playerModel: PlayerModel) {
+    this.playerModel = playerModel;
+  }   
 
   onDestroy(): void {
     this.healthBarBorder.destroy();
