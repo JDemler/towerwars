@@ -62,22 +62,29 @@ const GameOverlay: React.FC = () => {
                         </div>
                     </>
                 )}
-                <h4 style={{ textAlign: 'center' }}>Select your tower:</h4>
-                <div style={{ display: 'flex', justifyContent: 'center' }}>
-                    { towerTypes === undefined || playerModel === undefined ? (
-                        <p>Loading Mob types...</p>
-                    ) : towerTypes.map((towerType) => (
-                        <input 
-                            type="button"
-                            key={towerType.key}
-                            value={`${towerType.name} ${towerType.levels[0].cost}€`}
-                            title={`${towerType.description} (${towerType.levels[0].damage} damage, Fire Rate: ${towerType.levels[0].fireRate})`}
-                            onClick={() => uiState.setSelectedTowerType?.(towerType.key)} 
-                            style={{ margin: '0 2px', padding: '4px', backgroundColor: selectedTowerTypeKey === towerType.key ? 'lightblue' : undefined }}
-                            disabled={playerModel.money < towerType.levels[0].cost}
-                        />
-                    ))}
-                </div>
+<div className="flex flex-col shrink items-start ml-9">
+    <div className="flex p-4 shrink  bg-gray-900/25">
+    <h4 className="text-left mb-2 block self-center text-white bold px-3">Towers</h4>
+        
+        {towerTypes === undefined || playerModel === undefined ? (
+            <p>Loading Mob types...</p>
+        ) : towerTypes.map((towerType) => (
+            <button 
+                key={towerType.key}
+                className={`w-16 h-16 py-2 px-3 mx-1 text-sm border-2 ${selectedTowerTypeKey === towerType.key ? 'bg-lightblue' : 'border-black'} ${playerModel.money < towerType.levels[0].cost ? 'cursor-not-allowed' : ''}`}
+                title={`${towerType.description} (${towerType.levels[0].damage} damage, Fire Rate: ${towerType.levels[0].fireRate})`}
+                onClick={() => uiState.setSelectedTowerType?.(towerType.key)}
+                disabled={playerModel.money < towerType.levels[0].cost}
+            >
+                <img src={`assets/towerSprites/${towerType.key}.png`} alt={`${towerType.name} Thumbnail`} className="w-16 h-16" />
+                {/* <span>{towerType.name} {towerType.levels[0].cost}€</span> */}
+            </button>
+        ))}
+    </div>
+</div>
+
+
+
                 <h4 style={{ textAlign: 'center', marginTop: '8px' }}>Send Mobs to the battleground:</h4>
                 <div style={{ display: 'flex', justifyContent: 'center' }}>
                     { mobSlotsWithMobTypes === undefined || playerModel === undefined ? (
