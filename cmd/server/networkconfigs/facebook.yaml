@@ -4,7 +4,7 @@ description: "Slow but huge and powerful"
 towerTypes:
   - name: "Like Button"
     description: "Like Button"
-    key: "likebutton"
+    key: "likeButton"
     levels:
       - level: 1
         cost: 15
@@ -14,7 +14,7 @@ towerTypes:
         bulletSpeed:  10
   - name: "Profile Picture"
     description: "A picture so ugly your enemies will be blinded by it."
-    key: "profilepicture"
+    key: "profilePicture"
     levels:
       - level: 1  
         cost: 70
@@ -35,7 +35,7 @@ towerTypes:
 mobTypes:
   - name: Confused Kid
     description: "Not really sure what they are supposed to do on Facebook. But their grandparents forced them to join."
-    key: confusedkid
+    key: confusedKid
     health: 33
     speed: 0.6
     reward: 1
