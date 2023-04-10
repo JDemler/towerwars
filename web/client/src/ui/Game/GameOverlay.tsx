@@ -44,23 +44,7 @@ const GameOverlay: React.FC = () => {
   }
 
   return (
-    <div>
-      {/* Player Info */}
-      {playerModel !== undefined && (
-        <div
-          style={{
-            position: "fixed",
-            top: "16px",
-            left: "16px",
-            pointerEvents: "none",
-          }}
-        >
-          <h4>{playerModel?.name}</h4>
-          <p>Money: </p>
-          <p>Income: </p>
-          <p>HP: {playerModel?.lives}</p>
-        </div>
-      )}
+    <div>      
       {/* Game Action Bar */}
       <div style={{ position: "fixed", bottom: "16px", width: "100%" }}>
         {selectedTower !== undefined && playerModel !== undefined && (
