@@ -7,24 +7,34 @@ import (
 )
 
 type position struct {
-	x int
-	y int
+	X int `json:"x"`
+	Y int `json:"y"`
 }
 
 // TWMap is a map for the tower defense game
 type TWMap struct {
-	Width       int        `json:"width"`
-	Height      int        `json:"height"`
-	XStart      int        `json:"xstart"`
-	YStart      int        `json:"ystart"`
-	XEnd        int        `json:"xend"`
-	YEnd        int        `json:"yend"`
-	Tiles       [][]*Tile  `json:"tiles"`
-	currentPath []position `json:"-"`
+	Width       int       `json:"width"`
+	Height      int       `json:"height"`
+	XStart      int       `json:"xstart"`
+	YStart      int       `json:"ystart"`
+	XEnd        int       `json:"xend"`
+	YEnd        int       `json:"yend"`
+	Tiles       [][]*Tile `json:"tiles"`
+	CurrentPath Path      `json:"currentPath"`
 }
 
 // make currentPath its own type
 type Path []position
+
+// Implement Crud interface
+func (p *Path) getID() int {
+	return 0
+}
+
+// Implement Crud interface
+func (p *Path) getType() string {
+	return "path"
+}
 
 // IsInBounds checks if x,y is in the bounds of the map
 func (twMap *TWMap) IsInBounds(x, y int) bool {
@@ -78,11 +88,11 @@ func (twMap *TWMap) isOccupied(x, y int) bool {
 		return true
 	}
 	//Check if x and y is on the current path
-	for i := 0; i < len(twMap.currentPath); i++ {
-		if twMap.currentPath[i].x == x && twMap.currentPath[i].y == y {
+	for i := 0; i < len(twMap.CurrentPath); i++ {
+		if twMap.CurrentPath[i].X == x && twMap.CurrentPath[i].Y == y {
 			// occupy the tile
 			twMap.occupy(x, y)
-			pathExists := len(twMap.currentPath) > 0
+			pathExists := len(twMap.CurrentPath) > 0
 			twMap.free(x, y)
 			return !pathExists
 		}
@@ -90,15 +100,17 @@ func (twMap *TWMap) isOccupied(x, y int) bool {
 	return false
 }
 
-func (twMap *TWMap) occupy(x, y int) {
+func (twMap *TWMap) occupy(x, y int) Path {
 	twMap.Tiles[x][y].occupied = true
 	//recalculate current path
 	twMap.calculatePath()
+	return twMap.CurrentPath
 }
 
-func (twMap *TWMap) free(x, y int) {
+func (twMap *TWMap) free(x, y int) Path {
 	twMap.Tiles[x][y].occupied = false
 	twMap.calculatePath()
+	return twMap.CurrentPath
 }
 
 func (twMap *TWMap) startPosition() (int, int) {
@@ -111,13 +123,13 @@ func (twMap *TWMap) getAt(x int, y int) *Tile {
 }
 
 func (twMap *TWMap) nextStep(x int, y int) (int, int, error) {
-	if len(twMap.currentPath) == 0 {
+	if len(twMap.CurrentPath) == 0 {
 		twMap.calculatePath()
 	}
 	//Find current step in current path
-	for i := 0; i < len(twMap.currentPath)-1; i++ {
-		if twMap.currentPath[i].x == x && twMap.currentPath[i].y == y {
-			return twMap.currentPath[i+1].x, twMap.currentPath[i+1].y, nil
+	for i := 0; i < len(twMap.CurrentPath)-1; i++ {
+		if twMap.CurrentPath[i].X == x && twMap.CurrentPath[i].Y == y {
+			return twMap.CurrentPath[i+1].X, twMap.CurrentPath[i+1].Y, nil
 		}
 	}
 	// current x,y is not on the path, must be off, probably because towers were placed or removed
@@ -128,8 +140,8 @@ func (twMap *TWMap) nextStep(x int, y int) (int, int, error) {
 	}
 	pathPositions := path.path([]position{})
 	for i := 0; i < len(pathPositions)-1; i++ {
-		if pathPositions[i].x == x && pathPositions[i].y == y {
-			return pathPositions[i+1].x, pathPositions[i+1].y, nil
+		if pathPositions[i].X == x && pathPositions[i].Y == y {
+			return pathPositions[i+1].X, pathPositions[i+1].Y, nil
 		}
 	}
 	return 0, 0, errors.New("No next step")
@@ -138,10 +150,10 @@ func (twMap *TWMap) nextStep(x int, y int) (int, int, error) {
 func (twMap *TWMap) calculatePath() {
 	path, err := twMap.findPath(twMap.XStart, twMap.YStart)
 	if err != nil {
-		twMap.currentPath = nil
+		twMap.CurrentPath = nil
 		return
 	}
-	twMap.currentPath = path.path([]position{})
+	twMap.CurrentPath = path.path([]position{})
 }
 
 func (twMap *TWMap) findPath(x int, y int) (*Tile, error) {

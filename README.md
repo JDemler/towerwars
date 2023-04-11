@@ -58,7 +58,7 @@ For example `{"key":"b326447090e3a58d","fieldId":0,"gameId":"0ac475f17632fcc1"}`
 
 These events are very general and always have following fields
 
-`type` :: Object Type ('field', 'player', 'tower', 'mob', 'bullet', 'barracks')
+`type` :: Object Type ('field', 'player', 'tower', 'mob', 'bullet', 'barracks', 'path')
 
 `kind` :: Kind of Event ('create', 'update', 'delete')
 

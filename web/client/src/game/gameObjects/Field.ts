@@ -202,6 +202,15 @@ export default class Field extends GameObject {
                     }
                 }
                 break;
+            case 'path':
+                switch (action.kind) {
+                    case 'update': {
+                        this.mapModel.currentPath = action.path;
+                        this.map.updateFromModel(this.mapModel);
+                        break;
+                    }
+                }
+                break;
             default:
                 console.warn('Not a field change action: ' + action.type);
                 break;

@@ -25,6 +25,8 @@ export type UiStateContextAction =
 
     | { type: "set-field"; field: FieldModel }
 
+    | { type: "set-path"; path: { x: number, y: number }[] }
+
 function reducer(state: InitialUiState | undefined, action: UiStateContextAction): InitialUiState | undefined {
     if (action.type === 'set-uiState')
         return action.uiState;
@@ -125,7 +127,7 @@ function reducer(state: InitialUiState | undefined, action: UiStateContextAction
                 }
             }
             return state;            
-        }            
+        }      
         default:
             return state;
     }

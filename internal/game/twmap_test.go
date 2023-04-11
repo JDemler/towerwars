@@ -66,17 +66,17 @@ func TestCurrentPath(t *testing.T) {
 	simpleMap := simpleTWMap()
 	simpleMap.calculatePath()
 	// Check that current path is correct
-	if len(simpleMap.currentPath) != 5 {
-		t.Errorf("Current path should be length 5, but is length %d", len(simpleMap.currentPath))
+	if len(simpleMap.CurrentPath) != 5 {
+		t.Errorf("Current path should be length 5, but is length %d", len(simpleMap.CurrentPath))
 	}
-	if simpleMap.currentPath[0].x != 0 || simpleMap.currentPath[0].y != 0 {
+	if simpleMap.CurrentPath[0].X != 0 || simpleMap.CurrentPath[0].Y != 0 {
 		t.Error("First tile in current path should be 0,0")
 	}
-	if simpleMap.currentPath[1].x != 1 || simpleMap.currentPath[1].y != 0 {
-		t.Errorf("Second tile in current path should be 1,1 but is %d,%d", simpleMap.currentPath[1].x, simpleMap.currentPath[1].y)
+	if simpleMap.CurrentPath[1].X != 1 || simpleMap.CurrentPath[1].Y != 0 {
+		t.Errorf("Second tile in current path should be 1,1 but is %d,%d", simpleMap.CurrentPath[1].X, simpleMap.CurrentPath[1].Y)
 	}
-	if simpleMap.currentPath[2].x != 2 || simpleMap.currentPath[2].y != 0 {
-		t.Errorf("Third tile in current path should be 2,2 but is %d,%d", simpleMap.currentPath[2].x, simpleMap.currentPath[2].y)
+	if simpleMap.CurrentPath[2].X != 2 || simpleMap.CurrentPath[2].Y != 0 {
+		t.Errorf("Third tile in current path should be 2,2 but is %d,%d", simpleMap.CurrentPath[2].X, simpleMap.CurrentPath[2].Y)
 	}
 }
 
@@ -84,8 +84,8 @@ func TestCurrentPath(t *testing.T) {
 func TestOccupyingTileInPath(t *testing.T) {
 	simpleMap := simpleLongTWMap()
 	simpleMap.calculatePath()
-	if len(simpleMap.currentPath) != 10 {
-		t.Errorf("Current path should be length 10, but is length %d", len(simpleMap.currentPath))
+	if len(simpleMap.CurrentPath) != 10 {
+		t.Errorf("Current path should be length 10, but is length %d", len(simpleMap.CurrentPath))
 	}
 	mob := &Mob{
 		X: 0,

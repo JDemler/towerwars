@@ -99,10 +99,10 @@ func (e BuildEvent) TryExecute(sourceField *Field, targetField *Field, gc *Confi
 	}
 	tower := towerType.Tower(float64(e.X)+0.5, float64(e.Y)+0.5, 1, sourceField.getNextTowerID())
 	//Occupy tower position in twmap
-	sourceField.TWMap.occupy(e.X, e.Y)
+	newPath := sourceField.TWMap.occupy(e.X, e.Y)
 	sourceField.Towers = append(sourceField.Towers, tower)
 	sourceField.Player.Money -= towerLevel.Cost
-	return []*ServerEvent{createEvent(tower, sourceField.ID), updateEvent(sourceField.Player, sourceField.ID)}, nil
+	return []*ServerEvent{createEvent(tower, sourceField.ID), updateEvent(sourceField.Player, sourceField.ID), updateEvent(&newPath, sourceField.ID)}, nil
 }
 
 // SellEvent is sent from the client to the server when a player wants to sell a tower
@@ -121,10 +121,10 @@ func (e SellEvent) TryExecute(sourceField *Field, targetField *Field, gc *Config
 	if towerType == nil {
 		return nil, fmt.Errorf("Invalid tower type %s", tower.Type)
 	}
-	sourceField.TWMap.free(int((tower.X - 0.5)), int((tower.Y - 0.5)))
+	newPath := sourceField.TWMap.free(int((tower.X - 0.5)), int((tower.Y - 0.5)))
 	sourceField.removeTowerByID(e.TowerID)
 	sourceField.Player.Money += towerType.GetLevel(tower.Level).Cost * 0.8
-	return []*ServerEvent{deleteEvent(tower, sourceField.ID), updateEvent(sourceField.Player, sourceField.ID)}, nil
+	return []*ServerEvent{deleteEvent(tower, sourceField.ID), updateEvent(sourceField.Player, sourceField.ID), updateEvent(&newPath, sourceField.ID)}, nil
 }
 
 // UpgradeEvent is sent from the client to the server when a player wants to upgrade a tower

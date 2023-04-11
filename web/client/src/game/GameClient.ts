@@ -39,6 +39,8 @@ export type FieldChangeAction =
     // Barracks actions
     | { type: "barracks"; kind: GameChangeActionChangeKind; fieldId: number; barracks: BarracksModel }
     | { type: "barracks"; kind: GameChangeActionDeleteKind; fieldId: number; barracksId: number }
+    // Path actions
+    | { type: "path"; kind: GameChangeActionChangeKind; fieldId: number; path: GridCoordinate[] }
 
 export type FieldUpdateDispatch = (action: FieldChangeAction, gameClient: GameClient) => void;
 
@@ -264,7 +266,7 @@ export default class GameClient {
     }
 
     private handleWebSocketEvent(event: any) {
-        const eventType: 'gameStateChanged' | 'field' | 'player' | 'tower' | 'mob' | 'bullet' | 'barracks' = event.type;
+        const eventType: 'gameStateChanged' | 'field' | 'player' | 'tower' | 'mob' | 'bullet' | 'barracks' | 'path' = event.type;
         const eventKind: 'create' | 'update' | 'delete' | undefined = event.kind;
         const eventPayload = event.payload;
         const fieldId = event.fieldId;
@@ -326,6 +328,10 @@ export default class GameClient {
                     this.dispatch({ type: 'barracks', kind: eventKind, fieldId, barracks: BarracksModel.fromJSON(eventPayload) });
                 else if (eventKind === 'delete')
                     this.dispatch({ type: 'barracks', kind: eventKind, fieldId, barracksId: eventPayload });
+                break;
+            case "path":
+                if (eventKind === "create" || eventKind === "update")
+                    this.dispatch({ type: 'path', kind: eventKind, fieldId, path: eventPayload });
                 break;
             default:
                 console.log("Unknown event type:", eventType, event);

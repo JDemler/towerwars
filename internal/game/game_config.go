@@ -87,7 +87,7 @@ type MapConfig struct {
 
 // GenerateMap a map instance for the game
 func (mc *MapConfig) GenerateMap() *TWMap {
-	return &TWMap{
+	resMap := &TWMap{
 		Width:       mc.Width,
 		Height:      mc.Height,
 		XStart:      mc.StartX,
@@ -95,8 +95,10 @@ func (mc *MapConfig) GenerateMap() *TWMap {
 		XEnd:        mc.EndX,
 		YEnd:        mc.EndY,
 		Tiles:       makeTiles(mc.Width, mc.Height),
-		currentPath: nil,
+		CurrentPath: nil,
 	}
+	resMap.calculatePath()
+	return resMap
 }
 
 // TowerType represents a tower type with all levels

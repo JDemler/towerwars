@@ -5,6 +5,7 @@ interface MapModel {
     start: GridCoordinate;
     end: GridCoordinate;
     tiles: { x: number; y: number; }[];
+    currentPath: {x: number; y: number}[];
 }
 
 namespace MapModel {
@@ -14,6 +15,7 @@ namespace MapModel {
             start: new GridCoordinate(json.xstart, json.ystart),
             end: new GridCoordinate(json.xend, json.yend),
             tiles: json.tiles,
+            currentPath: json.currentPath,
         };
     }
 }
