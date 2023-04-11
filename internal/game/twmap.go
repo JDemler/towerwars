@@ -23,6 +23,9 @@ type TWMap struct {
 	currentPath []position `json:"-"`
 }
 
+// make currentPath its own type
+type Path []position
+
 // IsInBounds checks if x,y is in the bounds of the map
 func (twMap *TWMap) IsInBounds(x, y int) bool {
 	return x >= 0 && x < twMap.Width && y >= 0 && y < twMap.Height
