@@ -89,6 +89,9 @@ export default class Map extends GameObject {
 function drawPathDots(pathGraphics: PIXI.Graphics, mapModel: MapModel, offset: number) {
     pathGraphics.clear();
     
+    if (!(mapModel && mapModel.currentPath && mapModel.currentPath.length > 0)) {
+        return;
+    }    
     for (let i = 0; i < mapModel.currentPath.length - 1; i++) {
         const startX = mapModel.currentPath[i].x * tileSize + tileSize / 2;
         const startY = mapModel.currentPath[i].y * tileSize + tileSize / 2;
@@ -121,16 +124,3 @@ function drawPathDots(pathGraphics: PIXI.Graphics, mapModel: MapModel, offset: n
         }
     }
 }
-
-// Function to animate the moving dots
-// function animatePathDots(pathGraphics: PIXI.Graphics, mapModel: MapModel, initialOffset: number) {
-//     let offset = initialOffset;
-
-//     function animationLoop() {
-//         offset = (offset + pathDotSpeed) % (pathDotSize + pathDotSpacing);
-//         drawPathDots(pathGraphics, mapModel, offset);
-//         requestAnimationFrame(animationLoop);
-//     }
-
-//     animationLoop();
-// }
