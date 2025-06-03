@@ -1,11 +1,14 @@
 package game
 
+import "math"
+
 // Tile represents a tile on the map. Can be occupied. f and predecessor are used for pathfinding
 type Tile struct {
 	X           int     `json:"x"`
 	Y           int     `json:"y"`
 	occupied    bool    `json:"-"`
 	f           float64 `json:"-"`
+	g           float64 `json:"-"`
 	predecessor *Tile   `json:"-"`
 }
 
@@ -41,6 +44,7 @@ func (tl tileList) add(tile *Tile) tileList {
 	for _, t := range tl {
 		if t.X == tile.X && t.Y == tile.Y {
 			t.f = tile.f
+			t.g = tile.g
 			t.predecessor = tile.predecessor
 			return tl
 		}
@@ -55,6 +59,15 @@ func (tl tileList) fValueOf(tile *Tile) float64 {
 		}
 	}
 	return 0
+}
+
+func (tl tileList) gValueOf(tile *Tile) float64 {
+	for _, t := range tl {
+		if t.X == tile.X && t.Y == tile.Y {
+			return t.g
+		}
+	}
+	return math.Inf(1)
 }
 
 // IsOccupied returns true if the tile is occupied
