@@ -91,3 +91,17 @@ Currently there are four events the client can send to the server:
  `sellTower`:
 
 `{'type': 'sellTower', 'fieldId': 0, 'payload': {'towerId': 1}}`
+## Deployment with Azure Container Apps
+
+1. Push images to your Azure Container Registry using the provided GitHub Actions workflow.
+2. Create a Container Apps environment and two container apps (server and client) linked to your ACR repository. Example commands:
+
+```bash
+az group create --name <resource-group> --location <region>
+az containerapp env create --name <environment> --resource-group <resource-group> --location <region>
+az containerapp create --name <server-app> --resource-group <resource-group> --environment <environment> --image <acr-server>/socialmediawars:latest --target-port 8080 --ingress external
+az containerapp create --name <client-app> --resource-group <resource-group> --environment <environment> --image <acr-server>/socialmediawars-client:latest --target-port 80 --ingress external
+```
+
+3. The GitHub Actions workflow updates these container apps on every push to `master`.
+
