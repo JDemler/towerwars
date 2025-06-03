@@ -1,9 +1,8 @@
-name : Build SocialMediaWars Docker Image and Push it to ACR
+name: Build and Deploy to Azure Container Apps
 
 on:
   push:
     branches: [master]
-
   workflow_dispatch:
 
 jobs:
@@ -12,28 +11,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-
       - name: Set up Go 1.19
         uses: actions/setup-go@v3
         with:
           go-version: 1.19
-      
+
   golang-test:
     name: Run Golang Unit Tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3  
-
+      - uses: actions/checkout@v3
       - name: Set up Go 1.19
         uses: actions/setup-go@v3
         with:
           go-version: 1.19
-        
       - name: Run tests
         run: go test -v ./...
 
-  buildJob:
-    name: Build SocialMediaWars Docker Images and Push it to ACR
+  build-and-deploy:
+    name: Build Docker Images and Deploy
     runs-on: ubuntu-latest
     needs: [golang-ci, golang-test]
     steps:
@@ -45,12 +41,25 @@ jobs:
           username: ${{ secrets.ACR_USERNAME }}
           password: ${{ secrets.ACR_PASSWORD }}
 
-      - name: Build the Docker for server code      
+      - name: Build server image
         run: |
-          docker build -f Dockerfile.server -t ${{ secrets.ACR_LOGIN_SERVER }}/socialmediawars:latest .          
+          docker build -f Dockerfile.server -t ${{ secrets.ACR_LOGIN_SERVER }}/socialmediawars:latest .
           docker push ${{ secrets.ACR_LOGIN_SERVER }}/socialmediawars:latest
 
-      - name: Build the Docker for client code
+      - name: Build client image
         run: |
-          docker build -f Dockerfile.client -t ${{ secrets.ACR_LOGIN_SERVER }}/socialmediawars-client:${{ github.sha }} -t ${{ secrets.ACR_LOGIN_SERVER }}/socialmediawars-client:latest .          
+          docker build -f Dockerfile.client -t ${{ secrets.ACR_LOGIN_SERVER }}/socialmediawars-client:${{ github.sha }} -t ${{ secrets.ACR_LOGIN_SERVER }}/socialmediawars-client:latest .
           docker push ${{ secrets.ACR_LOGIN_SERVER }}/socialmediawars-client:latest
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy to Container Apps
+        uses: azure/CLI@v1
+        with:
+          inlineScript: |
+            az containerapp update --name ${{ secrets.SERVER_APP }} --resource-group ${{ secrets.RESOURCE_GROUP }} --image ${{ secrets.ACR_LOGIN_SERVER }}/socialmediawars:latest
+            az containerapp update --name ${{ secrets.CLIENT_APP }} --resource-group ${{ secrets.RESOURCE_GROUP }} --image ${{ secrets.ACR_LOGIN_SERVER }}/socialmediawars-client:latest
+
