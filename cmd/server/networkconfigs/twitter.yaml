@@ -1,0 +1,136 @@
+key: "twitter"
+name: "Twitter"
+description: "Short and chaotic commentary"
+towerTypes:
+  - name: Tweet
+    description: Send a quick jab at the enemy.
+    key: tweet
+    levels:
+      - level: 1
+        cost: 15
+        damage: 3
+        range: 5
+        fireRate: 0.4
+        bulletSpeed: 15
+  - name: Retweet
+    description: Spread the message far and wide.
+    key: retweet
+    levels:
+      - level: 1
+        cost: 70
+        damage: 15
+        fireRate: 0.4
+        range: 5
+        bulletSpeed: 11
+        splashRadius: 1
+        splashDmg: 5
+  - name: Thread
+    description: A long sequence nobody asked for.
+    key: thread
+    levels:
+      - level: 1
+        cost: 550
+        damage: 100
+        fireRate: 0.2
+        range: 5
+        bulletSpeed: 20
+mobTypes:
+  - name: Edgy Teen
+    description: They just discovered sarcasm.
+    key: edgyTeen
+    health: 16
+    speed: 1.3
+    reward: 1
+    income: 1
+    cost: 5
+    delay: 25
+    respawn: 5
+    maxStock: 5
+  - name: Keyboard Warrior
+    description: Always ready for a fight.
+    key: keyboardWarrior
+    health: 90
+    speed: 1.3
+    reward: 2
+    income: 2
+    cost: 10
+    delay: 45
+    respawn: 9
+    maxStock: 5
+  - name: Blue Check Influencer
+    description: Verified and smug.
+    key: blueCheck
+    health: 180
+    speed: 1.4
+    reward: 4
+    income: 4
+    cost: 20
+    delay: 67
+    respawn: 12
+    maxStock: 10
+  - name: Trending Hashtag
+    description: Everyone is talking about it.
+    key: trendingHashtag
+    health: 290
+    speed: 1.4
+    reward: 6
+    income: 6
+    cost: 30
+    delay: 90
+    respawn: 15
+    maxStock: 10
+  - name: Meme Lord
+    description: They speak only in memes.
+    key: memeLord
+    health: 1000
+    speed: 1.0
+    reward: 10
+    income: 10
+    cost: 48
+    delay: 135
+    respawn: 21
+    maxStock: 10
+  - name: Ratio Master
+    description: Watch them turn the tide.
+    key: ratioMaster
+    health: 1800
+    speed: 0.6
+    reward: 11
+    income: 11
+    cost: 58
+    delay: 157
+    respawn: 24
+    maxStock: 10
+  - name: Cancel Mob
+    description: They want you gone.
+    key: cancelMob
+    health: 2400
+    speed: 0.6
+    reward: 26
+    income: 26
+    cost: 126
+    delay: 217
+    respawn: 30
+    maxStock: 10
+  - name: Elon Stan
+    description: Follows the richest tweets.
+    key: elonStan
+    health: 2800
+    speed: 0.6
+    reward: 28
+    income: 28
+    cost: 136
+    delay: 255
+    respawn: 33
+    maxStock: 10
+  - name: Twitter CEO
+    description: In charge of the bird site.
+    key: twitterCEO
+    health: 3400
+    speed: 0.6
+    reward: 32
+    income: 32
+    cost: 155
+    delay: 285
+    respawn: 36
+    maxStock: 10
