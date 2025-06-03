@@ -159,6 +159,8 @@ func (twMap *TWMap) calculatePath() {
 func (twMap *TWMap) findPath(x int, y int) (*Tile, error) {
 	startTile := twMap.getAt(x, y)
 	startTile.predecessor = nil
+	startTile.g = 0
+	startTile.f = twMap.distanceToEnd(startTile)
 	openTiles := tileList([]*Tile{startTile})
 	closedTiles := tileList([]*Tile{})
 
@@ -174,10 +176,11 @@ func (twMap *TWMap) findPath(x int, y int) (*Tile, error) {
 			if closedTiles.Contains(neighbor) || neighbor.IsOccupied() {
 				continue
 			}
-			g := currentTile.f + 1
-			if openTiles.fValueOf(neighbor) >= g {
+			g := currentTile.g + 1
+			if openTiles.gValueOf(neighbor) <= g {
 				continue
 			}
+			neighbor.g = g
 			neighbor.f = g + twMap.distanceToEnd(neighbor)
 			neighbor.predecessor = currentTile
 
