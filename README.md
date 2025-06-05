@@ -91,6 +91,9 @@ Currently there are four events the client can send to the server:
  `sellTower`:
 
 `{'type': 'sellTower', 'fieldId': 0, 'payload': {'towerId': 1}}`
+## Balancing the Game
+Refer to [BALANCING.md](BALANCING.md) for tips on running the built-in tools to analyze tower and mob stats.
+
 ## Deployment with Azure Container Apps
 
 1. Push images to your Azure Container Registry using the provided GitHub Actions workflow.

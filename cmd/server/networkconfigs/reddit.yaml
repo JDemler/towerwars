@@ -18,7 +18,7 @@ towerTypes:
     levels:
       - level: 1
         cost: 70
-        damage: 40
+        damage: 50
         fireRate: 1.8
         range: 5
         bulletSpeed: 11

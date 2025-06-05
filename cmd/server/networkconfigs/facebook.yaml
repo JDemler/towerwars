@@ -16,9 +16,9 @@ towerTypes:
     description: "A picture so ugly your enemies will be blinded by it."
     key: "profilePicture"
     levels:
-      - level: 1  
+      - level: 1
         cost: 70
-        damage: 40
+        damage: 50
         fireRate: 1.8
         range: 5
         bulletSpeed: 11
