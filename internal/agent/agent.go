@@ -34,7 +34,7 @@ type BuildPosition struct {
 }
 
 func NewAgent(game *game.Game, playerID int, config *Config, network string) *Agent {
-	return &Agent{
+	a := &Agent{
 		game:       game,
 		playerID:   playerID,
 		config:     config,
@@ -42,6 +42,19 @@ func NewAgent(game *game.Game, playerID int, config *Config, network string) *Ag
 		network:    network,
 		towerTypes: game.GetTowerTypes(playerID),
 	}
+	// Initialize agent state from current game state so the agent can act
+	if playerID < len(game.Fields) {
+		field := game.Fields[playerID]
+		if field != nil {
+			a.state = &State{
+				lives:  field.Player.Lives,
+				money:  float64(field.Player.Money),
+				income: float64(field.Player.Income),
+			}
+			a.barracks = field.Barracks
+		}
+	}
+	return a
 }
 
 func (a *Agent) HandleEvents(events []*game.ServerEvent) {
