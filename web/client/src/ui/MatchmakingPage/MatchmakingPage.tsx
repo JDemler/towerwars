@@ -1,14 +1,20 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useUiState } from "@hooks";
-import { GameState } from "@models";
+import { GameState, ServerStatusModel } from "@models";
+import ApiClient from "@clients/ApiClient";
 
 const MatchmakingPage: React.FC = () => {
     const [uiState] = useUiState();
     const { socialMediaNetworks, gameClient, gameState } = uiState;
 
+    const [status, setStatus] = useState<ServerStatusModel>();
 
     const [playerName, setPlayerName] = useState('');
     const [socialMediaNetwork, setSocialMediaNetwork] = useState('facebook');
+
+    useEffect(() => {
+        ApiClient.getServerStatus().then(setStatus).catch(console.error);
+    }, []);
 
     if (!uiState) {
         return <div>Loading...</div>;
@@ -73,8 +79,18 @@ const MatchmakingPage: React.FC = () => {
       </div> 
                 ))}
             </div>
-            <div className="rounded-md shadow">              
+            <div className="rounded-md shadow">
                 <input type="button" className="flex w-full items-center justify-center rounded-md border border-transparent bg-smw-yellow-500 px-8 py-3 text-base font-medium text-white hover:bg-smw-orange-700 md:py-4 md:px-10 md:text-lg" value="Join Game" onClick={() => uiState.gameClient.joinGame(playerName, socialMediaNetwork)} />
+            </div>
+
+            <div className="text-xl pt-6 text-smw-yellow-500"><h2>Existing Games</h2></div>
+            <div className="flex flex-col space-y-2 w-full">
+                {status && Object.entries(status.gameStatus).map(([id, gs]) => (
+                    <div key={id} className="flex flex-row justify-between items-center w-full">
+                        <span className="text-white">{gs.players} players - {gs.duration}s</span>
+                        <button className="rounded-md bg-smw-yellow-500 px-3 py-1 text-white" onClick={() => uiState.gameClient.observeGame(id)}>Observe</button>
+                    </div>
+                ))}
             </div>
             
         </div>

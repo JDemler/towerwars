@@ -14,3 +14,6 @@ export { default as BarracksModel } from './BarracksModel';
 export { default as SocialMediaNetworkModel } from './SocialMediaNetworkModel';
 export type { MobSlotModel } from './BarracksModel';
 export type { default as UiState, InitialUiState } from './UiState';
+export { default as ServerStatusModel } from './ServerStatusModel';
+
+export type { GameStatusModel } from './ServerStatusModel';
