@@ -1,15 +1,15 @@
 {
-    "incomeCooldown": 20,
+    "incomeCooldown": 15,
     "upgradeMobTypeConfig": 
     {
-        "upgradeCostFactor": 50,
-        "healthFactor": 100,
-        "speedFactor": 1.1,
-        "rewardFactor": 100,
-        "incomeFactor": 80,
-        "costFactor": 100,
-        "respawnFactor": 0.95,
-        "delayFactor": 0.9
+        "upgradeCostFactor": 30,
+        "healthFactor": 120,
+        "speedFactor": 1.05,
+        "rewardFactor": 110,
+        "incomeFactor": 90,
+        "costFactor": 80,
+        "respawnFactor": 0.9,
+        "delayFactor": 0.85
     },
     "socialNetworks": [],
     "map": {
@@ -21,8 +21,8 @@
         "endY": 17
     },
     "startStats": {
-        "money": 30,
-        "lives": 30,
-        "income": 30
+        "money": 50,
+        "lives": 40,
+        "income": 40
     }
 }

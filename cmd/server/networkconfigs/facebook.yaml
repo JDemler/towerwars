@@ -1,134 +1,204 @@
 key: "facebook"
 name: "Facebook"
-description: "Slow but huge and powerful"
+description: "Slow but powerful - Masters of crowd control and area damage"
 towerTypes:
   - name: "Like Button"
-    description: "Like Button"
+    description: "Basic tower that slows enemies with likes"
     key: "likeButton"
     levels:
       - level: 1
         cost: 15
-        damage: 15
+        damage: 8
+        range: 6
+        fireRate: 1.2
+        bulletSpeed: 12
+        effect:
+          type: "slow"
+          value: 0.3
+          duration: 2
+      - level: 2
+        cost: 35
+        damage: 18
+        range: 6.5
+        fireRate: 1.0
+        bulletSpeed: 14
+        effect:
+          type: "slow"
+          value: 0.4
+          duration: 2.5
+      - level: 3
+        cost: 80
+        damage: 40
         range: 7
-        fireRate: 2
-        bulletSpeed:  10
-  - name: "Profile Picture"
-    description: "A picture so ugly your enemies will be blinded by it."
-    key: "profilePicture"
+        fireRate: 0.8
+        bulletSpeed: 16
+        effect:
+          type: "slow"
+          value: 0.5
+          duration: 3
+  - name: "Friend Request"
+    description: "Sends spam that damages groups of enemies"
+    key: "friendRequest"
     levels:
       - level: 1
         cost: 70
-        damage: 50
-        fireRate: 1.8
+        damage: 25
+        fireRate: 2.0
         range: 5
+        bulletSpeed: 10
+        splashRadius: 2
+        splashDmg: 15
+      - level: 2
+        cost: 150
+        damage: 55
+        fireRate: 1.8
+        range: 5.5
         bulletSpeed: 11
-  - name: "Comment"
-    description: "A comment so stupid your enemies will start to question humanity."
-    key: "comment"
-    levels:
-      - level: 1
-        cost: 550
-        damage: 500
-        fireRate: 2.2 
+        splashRadius: 2.5
+        splashDmg: 35
+      - level: 3
+        cost: 320
+        damage: 120
+        fireRate: 1.6
         range: 6
         bulletSpeed: 12
+        splashRadius: 3
+        splashDmg: 80
+  - name: "Drama Post"
+    description: "Creates drama that stuns and poisons enemies"
+    key: "dramaPost"
+    levels:
+      - level: 1
+        cost: 350
+        damage: 100
+        fireRate: 3.0
+        range: 7
+        bulletSpeed: 8
+        effect:
+          type: "stun"
+          value: 1
+          duration: 1.5
+      - level: 2
+        cost: 700
+        damage: 250
+        fireRate: 2.8
+        range: 7.5
+        bulletSpeed: 9
+        effect:
+          type: "stun"
+          value: 1
+          duration: 2
+        splashRadius: 1.5
+        splashDmg: 100
+      - level: 3
+        cost: 1400
+        damage: 500
+        fireRate: 2.5
+        range: 8
+        bulletSpeed: 10
+        effect:
+          type: "dot"
+          value: 50
+          duration: 5
+        splashRadius: 2
+        splashDmg: 250
 mobTypes:
-  - name: Confused Kid
-    description: "Not really sure what they are supposed to do on Facebook. But their grandparents forced them to join."
-    key: confusedKid
-    health: 33
-    speed: 0.6
+  - name: "Confused Kid"
+    description: "Lost and slow, but surprisingly resilient"
+    key: "confusedKid"
+    health: 40
+    speed: 0.5
     reward: 1
     income: 1
     cost: 5
-    delay: 25
-    respawn: 5
-    maxStock: 5
+    delay: 20
+    respawn: 4
+    maxStock: 8
   - name: "Facebook Troll"
-    description: "They are the reason you don't have a profile picture."
+    description: "Thick-skinned and annoying"
     key: "facebookTroll"
-    health: 176
-    speed: 0.6
-    reward: 2
+    health: 220
+    speed: 0.4
+    reward: 3
     income: 2
-    cost: 10
-    delay: 45
-    respawn: 9
-    maxStock: 5
-  - name: "Nice Guy"
-    description: "He's always trying to be your friend. He's really creepy."
-    key: niceGuy
-    health: 400
+    cost: 12
+    delay: 35
+    respawn: 7
+    maxStock: 6
+  - name: "Meme Sharer"
+    description: "Spreads faster when damaged"
+    key: "memeSharer"
+    health: 450
     speed: 0.6
-    reward: 4
+    reward: 5
     income: 4
-    cost: 20
-    delay: 67
-    respawn: 12
-    maxStock: 10
+    cost: 22
+    delay: 55
+    respawn: 10
+    maxStock: 8
   - name: "Facebook Addict"
-    description: "They can't go more than 5 minutes without checking their feed."
-    key: facebookAddict
-    health: 600
-    speed: 0.6
-    reward: 6
-    income: 6
-    cost: 30
-    delay: 90
-    respawn: 15
+    description: "Can't stop scrolling, regenerates health"
+    key: "facebookAddict"
+    health: 800
+    speed: 0.5
+    reward: 8
+    income: 7
+    cost: 35
+    delay: 75
+    respawn: 13
     maxStock: 10
-  - name: Karen
-    description: "She's always complaining about something. She's a real buzzkill."
-    key: karen
-    health: 1400
-    speed: 0.6
-    reward: 10
-    income: 10
-    cost: 48
-    delay: 135
-    respawn: 21
-    maxStock: 10
-  - name: Karen#2
-    description: "She's always complaining about something. She's a real buzzkill."
-    key: karen2
-    health: 1800
-    speed: 0.6
-    reward: 11
+  - name: "Karen"
+    description: "Demands to speak to the manager, very tanky"
+    key: "karen"
+    health: 1600
+    speed: 0.4
+    reward: 12
     income: 11
-    cost: 58
-    delay: 157
-    respawn: 24
-    maxStock: 10
-  - name: Karen#3
-    description: "She's always complaining about something. She's a real buzzkill."
-    key: karen3
-    health: 2400
-    speed: 0.6
-    reward: 26
-    income: 26
-    cost: 126
-    delay: 217
-    respawn: 30
-    maxStock: 10
-  - name: Karen#4
-    description: "She's always complaining about something. She's a real buzzkill."
-    key: karen
+    cost: 55
+    delay: 100
+    respawn: 17
+    maxStock: 8
+  - name: "Conspiracy Theorist"
+    description: "Immune to slows, spreads misinformation"
+    key: "conspiracyTheorist"
+    health: 2200
+    speed: 0.7
+    reward: 18
+    income: 16
+    cost: 85
+    delay: 130
+    respawn: 22
+    maxStock: 6
+  - name: "Boomer Brigade"
+    description: "Slow but comes in groups"
+    key: "boomerBrigade"
     health: 2800
-    speed: 0.6
-    reward: 28
-    income: 28
-    cost: 136
-    delay: 255
-    respawn: 33
-    maxStock: 10
-  - name: Facebook CEO
-    description: The guy who ruined the internet
-    key: facebookceo
-    health: 3400
-    speed: 0.6
-    reward: 32
-    income: 32
-    cost: 155
-    delay: 285
-    respawn: 36
-    maxStock: 10
+    speed: 0.35
+    reward: 25
+    income: 22
+    cost: 120
+    delay: 160
+    respawn: 26
+    maxStock: 12
+  - name: "Fake News"
+    description: "Fast and hard to kill"
+    key: "fakeNews"
+    health: 3500
+    speed: 0.9
+    reward: 35
+    income: 30
+    cost: 165
+    delay: 200
+    respawn: 30
+    maxStock: 5
+  - name: "Mark Zuckerberg"
+    description: "The final boss - extremely tanky with shields"
+    key: "zuckerberg"
+    health: 8000
+    speed: 0.3
+    reward: 80
+    income: 60
+    cost: 300
+    delay: 250
+    respawn: 40
+    maxStock: 3

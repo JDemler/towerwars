@@ -1,134 +1,192 @@
 key: "reddit"
 name: "Reddit"
-description: "Upvotes, memes and endless threads"
+description: "Strategic placement and karma-based combos"
 towerTypes:
-  - name: Upvote
-    description: Show some approval.
-    key: upvote
+  - name: "Upvote"
+    description: "Basic karma generator that boosts nearby towers"
+    key: "upvote"
     levels:
       - level: 1
         cost: 15
-        damage: 15
+        damage: 10
+        range: 6
+        fireRate: 1.5
+        bulletSpeed: 12
+      - level: 2
+        cost: 35
+        damage: 22
+        range: 6.5
+        fireRate: 1.3
+        bulletSpeed: 14
+      - level: 3
+        cost: 80
+        damage: 50
         range: 7
-        fireRate: 2
-        bulletSpeed: 10
-  - name: Subreddit Post
-    description: A wall of text that scares opponents.
-    key: subredditPost
+        fireRate: 1.1
+        bulletSpeed: 16
+  - name: "Award Bomber"
+    description: "Expensive shots that deal massive damage"
+    key: "awardBomber"
     levels:
       - level: 1
         cost: 70
-        damage: 50
-        fireRate: 1.8
+        damage: 60
+        fireRate: 2.5
         range: 5
-        bulletSpeed: 11
-  - name: Moderation Hammer
-    description: Bans from nowhere.
-    key: modHammer
+        bulletSpeed: 8
+        splashRadius: 1.5
+        splashDmg: 30
+      - level: 2
+        cost: 150
+        damage: 140
+        fireRate: 2.2
+        range: 5.5
+        bulletSpeed: 9
+        splashRadius: 2
+        splashDmg: 70
+      - level: 3
+        cost: 320
+        damage: 300
+        fireRate: 2.0
+        range: 6
+        bulletSpeed: 10
+        splashRadius: 2.5
+        splashDmg: 150
+  - name: "Mod Hammer"
+    description: "Bans enemies with powerful stun and slow effects"
+    key: "modHammer"
     levels:
       - level: 1
-        cost: 550
-        damage: 500
-        fireRate: 2.2
-        range: 6
-        bulletSpeed: 12
+        cost: 350
+        damage: 150
+        fireRate: 3.0
+        range: 8
+        bulletSpeed: 6
+        effect:
+          type: "stun"
+          value: 1
+          duration: 2
+      - level: 2
+        cost: 700
+        damage: 350
+        fireRate: 2.7
+        range: 8.5
+        bulletSpeed: 7
+        effect:
+          type: "stun"
+          value: 1
+          duration: 2.5
+        splashRadius: 1.5
+        splashDmg: 175
+      - level: 3
+        cost: 1400
+        damage: 700
+        fireRate: 2.4
+        range: 9
+        bulletSpeed: 8
+        effect:
+          type: "slow"
+          value: 0.8
+          duration: 4
+        splashRadius: 2.5
+        splashDmg: 350
 mobTypes:
-  - name: Newbie
-    description: Just learning the ropes.
-    key: newbie
-    health: 33
-    speed: 0.6
+  - name: "Lurker"
+    description: "Invisible until damaged"
+    key: "lurker"
+    health: 25
+    speed: 1.0
     reward: 1
     income: 1
     cost: 5
-    delay: 25
-    respawn: 5
-    maxStock: 5
-  - name: Shitposter
-    description: Low effort jokes everywhere.
-    key: shitposter
-    health: 176
-    speed: 0.6
-    reward: 2
+    delay: 22
+    respawn: 4
+    maxStock: 10
+  - name: "Reposter"
+    description: "Copies abilities of nearby mobs"
+    key: "reposter"
+    health: 120
+    speed: 0.8
+    reward: 3
     income: 2
-    cost: 10
-    delay: 45
-    respawn: 9
-    maxStock: 5
-  - name: Helpful User
-    description: They actually contribute.
-    key: helpfulUser
-    health: 400
-    speed: 0.6
-    reward: 4
+    cost: 12
+    delay: 38
+    respawn: 6
+    maxStock: 8
+  - name: "Karma Whore"
+    description: "Gets faster with each tower it passes"
+    key: "karmaWhore"
+    health: 250
+    speed: 0.7
+    reward: 5
     income: 4
-    cost: 20
-    delay: 67
+    cost: 22
+    delay: 55
+    respawn: 9
+    maxStock: 10
+  - name: "Wholesome Redditor"
+    description: "Heals nearby mobs"
+    key: "wholesomeRedditor"
+    health: 400
+    speed: 0.9
+    reward: 8
+    income: 7
+    cost: 35
+    delay: 75
     respawn: 12
-    maxStock: 10
-  - name: Karma Farmer
-    description: Always chasing points.
-    key: karmaFarmer
-    health: 600
-    speed: 0.6
-    reward: 6
-    income: 6
-    cost: 30
-    delay: 90
-    respawn: 15
-    maxStock: 10
-  - name: Gatekeeper
-    description: Keeps newcomers at bay.
-    key: gatekeeper
-    health: 1400
-    speed: 0.6
-    reward: 10
-    income: 10
-    cost: 48
-    delay: 135
-    respawn: 21
-    maxStock: 10
-  - name: Edgelord
-    description: Tries very hard to be edgy.
-    key: edgelord
+    maxStock: 8
+  - name: "Downvote Brigade"
+    description: "Reduces tower damage when nearby"
+    key: "downvoteBrigade"
+    health: 700
+    speed: 0.8
+    reward: 12
+    income: 11
+    cost: 55
+    delay: 95
+    respawn: 16
+    maxStock: 12
+  - name: "Reddit Lawyer"
+    description: "Immune to first 3 hits"
+    key: "redditLawyer"
+    health: 1100
+    speed: 1.0
+    reward: 18
+    income: 16
+    cost: 85
+    delay: 120
+    respawn: 20
+    maxStock: 6
+  - name: "Hive Mind"
+    description: "Splits into smaller mobs when killed"
+    key: "hiveMind"
     health: 1800
     speed: 0.6
-    reward: 11
-    income: 11
-    cost: 58
-    delay: 157
+    reward: 25
+    income: 22
+    cost: 120
+    delay: 150
     respawn: 24
-    maxStock: 10
-  - name: Subreddit Mod
-    description: They wield mysterious powers.
-    key: subredditMod
-    health: 2400
-    speed: 0.6
-    reward: 26
-    income: 26
-    cost: 126
-    delay: 217
-    respawn: 30
-    maxStock: 10
-  - name: Power User
-    description: Spends way too much time here.
-    key: powerUser
+    maxStock: 5
+  - name: "Power Mod"
+    description: "Removes tower effects on hit"
+    key: "powerMod"
     health: 2800
-    speed: 0.6
-    reward: 28
-    income: 28
-    cost: 136
-    delay: 255
-    respawn: 33
-    maxStock: 10
-  - name: Reddit Admin
-    description: Controls it all behind the scenes.
-    key: redditAdmin
-    health: 3400
-    speed: 0.6
-    reward: 32
-    income: 32
-    cost: 155
-    delay: 285
-    respawn: 36
-    maxStock: 10
+    speed: 0.9
+    reward: 35
+    income: 30
+    cost: 165
+    delay: 190
+    respawn: 28
+    maxStock: 4
+  - name: "Spez"
+    description: "CEO - Changes rules mid-battle"
+    key: "spez"
+    health: 6000
+    speed: 0.7
+    reward: 80
+    income: 60
+    cost: 300
+    delay: 240
+    respawn: 38
+    maxStock: 3
