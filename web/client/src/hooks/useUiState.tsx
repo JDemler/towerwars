@@ -26,6 +26,7 @@ export type UiStateContextAction =
     | { type: "set-field"; field: FieldModel }
 
     | { type: "set-path"; path: { x: number, y: number }[] }
+    | { type: "set-incomeCooldown"; incomeCooldown: number }
 
 function reducer(state: InitialUiState | undefined, action: UiStateContextAction): InitialUiState | undefined {
     if (action.type === 'set-uiState')
@@ -111,6 +112,18 @@ function reducer(state: InitialUiState | undefined, action: UiStateContextAction
                 selectedTower: action.selectedTower,
             }
         }
+        case 'set-incomeCooldown': {
+            if (state.gameState === undefined) {
+                return state;
+            }
+            return {
+                ...state,
+                gameState: {
+                    ...state.gameState,
+                    incomeCooldown: action.incomeCooldown,
+                }
+            }
+        }
         case 'set-field': {
             console.log("set-field", action.field);
             if (state.gameState === undefined) {
@@ -170,8 +183,11 @@ export const UiStateProvider: React.FC<React.PropsWithChildren> = ({ children })
                         dispatch({ type: 'set-field', field: action.field });
                     }
                     break;
+                case 'incomeCooldown': {
+                    dispatch({ type: 'set-incomeCooldown', incomeCooldown: action.incomeCooldown });
+                    break;
                 }
-                default: {                    
+                default: {
                     return;
                 }
             }

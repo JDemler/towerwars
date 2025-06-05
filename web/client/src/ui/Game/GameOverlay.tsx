@@ -1,4 +1,5 @@
 import { useUiState } from "@hooks";
+import { useState, useEffect } from "react";
 import { MobSlotModel, MobTypeModel } from "@models";
 
 const GameOverlay: React.FC = () => {
@@ -13,6 +14,24 @@ const GameOverlay: React.FC = () => {
     selectedTowerTypeKey,
     selectedTower,
   } = uiState;
+
+  const [incomeCooldown, setIncomeCooldown] = useState<number | undefined>(
+    uiState.gameState?.incomeCooldown
+  );
+
+  useEffect(() => {
+    setIncomeCooldown(uiState.gameState?.incomeCooldown);
+  }, [uiState.gameState?.incomeCooldown]);
+
+  useEffect(() => {
+    if (incomeCooldown === undefined) return;
+    const interval = setInterval(() => {
+      setIncomeCooldown((prev) =>
+        prev !== undefined ? Math.max(prev - 0.1, 0) : prev
+      );
+    }, 100);
+    return () => clearInterval(interval);
+  }, [incomeCooldown]);
 
   const selectedTowerType = towerTypes?.find(
     (t) => t.key === selectedTower?.type
@@ -155,6 +174,14 @@ const GameOverlay: React.FC = () => {
               <span className="ml-4 font-semibold text-right">{playerModel?.income}</span>
               <span className="font-semibold text-right">€</span>
               </div>
+            </div>
+            <div className="flex flex-row justify-between w-36">
+              <span className="font-semibold pr-5">Next in:</span>
+              <span className="ml-4 font-semibold text-right">
+                {incomeCooldown !== undefined
+                  ? incomeCooldown.toFixed(1)
+                  : '-'}s
+              </span>
             </div>
             <div className="flex flex-row justify-between w-36">
               <span className="font-semibold pr-5">Money:</span>

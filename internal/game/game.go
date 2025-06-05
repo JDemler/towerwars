@@ -170,6 +170,13 @@ func (game *Game) Update(delta float64) []*ServerEvent {
 			events = append(events, updateEvent(field.Player, field.ID))
 		}
 		game.IncomeCooldown = float64(game.Config.IncomeCooldown)
+		// notify clients about new income cooldown
+		events = append(events, &ServerEvent{
+			Type:    "incomeCooldown",
+			Kind:    "update",
+			FieldID: -1,
+			Payload: game.IncomeCooldown,
+		})
 	}
 
 	game.Elapsed += delta
