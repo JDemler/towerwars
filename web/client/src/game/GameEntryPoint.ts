@@ -90,6 +90,9 @@ const beginGameLoop = (app: Application, viewport: Viewport, initialGameState: G
                 dispatchUiState({ type: 'set-barracksModel', barracksModel: action.barracks });
             }
         }
+        else if (action.type === 'incomeCooldown') {
+            dispatchUiState({ type: 'set-incomeCooldown', incomeCooldown: action.incomeCooldown });
+        }
         else {
             const fieldId = action.fieldId;
 

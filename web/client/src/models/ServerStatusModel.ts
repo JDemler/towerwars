@@ -34,4 +34,3 @@ namespace ServerStatusModel {
 }
 
 export default ServerStatusModel;
-export type { GameStatusModel };

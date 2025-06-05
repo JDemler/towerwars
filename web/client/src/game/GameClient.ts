@@ -290,7 +290,7 @@ export default class GameClient {
     }
 
     private handleWebSocketEvent(event: any) {
-        const eventType: 'gameStateChanged' | 'field' | 'player' | 'tower' | 'mob' | 'bullet' | 'barracks' | 'path' = event.type;
+        const eventType: 'gameStateChanged' | 'field' | 'player' | 'tower' | 'mob' | 'bullet' | 'barracks' | 'path' | 'incomeCooldown' = event.type;
         const eventKind: 'create' | 'update' | 'delete' | undefined = event.kind;
         const eventPayload = event.payload;
         const fieldId = event.fieldId;
