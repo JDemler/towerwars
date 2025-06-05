@@ -1,136 +1,192 @@
 key: "twitter"
 name: "Twitter"
-description: "Short and chaotic commentary"
+description: "Lightning fast attacks and viral spread mechanics"
 towerTypes:
-  - name: Tweet
-    description: Send a quick jab at the enemy.
-    key: tweet
+  - name: "Tweet"
+    description: "Rapid-fire basic attacks that can go viral"
+    key: "tweet"
     levels:
       - level: 1
         cost: 15
-        damage: 3
+        damage: 4
         range: 5
-        fireRate: 0.4
-        bulletSpeed: 15
-  - name: Retweet
-    description: Spread the message far and wide.
-    key: retweet
+        fireRate: 0.3
+        bulletSpeed: 20
+      - level: 2
+        cost: 35
+        damage: 9
+        range: 5.5
+        fireRate: 0.25
+        bulletSpeed: 25
+      - level: 3
+        cost: 80
+        damage: 20
+        range: 6
+        fireRate: 0.2
+        bulletSpeed: 30
+  - name: "Retweet Storm"
+    description: "Spreads damage virally to nearby enemies"
+    key: "retweetStorm"
     levels:
       - level: 1
         cost: 70
-        damage: 12
+        damage: 15
+        fireRate: 0.5
+        range: 4
+        bulletSpeed: 15
+        splashRadius: 2
+        splashDmg: 8
+      - level: 2
+        cost: 150
+        damage: 35
         fireRate: 0.4
-        range: 5
-        bulletSpeed: 11
-        splashRadius: 1
-        splashDmg: 5
-  - name: Thread
-    description: A long sequence nobody asked for.
-    key: thread
-    levels:
-      - level: 1
-        cost: 550
-        damage: 55
-        fireRate: 0.2
+        range: 4.5
+        bulletSpeed: 18
+        splashRadius: 2.5
+        splashDmg: 20
+      - level: 3
+        cost: 320
+        damage: 80
+        fireRate: 0.35
         range: 5
         bulletSpeed: 20
+        splashRadius: 3
+        splashDmg: 50
+  - name: "Trending Topic"
+    description: "Creates a trending wave that damages all enemies in a line"
+    key: "trendingTopic"
+    levels:
+      - level: 1
+        cost: 350
+        damage: 60
+        fireRate: 0.8
+        range: 8
+        bulletSpeed: 35
+        effect:
+          type: "dot"
+          value: 10
+          duration: 3
+      - level: 2
+        cost: 700
+        damage: 140
+        fireRate: 0.6
+        range: 9
+        bulletSpeed: 40
+        effect:
+          type: "dot"
+          value: 25
+          duration: 4
+        splashRadius: 1
+        splashDmg: 70
+      - level: 3
+        cost: 1400
+        damage: 300
+        fireRate: 0.4
+        range: 10
+        bulletSpeed: 50
+        effect:
+          type: "dot"
+          value: 50
+          duration: 5
+        splashRadius: 2
+        splashDmg: 150
 mobTypes:
-  - name: Edgy Teen
-    description: They just discovered sarcasm.
-    key: edgyTeen
-    health: 16
-    speed: 1.3
+  - name: "Tweet Bot"
+    description: "Fast but fragile spam"
+    key: "tweetBot"
+    health: 12
+    speed: 1.8
     reward: 1
     income: 1
     cost: 5
-    delay: 25
-    respawn: 5
-    maxStock: 5
-  - name: Keyboard Warrior
-    description: Always ready for a fight.
-    key: keyboardWarrior
-    health: 90
-    speed: 1.3
-    reward: 2
+    delay: 15
+    respawn: 3
+    maxStock: 12
+  - name: "Keyboard Warrior"
+    description: "Quick to attack, quick to fall"
+    key: "keyboardWarrior"
+    health: 65
+    speed: 1.5
+    reward: 3
     income: 2
-    cost: 10
-    delay: 45
-    respawn: 9
-    maxStock: 5
-  - name: Blue Check Influencer
-    description: Verified and smug.
-    key: blueCheck
-    health: 180
-    speed: 1.4
-    reward: 4
+    cost: 12
+    delay: 28
+    respawn: 5
+    maxStock: 8
+  - name: "Verified Blue Check"
+    description: "Elite and fast, harder to kill"
+    key: "blueCheck"
+    health: 150
+    speed: 1.6
+    reward: 5
     income: 4
-    cost: 20
-    delay: 67
-    respawn: 12
+    cost: 22
+    delay: 45
+    respawn: 8
     maxStock: 10
-  - name: Trending Hashtag
-    description: Everyone is talking about it.
-    key: trendingHashtag
-    health: 290
-    speed: 1.4
-    reward: 6
-    income: 6
-    cost: 30
-    delay: 90
-    respawn: 15
+  - name: "Viral Thread"
+    description: "Gains speed as it takes damage"
+    key: "viralThread"
+    health: 280
+    speed: 1.3
+    reward: 8
+    income: 7
+    cost: 35
+    delay: 65
+    respawn: 11
     maxStock: 10
-  - name: Meme Lord
-    description: They speak only in memes.
-    key: memeLord
-    health: 1000
-    speed: 1.0
-    reward: 10
-    income: 10
-    cost: 48
-    delay: 135
-    respawn: 21
-    maxStock: 10
-  - name: Ratio Master
-    description: Watch them turn the tide.
-    key: ratioMaster
-    health: 1800
-    speed: 0.6
-    reward: 11
+  - name: "Ratio Brigade"
+    description: "Comes in swarms"
+    key: "ratioBrigade"
+    health: 450
+    speed: 2.0
+    reward: 12
     income: 11
-    cost: 58
-    delay: 157
-    respawn: 24
-    maxStock: 10
-  - name: Cancel Mob
-    description: They want you gone.
-    key: cancelMob
-    health: 2400
-    speed: 0.6
-    reward: 26
-    income: 26
-    cost: 126
-    delay: 217
-    respawn: 30
-    maxStock: 10
-  - name: Elon Stan
-    description: Follows the richest tweets.
-    key: elonStan
-    health: 2800
-    speed: 0.6
-    reward: 28
-    income: 28
-    cost: 136
-    delay: 255
-    respawn: 33
-    maxStock: 10
-  - name: Twitter CEO
-    description: In charge of the bird site.
-    key: twitterCEO
-    health: 3400
-    speed: 0.6
-    reward: 32
-    income: 32
-    cost: 155
-    delay: 285
-    respawn: 36
-    maxStock: 10
+    cost: 55
+    delay: 85
+    respawn: 14
+    maxStock: 15
+  - name: "Cancel Culture"
+    description: "Immune to damage over time effects"
+    key: "cancelCulture"
+    health: 800
+    speed: 1.4
+    reward: 18
+    income: 16
+    cost: 85
+    delay: 110
+    respawn: 18
+    maxStock: 8
+  - name: "Twitter Storm"
+    description: "Extremely fast, teleports when hit"
+    key: "twitterStorm"
+    health: 1200
+    speed: 2.5
+    reward: 25
+    income: 22
+    cost: 120
+    delay: 140
+    respawn: 22
+    maxStock: 6
+  - name: "Influencer Army"
+    description: "Moderate speed but spawns mini-bots"
+    key: "influencerArmy"
+    health: 2000
+    speed: 1.2
+    reward: 35
+    income: 30
+    cost: 165
+    delay: 180
+    respawn: 26
+    maxStock: 5
+  - name: "Elon Musk"
+    description: "Unpredictable movement, high health"
+    key: "elonMusk"
+    health: 5000
+    speed: 1.8
+    reward: 80
+    income: 60
+    cost: 300
+    delay: 220
+    respawn: 35
+    maxStock: 3

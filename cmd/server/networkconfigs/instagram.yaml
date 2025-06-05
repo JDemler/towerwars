@@ -1,137 +1,193 @@
 key: "instagram"
 name: "Instagram"
-description: "Fast paced and uncannily beautiful"
+description: "Style over substance - Aesthetic damage and filter effects"
 towerTypes:
-  - name: Bio
-    description: A short description of yourself. It's not very interesting.",
-    key: bio
+  - name: "Filter"
+    description: "Basic attack that makes enemies uglier (damages them)"
+    key: "filter"
     levels:
       - level: 1
         cost: 15
-        damage: 3
+        damage: 5
         range: 5
+        fireRate: 0.5
+        bulletSpeed: 18
+      - level: 2
+        cost: 35
+        damage: 12
+        range: 5.5
         fireRate: 0.4
-        bulletSpeed:  15
-  - name: Hashtag
-    description: A word or phrase that is used to describe a picture. It's not very useful. But it reaches a lot of people.
-    key: hashtag
+        bulletSpeed: 22
+      - level: 3
+        cost: 80
+        damage: 28
+        range: 6
+        fireRate: 0.35
+        bulletSpeed: 25
+  - name: "Hashtag Bomb"
+    description: "Viral spread damage #blessed #nofilter"
+    key: "hashtagBomb"
     levels:
       - level: 1
         cost: 70
-        damage: 12
+        damage: 20
+        fireRate: 0.6
+        range: 4
+        bulletSpeed: 14
+        splashRadius: 2.5
+        splashDmg: 12
+      - level: 2
+        cost: 150
+        damage: 45
+        fireRate: 0.5
+        range: 4.5
+        bulletSpeed: 16
+        splashRadius: 3
+        splashDmg: 30
+      - level: 3
+        cost: 320
+        damage: 100
         fireRate: 0.4
         range: 5
-        bulletSpeed: 11
-        splashRadius: 1
-        splashDmg: 5
-  - name: Story
-    description: Skip to the good part! This is not it.
-    key: story
+        bulletSpeed: 18
+        splashRadius: 3.5
+        splashDmg: 70
+  - name: "Story Beam"
+    description: "24-hour lasting poison effect that expires quickly"
+    key: "storyBeam"
     levels:
       - level: 1
-        cost: 550
-        damage: 55
-        fireRate: 0.2
-        range: 5
-        bulletSpeed: 20
+        cost: 350
+        damage: 80
+        fireRate: 1.0
+        range: 7
+        bulletSpeed: 30
+        effect:
+          type: "dot"
+          value: 20
+          duration: 4
+      - level: 2
+        cost: 700
+        damage: 180
+        fireRate: 0.8
+        range: 8
+        bulletSpeed: 35
+        effect:
+          type: "dot"
+          value: 40
+          duration: 5
+        splashRadius: 1.5
+        splashDmg: 90
+      - level: 3
+        cost: 1400
+        damage: 400
+        fireRate: 0.6
+        range: 9
+        bulletSpeed: 40
+        effect:
+          type: "slow"
+          value: 0.7
+          duration: 3
+        splashRadius: 2.5
+        splashDmg: 200
 mobTypes:
-  - name: Aspiring AI Artist
-    description: Well. What can you say... at least they tried
-    key: aspiringAiArtits
-    health: 16
-    speed: 1.3
+  - name: "Wannabe Model"
+    description: "Poses every few steps, slowing down"
+    key: "wannabeModel"
+    health: 18
+    speed: 1.5
     reward: 1
     income: 1
     cost: 5
-    delay: 25
-    respawn: 5
-    maxStock: 5
-  - name: Wannabe Influencer
-    description: They act like they are important. They are not. 
-    key: wannabeInfluencer
-    health: 90
-    speed: 1.3
-    reward: 2
+    delay: 18
+    respawn: 3
+    maxStock: 10
+  - name: "Selfie Addict"
+    description: "Stops to take selfies, but has armor"
+    key: "selfieAddict"
+    health: 85
+    speed: 1.2
+    reward: 3
     income: 2
-    cost: 10
-    delay: 45
-    respawn: 9
-    maxStock: 5
-  - name: Fitness Influencer
-    description: They would be really fast. But they have to take selfies!
-    key: fitnessInfluencer
+    cost: 12
+    delay: 32
+    respawn: 5
+    maxStock: 8
+  - name: "Fitness Guru"
+    description: "Alternates between sprinting and resting"
+    key: "fitnessGuru"
     health: 180
-    speed: 1.4
-    reward: 4
+    speed: 1.7
+    reward: 5
     income: 4
-    cost: 20
-    delay: 67
-    respawn: 12
+    cost: 22
+    delay: 50
+    respawn: 8
     maxStock: 10
-  - name: Fashion Influencer
-    description: Stunningly Irrelevant
-    key: fashionInfluencer
-    health: 290
-    speed: 1.4
-    reward: 6
-    income: 6
-    cost: 30
-    delay: 90
-    respawn: 15
-    maxStock: 10
-  - name: Food Influencer
-    description: Wait what?
-    key: foodInfluencer
-    health: 1000
-    speed: 1.0
-    reward: 10
-    income: 10
-    cost: 48
-    delay: 135
-    respawn: 21
-    maxStock: 10
-  - name: Karen#2
-    description: "She's always complaining about something. She's a real buzzkill."
-    key: karen2
-    health: 1800
-    speed: 0.6
-    reward: 11
+  - name: "Food Blogger"
+    description: "Heals when passing towers (photos for content)"
+    key: "foodBlogger"
+    health: 320
+    speed: 1.1
+    reward: 8
+    income: 7
+    cost: 35
+    delay: 70
+    respawn: 11
+    maxStock: 8
+  - name: "Brand Ambassador"
+    description: "Shields nearby influencers"
+    key: "brandAmbassador"
+    health: 550
+    speed: 1.3
+    reward: 12
     income: 11
-    cost: 58
-    delay: 157
-    respawn: 24
+    cost: 55
+    delay: 90
+    respawn: 14
     maxStock: 10
-  - name: Karen#3
-    description: "She's always complaining about something. She's a real buzzkill."
-    key: karen3
-    health: 2400
-    speed: 0.6
-    reward: 26
-    income: 26
-    cost: 126
-    delay: 217
-    respawn: 30
-    maxStock: 10
-  - name: Karen#4
-    description: "She's always complaining about something. She's a real buzzkill."
-    key: karen
-    health: 2800
-    speed: 0.6
-    reward: 28
-    income: 28
-    cost: 136
-    delay: 255
-    respawn: 33
-    maxStock: 10
-  - name: Facebook CEO
-    description: The guy who ruined the internet
-    key: facebookceo
-    health: 3400
-    speed: 0.6
-    reward: 32
-    income: 32
-    cost: 155
-    delay: 285
+  - name: "Travel Influencer"
+    description: "Teleports forward when hit"
+    key: "travelInfluencer"
+    health: 900
+    speed: 1.5
+    reward: 18
+    income: 16
+    cost: 85
+    delay: 115
+    respawn: 18
+    maxStock: 6
+  - name: "Fashion Week"
+    description: "Changes appearance/stats every few seconds"
+    key: "fashionWeek"
+    health: 1500
+    speed: 1.2
+    reward: 25
+    income: 22
+    cost: 120
+    delay: 145
+    respawn: 22
+    maxStock: 5
+  - name: "Mega Influencer"
+    description: "Spawns followers when damaged"
+    key: "megaInfluencer"
+    health: 2500
+    speed: 1.0
+    reward: 35
+    income: 30
+    cost: 165
+    delay: 185
+    respawn: 26
+    maxStock: 4
+  - name: "Meta CEO"
+    description: "Reality-warping final boss"
+    key: "metaCEO"
+    health: 7000
+    speed: 1.1
+    reward: 80
+    income: 60
+    cost: 300
+    delay: 230
     respawn: 36
-    maxStock: 10
+    maxStock: 3
  
