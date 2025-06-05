@@ -46,11 +46,19 @@ export default class Map extends GameObject {
                 const tile = new PIXI.Graphics()
                     .beginFill(color)
                     .drawRect(x * tileSize, y * tileSize, tileSize, tileSize)
-                    .endFill()
-                    
+                    .endFill();
+
                 tile.zIndex = 0;
 
                 tile.interactive = true;
+
+                // Add subtle highlight on hover to improve look and feel
+                tile.on('pointerover', () => {
+                    tile.alpha = 0.8;
+                });
+                tile.on('pointerout', () => {
+                    tile.alpha = 1;
+                });
                 
                 handleViewportClick(tile, this.viewport);
 
@@ -118,7 +126,8 @@ function drawPathDots(pathGraphics: PIXI.Graphics, mapModel: MapModel, offset: n
             const deltaX = Math.cos(angle) * rectWidth / 2;
             const deltaY = Math.sin(angle) * rectHeight / 2;
 
-            pathGraphics.beginFill(0xCCCCFF, 0.5)
+            // Slightly brighter path color for better visibility
+            pathGraphics.beginFill(0xEEEEFF, 0.6)
                 .drawRoundedRect(dotX - deltaX, dotY - deltaY, rectWidth, rectHeight, cornerRadius)
                 .endFill();
         }
