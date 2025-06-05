@@ -43,6 +43,8 @@ const GameOverlay: React.FC = () => {
       ? selectedTowerType?.levels[selectedTower.level]
       : undefined;
 
+  const [activeTab, setActiveTab] = useState<'towers' | 'mobs'>('towers');
+
   const mobSlots = barracksModel?.mobSlots;
 
   let mobSlotsWithMobTypes:
@@ -63,98 +65,83 @@ const GameOverlay: React.FC = () => {
   }
 
   return (
-    <div>      
-      {/* Game Action Bar */}
-      <div style={{ position: "fixed", bottom: "16px", width: "100%" }}>
-        {selectedTower !== undefined && playerModel !== undefined && (
-          <>
-            <h4 style={{ textAlign: "center" }}>1 Tower selected:</h4>
-            <div style={{ display: "flex", justifyContent: "center" }}>
-              <input
-                type="button"
-                value={
-                  selectedTowerNextLevel !== undefined
-                    ? `Upgrade (${selectedTowerNextLevel.cost}€)`
-                    : "Max Level"
-                }
-                onClick={() => gameClient.upgradeTurret(selectedTower)}
-                style={{ margin: "0 2px", padding: "4px" }}
-                disabled={
-                  selectedTowerNextLevel === undefined ||
-                  playerModel.money < selectedTowerNextLevel.cost
-                }
-              />
-              <input
-                type="button"
-                value={"Sell"}
-                onClick={() => gameClient.sellTurret(selectedTower)}
-                style={{ margin: "0 2px", padding: "4px" }}
-              />
-            </div>
-          </>
-        )}
-        <div className="flex my-5">
-          <div className="flex flex-col shrink items-start ml-9 w-1/2">
-            <div className="flex p-4 shrink bg-gray-900/25">
-              <h4 className="text-left mb-2 block self-center text-white bold px-3">
-                Towers
-              </h4>
+    <div>
+      {/* Top resource bar */}
+      <div className="fixed top-0 left-0 right-0 flex justify-center gap-8 p-2 bg-slate-800/90 text-white shadow">
+        <div className="flex items-center gap-1">
+          <span role="img" aria-label="income">📈</span>
+          {playerModel?.income}
+        </div>
+        <div className="flex items-center gap-1">
+          <span role="img" aria-label="cooldown">⏳</span>
+          {incomeCooldown !== undefined ? incomeCooldown.toFixed(1) : '-'}s
+        </div>
+        <div className="flex items-center gap-1">
+          <span role="img" aria-label="money">🪙</span>
+          {playerModel?.money}
+        </div>
+      </div>
 
-              {towerTypes === undefined || playerModel === undefined ? (
-                <p>Loading Mob types...</p>
-              ) : (
-                towerTypes.map((towerType) => (
-                  <button
-                    key={towerType.key}
-                    className={`relative w-16 h-16 py-2 px-3 mx-1 text-sm border-2 ${
-                      selectedTowerTypeKey === towerType.key
-                        ? "bg-lightblue"
-                        : "border-black"
-                    } ${
-                      playerModel.money < towerType.levels[0].cost
-                        ? "cursor-not-allowed"
-                        : ""
-                    }`}
-                    title={`${towerType.description} (${towerType.levels[0].damage} damage, Fire Rate: ${towerType.levels[0].fireRate})`}
-                    onClick={() =>
-                      uiState.setSelectedTowerType?.(towerType.key)
-                    }
-                    disabled={playerModel.money < towerType.levels[0].cost}
-                  >
-                    <img
-                      src={`assets/towerSprites/${towerType.key}.png`}
-                      alt={`${towerType.name} Thumbnail`}
-                      className="w-16 h-16"
-                    />
-                    <span className="absolute bottom-0 left-0 bg-black bg-opacity-60 text-white text-xs px-1">
-                      {towerType.levels[0].cost}€
-                    </span>
-                  </button>
-                ))
-              )}
-            </div>
+      {/* Bottom HUD */}
+      <div className="fixed bottom-0 left-0 right-0 flex justify-center pointer-events-none">
+        <div className="pointer-events-auto w-full max-w-5xl bg-slate-900/80 text-white rounded-t-lg shadow-lg">
+          <div className="flex justify-center space-x-6 border-b border-slate-700">
+            <button
+              className={`p-2 ${activeTab === 'towers' ? 'border-b-2 border-smw-orange-500' : ''}`}
+              onClick={() => setActiveTab('towers')}
+            >
+              Towers
+            </button>
+            <button
+              className={`p-2 ${activeTab === 'mobs' ? 'border-b-2 border-smw-orange-500' : ''}`}
+              onClick={() => setActiveTab('mobs')}
+            >
+              Mobs
+            </button>
           </div>
-          <div className="flex flex-col shrink items-start ml-9 w-1/2">
-            <div className="flex p-4 shrink bg-gray-900/25">
-              <h4 className="text-left mb-2 block self-center text-white bold px-3">
-                Mobs
-              </h4>
-              {mobSlotsWithMobTypes === undefined ||
-              playerModel === undefined ? (
-                <p>Loading Mob types...</p>
-              ) : (
-                Object.values(mobSlotsWithMobTypes).map(
-                  ([mobType, mobSlot]) => (
+          <div className="p-3 flex justify-center flex-wrap">
+            {activeTab === 'towers' && (
+              <>
+                {towerTypes === undefined || playerModel === undefined ? (
+                  <p>Loading tower types...</p>
+                ) : (
+                  towerTypes.map((towerType) => (
+                    <button
+                      key={towerType.key}
+                      className={`relative w-16 h-16 m-1 border-2 rounded shadow ${
+                        selectedTowerTypeKey === towerType.key ? 'border-smw-orange-500' : 'border-black'
+                      } ${playerModel.money < towerType.levels[0].cost ? 'cursor-not-allowed opacity-50' : ''}`}
+                      title={`${towerType.description} (${towerType.levels[0].damage} damage, Fire Rate: ${towerType.levels[0].fireRate})`}
+                      onClick={() => uiState.setSelectedTowerType?.(towerType.key)}
+                      disabled={playerModel.money < towerType.levels[0].cost}
+                    >
+                      <img
+                        src={`assets/towerSprites/${towerType.key}.png`}
+                        alt={`${towerType.name} Thumbnail`}
+                        className="w-16 h-16"
+                      />
+                      <span className="absolute bottom-0 left-0 bg-black bg-opacity-60 text-white text-xs px-1">
+                        {towerType.levels[0].cost}€
+                      </span>
+                    </button>
+                  ))
+                )}
+              </>
+            )}
+            {activeTab === 'mobs' && (
+              <>
+                {mobSlotsWithMobTypes === undefined || playerModel === undefined ? (
+                  <p>Loading mob types...</p>
+                ) : (
+                  Object.values(mobSlotsWithMobTypes).map(([mobType, mobSlot]) => (
                     <button
                       key={mobType.key}
-                      className={`relative w-16 h-16 p-2 mx-1 text-sm border-2 border-black`}
-                      value={`${mobType.name} ${mobType.cost}€ (${mobSlot.count})`}
-                      title={`${mobType.description} (${mobType.health} HP, Delay: ${mobType.delay})`}
+                      className={`relative w-16 h-16 m-1 border-2 rounded shadow ${
+                        mobSlot.count === 0 || playerModel.money < mobType.cost ? 'cursor-not-allowed opacity-50' : ''
+                      }`}
                       onClick={() => gameClient.buyMob(mobType.key)}
-                      style={{ margin: "0 2px", padding: "4px" }}
-                      disabled={
-                        mobSlot.count === 0 || playerModel.money < mobType.cost
-                      }
+                      disabled={mobSlot.count === 0 || playerModel.money < mobType.cost}
+                      title={`${mobType.description} (${mobType.health} HP, Delay: ${mobType.delay})`}
                     >
                       <img
                         src={`assets/mobSprites/${mobType.key}.png`}
@@ -168,39 +155,39 @@ const GameOverlay: React.FC = () => {
                         {mobType.cost}€
                       </span>
                     </button>
-                  )
-                )
-              )}
-            </div>
-          </div>
-        </div>
-        <div className="flex mx-9 text-white">
-          <div className="flex flex-col items-start mb-5">
-          <div className="flex flex-row justify-between w-36">
-              <span className="font-semibold pr-5">Income:</span>
-              <div>
-              <span className="ml-4 font-semibold text-right">{playerModel?.income}</span>
-              <span className="font-semibold text-right">€</span>
-              </div>
-            </div>
-            <div className="flex flex-row justify-between w-36">
-              <span className="font-semibold pr-5">Next in:</span>
-              <span className="ml-4 font-semibold text-right">
-                {incomeCooldown !== undefined
-                  ? incomeCooldown.toFixed(1)
-                  : '-'}s
-              </span>
-            </div>
-            <div className="flex flex-row justify-between w-36">
-              <span className="font-semibold pr-5">Money:</span>
-              <div>
-              <span className="ml-4 font-semibold text-right">{playerModel?.money}</span>
-              <span className="font-semibold text-right">€</span>
-              </div>
-            </div>
+                  ))
+                )}
+              </>
+            )}
           </div>
         </div>
       </div>
+
+      {/* Selected tower actions */}
+      {selectedTower !== undefined && playerModel !== undefined && (
+        <div className="fixed bottom-24 left-0 right-0 flex justify-center">
+          <div className="bg-slate-800/90 p-2 rounded shadow text-white flex space-x-2">
+            <button
+              className="px-2 py-1 bg-smw-yellow-500 rounded disabled:opacity-50"
+              onClick={() => gameClient.upgradeTurret(selectedTower)}
+              disabled={
+                selectedTowerNextLevel === undefined ||
+                playerModel.money < selectedTowerNextLevel.cost
+              }
+            >
+              {selectedTowerNextLevel !== undefined
+                ? `Upgrade (${selectedTowerNextLevel.cost}€)`
+                : 'Max Level'}
+            </button>
+            <button
+              className="px-2 py-1 bg-smw-orange-500 rounded"
+              onClick={() => gameClient.sellTurret(selectedTower)}
+            >
+              Sell
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

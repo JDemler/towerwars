@@ -18,7 +18,8 @@ const GameCanvas: React.FC = () => {
             resolution: window.devicePixelRatio,
             antialias: true,
 
-            backgroundColor: 0x50a161,
+            // Use a darker background so the HUD elements stand out better
+            backgroundColor: 0x1e293b,
         });
 
         // Add the canvas to the DOM
