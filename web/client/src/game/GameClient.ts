@@ -41,6 +41,8 @@ export type FieldChangeAction =
     | { type: "barracks"; kind: GameChangeActionDeleteKind; fieldId: number; barracksId: number }
     // Path actions
     | { type: "path"; kind: GameChangeActionChangeKind; fieldId: number; path: GridCoordinate[] }
+    // Income cooldown update
+    | { type: "incomeCooldown"; incomeCooldown: number }
 
 export type FieldUpdateDispatch = (action: FieldChangeAction, gameClient: GameClient) => void;
 
@@ -332,6 +334,9 @@ export default class GameClient {
             case "path":
                 if (eventKind === "create" || eventKind === "update")
                     this.dispatch({ type: 'path', kind: eventKind, fieldId, path: eventPayload });
+                break;
+            case "incomeCooldown":
+                this.dispatch({ type: 'incomeCooldown', incomeCooldown: eventPayload });
                 break;
             default:
                 console.log("Unknown event type:", eventType, event);
