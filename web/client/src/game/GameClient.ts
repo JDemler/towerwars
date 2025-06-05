@@ -167,6 +167,28 @@ export default class GameClient {
         this.webSocketClient?.disconnect();
     }
 
+    public observeGame(gameId: string) {
+        sessionStorage.removeItem('addedPlayer');
+        this.player = undefined;
+        this.webSocketClient?.disconnect();
+
+        try {
+            this.webSocketClient = new WebSocketClient(gameId, '');
+            this.webSocketClient.webSocket.onmessage = (event: MessageEvent) => {
+                const message = JSON.parse(event.data);
+                this.handleWebSocketEvent(message);
+            };
+        } catch (error) {
+            console.error(error);
+        }
+
+        ApiClient.getGameState(gameId)
+            .then(gameState => {
+                this.dispatch({ type: 'gameState', kind: 'create', gameState });
+                this.dispatch({ type: 'state', gameStatus: gameState.state });
+            }).catch(error => console.error(error));
+    }
+
     public addAgent() {
         if (this.player === undefined) {
             console.error('Cannot start game without player');

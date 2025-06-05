@@ -1,3 +1,4 @@
+import { ServerStatusModel } from "@models";
 import { GameState, AddedPlayerModel, TowerTypeModel, MobTypeModel, SocialMediaNetworkModel } from "@models";
 import { isAbsoluteUrl } from '@helpers';
 
@@ -33,6 +34,12 @@ export default class ApiClient {
 
         return GameState.fromJSON(responseJson);
     }
+    static getServerStatus = async () => {
+        const response = await fetch(getApiUrl("status"));
+        const responseJson = await response.json();
+        return ServerStatusModel.fromJSON(responseJson);
+    }
+
 
     // Function that fetches the social media network types
     static getSocialMediaNetworks = async () => {
