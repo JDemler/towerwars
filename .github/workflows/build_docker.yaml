@@ -56,10 +56,23 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Deploy to Container Apps
-        uses: azure/CLI@v1
+      - name: Deploy Server App via Container Apps Action
+        uses: azure/container-apps-deploy-action@v1
         with:
-          inlineScript: |
-            az containerapp update --name ${{ secrets.SERVER_APP }} --resource-group ${{ secrets.RESOURCE_GROUP }} --image ${{ secrets.ACR_LOGIN_SERVER }}/socialmediawars:latest
-            az containerapp update --name ${{ secrets.CLIENT_APP }} --resource-group ${{ secrets.RESOURCE_GROUP }} --image ${{ secrets.ACR_LOGIN_SERVER }}/socialmediawars-client:latest
+          acrName: ${{ secrets.ACR_LOGIN_SERVER_NAME }}
+          containerAppName: ${{ secrets.SERVER_APP }}
+          resourceGroup: ${{ secrets.RESOURCE_GROUP }}
+          imageToDeploy: ${{ secrets.ACR_LOGIN_SERVER }}/socialmediawars:latest
+          # registryUsername: ${{ secrets.ACR_USERNAME }}
+          # registryPassword: ${{ secrets.ACR_PASSWORD }}
+
+      - name: Deploy Client App via Container Apps Action
+        uses: azure/container-apps-deploy-action@v1
+        with:
+          acrName: ${{ secrets.ACR_LOGIN_SERVER_NAME }}
+          containerAppName: ${{ secrets.CLIENT_APP }}
+          resourceGroup: ${{ secrets.RESOURCE_GROUP }}
+          imageToDeploy: ${{ secrets.ACR_LOGIN_SERVER }}/socialmediawars-client:latest
+          # registryUsername: ${{ secrets.ACR_USERNAME }}
+          # registryPassword: ${{ secrets.ACR_PASSWORD }}
 

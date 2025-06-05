@@ -58,11 +58,28 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Deploy preview Container Apps
-        uses: azure/CLI@v1
+      - name: Deploy Server Preview App via Container Apps Action
+        uses: azure/container-apps-deploy-action@v1
         with:
-          inlineScript: |
-            az containerapp update --name ${{ secrets.SERVER_APP }}-pr-${{ github.event.number }} --resource-group ${{ secrets.RESOURCE_GROUP }} --image ${{ secrets.ACR_LOGIN_SERVER }}/socialmediawars:pr-${{ github.event.number }} || \
-            az containerapp create --name ${{ secrets.SERVER_APP }}-pr-${{ github.event.number }} --resource-group ${{ secrets.RESOURCE_GROUP }} --environment ${{ secrets.CONTAINERAPPS_ENVIRONMENT }} --image ${{ secrets.ACR_LOGIN_SERVER }}/socialmediawars:pr-${{ github.event.number }} --target-port 8080 --ingress external
-            az containerapp update --name ${{ secrets.CLIENT_APP }}-pr-${{ github.event.number }} --resource-group ${{ secrets.RESOURCE_GROUP }} --image ${{ secrets.ACR_LOGIN_SERVER }}/socialmediawars-client:pr-${{ github.event.number }} || \
-            az containerapp create --name ${{ secrets.CLIENT_APP }}-pr-${{ github.event.number }} --resource-group ${{ secrets.RESOURCE_GROUP }} --environment ${{ secrets.CONTAINERAPPS_ENVIRONMENT }} --image ${{ secrets.ACR_LOGIN_SERVER }}/socialmediawars-client:pr-${{ github.event.number }} --target-port 80 --ingress external
+          acrName: ${{ secrets.ACR_LOGIN_SERVER_NAME }}
+          containerAppName: ${{ secrets.SERVER_APP }}-pr-${{ github.event.number }}
+          resourceGroup: ${{ secrets.RESOURCE_GROUP }}
+          containerAppEnvironment: ${{ secrets.CONTAINERAPPS_ENVIRONMENT }}
+          imageToDeploy: ${{ secrets.ACR_LOGIN_SERVER }}/socialmediawars:pr-${{ github.event.number }}
+          ingress: external
+          targetPort: 8080
+          # registryUsername: ${{ secrets.ACR_USERNAME }}
+          # registryPassword: ${{ secrets.ACR_PASSWORD }}
+
+      - name: Deploy Client Preview App via Container Apps Action
+        uses: azure/container-apps-deploy-action@v1
+        with:
+          acrName: ${{ secrets.ACR_LOGIN_SERVER_NAME }}
+          containerAppName: ${{ secrets.CLIENT_APP }}-pr-${{ github.event.number }}
+          resourceGroup: ${{ secrets.RESOURCE_GROUP }}
+          containerAppEnvironment: ${{ secrets.CONTAINERAPPS_ENVIRONMENT }}
+          imageToDeploy: ${{ secrets.ACR_LOGIN_SERVER }}/socialmediawars-client:pr-${{ github.event.number }}
+          ingress: external
+          targetPort: 80
+          # registryUsername: ${{ secrets.ACR_USERNAME }}
+          # registryPassword: ${{ secrets.ACR_PASSWORD }}
