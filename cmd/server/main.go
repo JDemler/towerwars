@@ -7,13 +7,32 @@ import (
 	"math/rand"
 	"net/http"
 	"os"
+	"runtime/debug"
 	"strconv"
 	"time"
 
 	"towerwars/internal/game"
 )
 
-var serverVersion = "0.1.0"
+var (
+	baseVersion   = "0.1.0"
+	serverVersion = baseVersion
+)
+
+func init() {
+	if info, ok := debug.ReadBuildInfo(); ok {
+		for _, setting := range info.Settings {
+			if setting.Key == "vcs.revision" {
+				if len(setting.Value) >= 7 {
+					serverVersion = fmt.Sprintf("%s-%s", baseVersion, setting.Value[:7])
+				} else if setting.Value != "" {
+					serverVersion = fmt.Sprintf("%s-%s", baseVersion, setting.Value)
+				}
+				break
+			}
+		}
+	}
+}
 
 type Server struct {
 	runningGames map[string]*GameInstance
