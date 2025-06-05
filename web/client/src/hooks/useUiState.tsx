@@ -183,6 +183,7 @@ export const UiStateProvider: React.FC<React.PropsWithChildren> = ({ children })
                         dispatch({ type: 'set-field', field: action.field });
                     }
                     break;
+                }
                 case 'incomeCooldown': {
                     dispatch({ type: 'set-incomeCooldown', incomeCooldown: action.incomeCooldown });
                     break;
