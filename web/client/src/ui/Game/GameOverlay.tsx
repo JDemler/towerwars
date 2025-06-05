@@ -106,7 +106,7 @@ const GameOverlay: React.FC = () => {
                 towerTypes.map((towerType) => (
                   <button
                     key={towerType.key}
-                    className={`w-16 h-16 py-2 px-3 mx-1 text-sm border-2 ${
+                    className={`relative w-16 h-16 py-2 px-3 mx-1 text-sm border-2 ${
                       selectedTowerTypeKey === towerType.key
                         ? "bg-lightblue"
                         : "border-black"
@@ -126,7 +126,9 @@ const GameOverlay: React.FC = () => {
                       alt={`${towerType.name} Thumbnail`}
                       className="w-16 h-16"
                     />
-                    {/* <span>{towerType.name} {towerType.levels[0].cost}€</span> */}
+                    <span className="absolute bottom-0 left-0 bg-black bg-opacity-60 text-white text-xs px-1">
+                      {towerType.levels[0].cost}€
+                    </span>
                   </button>
                 ))
               )}
@@ -145,7 +147,7 @@ const GameOverlay: React.FC = () => {
                   ([mobType, mobSlot]) => (
                     <button
                       key={mobType.key}
-                      className={`w-16 h-16 p-2 mx-1 text-sm border-2 border-black`}
+                      className={`relative w-16 h-16 p-2 mx-1 text-sm border-2 border-black`}
                       value={`${mobType.name} ${mobType.cost}€ (${mobSlot.count})`}
                       title={`${mobType.description} (${mobType.health} HP, Delay: ${mobType.delay})`}
                       onClick={() => gameClient.buyMob(mobType.key)}
@@ -159,6 +161,12 @@ const GameOverlay: React.FC = () => {
                         alt={`${mobType.name} Thumbnail`}
                         className="w-16 h-16"
                       />
+                      <span className="absolute bottom-0 left-0 bg-black bg-opacity-60 text-white text-xs px-1">
+                        {mobSlot.count}
+                      </span>
+                      <span className="absolute bottom-0 right-0 bg-black bg-opacity-60 text-white text-xs px-1">
+                        {mobType.cost}€
+                      </span>
                     </button>
                   )
                 )
