@@ -6,6 +6,7 @@ export interface GameStatusModel {
 }
 
 interface ServerStatusModel {
+    version: string;
     openGames: number;
     runningGames: number;
     gameStatus: { [gameId: string]: GameStatusModel };
@@ -26,6 +27,7 @@ namespace ServerStatusModel {
             }
         }
         return {
+            version: json.version,
             openGames: json.openGames,
             runningGames: json.runningGames,
             gameStatus,

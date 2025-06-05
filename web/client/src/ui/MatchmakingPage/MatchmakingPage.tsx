@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import packageJson from "../../../package.json";
 import { useUiState } from "@hooks";
 import { GameState, ServerStatusModel } from "@models";
 import ApiClient from "@clients/ApiClient";
@@ -92,7 +93,11 @@ const MatchmakingPage: React.FC = () => {
                     </div>
                 ))}
             </div>
-            
+
+            <div className="text-white text-xs pt-4">
+                Client v{packageJson.version} - Server v{status?.version}
+            </div>
+
         </div>
         </div>
     );

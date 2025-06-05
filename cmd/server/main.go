@@ -13,6 +13,8 @@ import (
 	"towerwars/internal/game"
 )
 
+var serverVersion = "0.1.0"
+
 type Server struct {
 	runningGames map[string]*GameInstance
 	openGames    map[string]*GameInstance
@@ -21,6 +23,7 @@ type Server struct {
 }
 
 type ServerStatus struct {
+	Version      string                `json:"version"`
 	OpenGames    int                   `json:"openGames"`
 	RunningGames int                   `json:"runningGames"`
 	GameStatus   map[string]GameStatus `json:"gameStatus"`
@@ -274,6 +277,7 @@ func (s *Server) StartGame(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) GetStatus(w http.ResponseWriter, r *http.Request) {
 	gameStatus := ServerStatus{
+		Version:      serverVersion,
 		OpenGames:    len(s.openGames),
 		RunningGames: len(s.runningGames),
 		GameStatus:   make(map[string]GameStatus),
