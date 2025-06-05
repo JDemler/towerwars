@@ -3,7 +3,7 @@ import { GameState, AddedPlayerModel, TowerTypeModel, MobTypeModel, SocialMediaN
 import { isAbsoluteUrl } from '@helpers';
 
 const getApiRoot = () => {
-    let url = window._env_.REACT_APP_API_URL;
+    let url = import.meta.env.VITE_API_URL;
 
     if (url === undefined)
         throw new Error("API URL is not defined");
