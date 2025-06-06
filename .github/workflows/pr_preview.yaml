@@ -37,7 +37,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: azure/docker-login@v1
+      - uses: azure/docker-login@v2
         with:
           login-server: ${{ secrets.ACR_LOGIN_SERVER }}
           username: ${{ secrets.ACR_USERNAME }}
