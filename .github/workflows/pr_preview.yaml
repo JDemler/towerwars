@@ -59,7 +59,7 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Deploy Server Preview App via Container Apps Action
-        uses: azure/container-apps-deploy-action@v1
+        uses: azure/container-apps-deploy-action@v2
         with:
           acrName: ${{ secrets.ACR_LOGIN_SERVER_NAME }}
           containerAppName: ${{ secrets.SERVER_APP }}-pr-${{ github.event.number }}
@@ -72,7 +72,7 @@ jobs:
           # registryPassword: ${{ secrets.ACR_PASSWORD }}
 
       - name: Deploy Client Preview App via Container Apps Action
-        uses: azure/container-apps-deploy-action@v1
+        uses: azure/container-apps-deploy-action@v2
         with:
           acrName: ${{ secrets.ACR_LOGIN_SERVER_NAME }}
           containerAppName: ${{ secrets.CLIENT_APP }}-pr-${{ github.event.number }}
