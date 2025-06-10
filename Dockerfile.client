@@ -1,5 +1,5 @@
 # build environment
-FROM node:19.7.0-alpine as build
+FROM node:24.2.0-alpine as build
 WORKDIR /app
 ENV PATH /app/node_modules/.bin:$PATH
 ENV REACT_APP_API_URL /api/
