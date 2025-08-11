@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event.label.name == 'preview'
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v5
       - name: Set up Go 1.19
         uses: actions/setup-go@v3
         with:
@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event.label.name == 'preview'
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v5
       - name: Set up Go 1.19
         uses: actions/setup-go@v3
         with:
@@ -35,7 +35,7 @@ jobs:
     needs: [golang-ci, golang-test]
     if: github.event.label.name == 'preview'
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v5
 
       - uses: azure/docker-login@v1
         with:
